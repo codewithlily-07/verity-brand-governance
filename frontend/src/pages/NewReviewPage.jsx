@@ -303,3 +303,4 @@ export function NewReviewPage({ setActivePage, setSelectedSubmissionId, role }) 
     </div>
   );
 }
+

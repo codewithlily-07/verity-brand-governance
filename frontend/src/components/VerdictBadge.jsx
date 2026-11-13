@@ -52,3 +52,4 @@ export function VerdictBadge({ verdict }) {
     </span>
   );
 }
+

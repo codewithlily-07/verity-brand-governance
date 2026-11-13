@@ -206,3 +206,4 @@ export function SubmissionHistoryPage({ setActivePage, setSelectedSubmissionId }
     </div>
   );
 }
+

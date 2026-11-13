@@ -61,3 +61,4 @@ VERITY provides an OpenAPI 3.0 compliant REST API served by FastAPI. Complete in
   - Returns cryptographically linked workspace audit event ledger.
 - `GET /api/ai/status`
   - Reports provider status, model, and active fallback mode.
+

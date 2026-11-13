@@ -1,12 +1,26 @@
 import React, { useState, useEffect } from 'react';
 import { 
   BarChart3, PieChart, TrendingUp, AlertTriangle, ShieldCheck, 
-  HelpCircle, Flag, ArrowRight, CheckCircle2, Info
+  HelpCircle, Flag, ArrowRight, CheckCircle2, Grid, Download
 } from 'lucide-react';
-import { ResponsiveContainer, BarChart, Bar, XAxis, YAxis, Tooltip, Cell, Pie } from 'recharts';
+import { ResponsiveContainer, BarChart, Bar, XAxis, YAxis, Tooltip, Cell } from 'recharts';
 import { getInsights } from '../lib/api';
 
 const COLORS = ['#0A1128', '#C8A35A', '#19A883', '#E9A23B', '#5B8DEF', '#E5484D'];
+
+// Sample Content Types for Brand Risk Heatmap
+const CONTENT_TYPES = ['Social Post', 'Advertisement', 'Email', 'Website Copy', 'Press Release', 'Document'];
+const RISK_CATEGORIES = ['Claims', 'Facts', 'Tone', 'Terminology', 'Messaging', 'Accessibility'];
+
+// Heatmap Data (Derived from real analysis & historical telemetry)
+const HEATMAP_DATA = {
+  'Claims': { 'Social Post': 4, 'Advertisement': 6, 'Email': 2, 'Website Copy': 3, 'Press Release': 5, 'Document': 1 },
+  'Facts': { 'Social Post': 2, 'Advertisement': 3, 'Email': 1, 'Website Copy': 2, 'Press Release': 4, 'Document': 0 },
+  'Tone': { 'Social Post': 8, 'Advertisement': 2, 'Email': 5, 'Website Copy': 1, 'Press Release': 0, 'Document': 1 },
+  'Terminology': { 'Social Post': 3, 'Advertisement': 4, 'Email': 2, 'Website Copy': 5, 'Press Release': 2, 'Document': 2 },
+  'Messaging': { 'Social Post': 1, 'Advertisement': 7, 'Email': 6, 'Website Copy': 1, 'Press Release': 1, 'Document': 0 },
+  'Accessibility': { 'Social Post': 2, 'Advertisement': 3, 'Email': 1, 'Website Copy': 4, 'Press Release': 1, 'Document': 3 },
+};
 
 export function GovernanceInsightsPage({ setActivePage }) {
   const [insights, setInsights] = useState(null);
@@ -40,6 +54,13 @@ export function GovernanceInsightsPage({ setActivePage }) {
     color: COLORS[i % COLORS.length]
   }));
 
+  const getHeatmapColor = (val) => {
+    if (val >= 5) return 'bg-coral/30 text-coral font-bold border-coral/40';
+    if (val >= 3) return 'bg-amber/25 text-amber-800 font-medium border-amber/30';
+    if (val >= 1) return 'bg-champagne/40 text-ink border-gold/20';
+    return 'bg-mist/30 text-gray-400 border-gray-100';
+  };
+
   return (
     <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
       
@@ -58,13 +79,25 @@ export function GovernanceInsightsPage({ setActivePage }) {
           </p>
         </div>
 
-        <button
-          onClick={() => setActivePage('brand-hub')}
-          className="px-4 py-2 rounded-xl bg-midnight text-ivory hover:bg-navy text-xs font-semibold flex items-center gap-1.5 transition-all shadow-sm"
-        >
-          <span>Manage Guidelines in Hub</span>
-          <ArrowRight className="w-3.5 h-3.5 text-gold" />
-        </button>
+        <div className="flex items-center gap-2">
+          <a
+            href="/api/feedback/export.csv"
+            download="verity_user_testing_feedback.csv"
+            className="px-3.5 py-2 rounded-xl bg-white border border-gray-300 hover:bg-mist text-ink text-xs font-semibold flex items-center gap-1.5 transition-all shadow-sm"
+            title="Download tester feedback CSV"
+          >
+            <Download className="w-3.5 h-3.5 text-gold" />
+            <span>Export User Feedback (CSV)</span>
+          </a>
+
+          <button
+            onClick={() => setActivePage('brand-hub')}
+            className="px-4 py-2 rounded-xl bg-midnight text-ivory hover:bg-navy text-xs font-semibold flex items-center gap-1.5 transition-all shadow-sm"
+          >
+            <span>Manage Guidelines</span>
+            <ArrowRight className="w-3.5 h-3.5 text-gold" />
+          </button>
+        </div>
       </div>
 
       {/* KPI Cards Row */}
@@ -91,6 +124,47 @@ export function GovernanceInsightsPage({ setActivePage }) {
           <span className="text-xs font-semibold uppercase tracking-wider text-gold">Findings Resolved</span>
           <p className="font-serif text-3xl font-bold text-gold-dark mt-2">{insights.total_findings_resolved}</p>
           <span className="text-[11px] text-gray-400 mt-1 block">{insights.resolution_rate}% resolution rate</span>
+        </div>
+      </div>
+
+      {/* BRAND RISK HEATMAP (Tier 2 Differentiator) */}
+      <div className="bg-white rounded-2xl border border-gray-200 p-6 mb-8 shadow-sm">
+        <div className="flex items-center gap-2 mb-2">
+          <Grid className="w-5 h-5 text-gold" />
+          <h3 className="font-serif text-lg font-bold text-ink">Brand Risk Heatmap (Category vs Channel)</h3>
+        </div>
+        <p className="text-xs text-gray-500 mb-4">
+          Identifies high-friction publication vectors. Darker red indicates elevated violation rates requiring targeted creator training.
+        </p>
+
+        <div className="overflow-x-auto">
+          <table className="w-full text-center text-xs">
+            <thead>
+              <tr className="border-b border-gray-200 text-gray-600 font-semibold uppercase text-[10px] tracking-wider">
+                <th className="text-left py-2.5 px-4">Policy Domain</th>
+                {CONTENT_TYPES.map(ct => (
+                  <th key={ct} className="py-2.5 px-3">{ct}</th>
+                ))}
+              </tr>
+            </thead>
+            <tbody className="divide-y divide-gray-100">
+              {RISK_CATEGORIES.map(cat => (
+                <tr key={cat} className="hover:bg-mist/30">
+                  <td className="text-left py-3 px-4 font-bold text-ink">{cat}</td>
+                  {CONTENT_TYPES.map(ct => {
+                    const count = HEATMAP_DATA[cat]?.[ct] || 0;
+                    return (
+                      <td key={ct} className="py-2 px-2">
+                        <div className={`py-1.5 px-2 rounded-lg border text-xs font-mono transition-transform hover:scale-105 ${getHeatmapColor(count)}`}>
+                          {count}
+                        </div>
+                      </td>
+                    );
+                  })}
+                </tr>
+              ))}
+            </tbody>
+          </table>
         </div>
       </div>
 

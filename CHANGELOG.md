@@ -29,3 +29,20 @@ All notable changes to VERITY are documented in this file.
 - **Evaluation & Deployment:**
   - 30-sample labelled evaluation benchmark suite with automated metrics generation.
   - Docker multi-stage containerization and Docker Compose setup.
+- **Tier 2 Differentiators & Advanced Capabilities:**
+  - Brand Compliance Score engine with transparent component weighting and check coverage gating.
+  - Evidence Ledger extracting draft claims with supported/unsupported/conflicting verdicts.
+  - Server-side PDF review report generation via ReportLab with branding and decision seals.
+  - Real-time in-app feedback widget with CSV export (`/api/feedback/export.csv`).
+  - Command Palette (Ctrl/⌘ + K) for rapid keyboard navigation.
+  - Notifications drawer for status transitions and review alerts.
+  - Interactive 6-step Onboarding Wizard for new workspace setup.
+- **Complete Round 2 Documentation Pack:**
+  - `docs/ARCHITECTURE.md`: High-level architecture and state-machine Mermaid diagrams.
+  - `docs/DECISIONS.md`: In-depth Architectural Decision Records (ADRs).
+  - `docs/TECH_INVENTORY.md`: Comprehensive inventory of every runtime, library, and service.
+  - `docs/USER_TESTING.md`: Structured testing protocol and real exported feedback logs.
+  - `docs/API.md`: Complete REST API reference.
+  - `docs/DEMO_SCRIPT.md`: 3-minute video presentation walkthrough script.
+
+

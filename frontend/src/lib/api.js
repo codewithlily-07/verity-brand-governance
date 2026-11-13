@@ -157,3 +157,4 @@ export async function getAIStatus() {
   const res = await fetch(`${BASE_URL}/ai/status`);
   return await res.json();
 }
+

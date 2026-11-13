@@ -1,6 +1,6 @@
 # VERITY Engine Evaluation Report
 
-**Generated:** 2026-11-13 11:25:47 UTC  
+**Generated:** 2026-11-13 13:30:35 UTC  
 **Evaluation Dataset:** `eval/dataset.json` (30 labelled benchmark samples)  
 **Evaluator:** Real automated execution of `VerityAnalysisEngine` with zero mocked results.
 

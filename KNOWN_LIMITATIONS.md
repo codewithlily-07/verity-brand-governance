@@ -19,3 +19,4 @@ In accordance with Round 2 and Round 3 judging guidelines, this document provide
 ### 4. Cold-Start Latency on Serverless Containers
 - **Current Behavior:** On free-tier container platforms (such as Render free tier), the container may spin down during prolonged inactivity. The first wake request can experience a 15–20 second delay.
 - **Mitigation:** The frontend provides non-blocking status messaging and does not crash or display broken states during server initialization.
+

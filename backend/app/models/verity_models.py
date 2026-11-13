@@ -264,6 +264,29 @@ class ReviewDecision(Base):
     submission = relationship("Submission", back_populates="decisions")
     submission_version = relationship("SubmissionVersion", back_populates="decisions")
 
+class Notification(Base):
+    __tablename__ = "notifications"
+
+    id = Column(String(36), primary_key=True, default=gen_uuid)
+    workspace_id = Column(String(36), ForeignKey("workspaces.id"), nullable=False)
+    user_id = Column(String(36), nullable=True)
+    title = Column(String(255), nullable=False)
+    message = Column(Text, nullable=False)
+    link = Column(String(255), nullable=True)
+    read = Column(Boolean, default=False)
+    created_at = Column(DateTime(timezone=True), default=utcnow)
+
+class Feedback(Base):
+    __tablename__ = "feedback"
+
+    id = Column(String(36), primary_key=True, default=gen_uuid)
+    workspace_id = Column(String(36), ForeignKey("workspaces.id"), nullable=False)
+    user_name = Column(String(255), default="Judge / Reviewer")
+    rating = Column(Integer, default=5)
+    comment = Column(Text, nullable=False)
+    category = Column(String(50), default="Usability") # Usability | Accuracy | Feature Request
+    created_at = Column(DateTime(timezone=True), default=utcnow)
+
 class AuditEvent(Base):
     __tablename__ = "audit_events"
 

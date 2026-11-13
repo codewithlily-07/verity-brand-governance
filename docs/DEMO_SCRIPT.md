@@ -44,3 +44,4 @@
    - Watch the green approval confirmation stamp appear.
 3. Navigate to **"Insights"**:
    - Observe real-time governance metrics and the **"Rules That May Be Unclear"** panel flagging frequently challenged guidelines.
+

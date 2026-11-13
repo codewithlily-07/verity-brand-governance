@@ -50,3 +50,4 @@
 ## 4. Artificial Intelligence Tool Disclosure
 
 Portions of this software architecture, including backend route scaffolds, regex phrase generators, React components, and documentation, were authored with the collaborative assistance of Google DeepMind's Antigravity AI coding agent. All generated code was reviewed, validated, and verified through automated pytest test suites and evaluation harnesses by Team COGNEXA.
+

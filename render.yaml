@@ -19,3 +19,4 @@ services:
         value: "true"
       - key: MAX_UPLOAD_MB
         value: "10"
+

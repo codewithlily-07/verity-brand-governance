@@ -1,6 +1,9 @@
 import React, { useState, useEffect } from 'react';
 import { Navbar } from './components/Navbar';
 import { Footer } from './components/Footer';
+import { CommandPalette } from './components/CommandPalette';
+import { FeedbackWidget } from './components/FeedbackWidget';
+import { OnboardingWizard } from './components/OnboardingWizard';
 import { LandingPage } from './pages/LandingPage';
 import { DashboardPage } from './pages/DashboardPage';
 import { BrandHubPage } from './pages/BrandHubPage';
@@ -20,6 +23,8 @@ export default function App() {
   const [role, setRole] = useState('creator');
   const [selectedSubmissionId, setSelectedSubmissionId] = useState(null);
   const [isInitializing, setIsInitializing] = useState(true);
+  const [isCommandPaletteOpen, setIsCommandPaletteOpen] = useState(false);
+  const [isOnboardingOpen, setIsOnboardingOpen] = useState(false);
 
   useEffect(() => {
     async function bootstrap() {
@@ -47,15 +52,20 @@ export default function App() {
   };
 
   return (
-    <div className="min-h-screen flex flex-col bg-ivory font-sans text-ink selection:bg-champagne selection:text-ink">
+    <div className="min-h-screen flex flex-col bg-ivory font-sans text-ink selection:bg-champagne selection:text-ink relative">
+      
+      {/* Navigation Header */}
       <Navbar
         activePage={activePage}
         setActivePage={setActivePage}
         role={role}
         setRole={setRole}
         onResetDemo={handleResetDemo}
+        onOpenCommandPalette={() => setIsCommandPaletteOpen(true)}
+        onOpenOnboarding={() => setIsOnboardingOpen(true)}
       />
 
+      {/* Main View Router */}
       <main className="flex-grow">
         {activePage === 'landing' && <LandingPage setActivePage={setActivePage} />}
         {activePage === 'dashboard' && (
@@ -110,6 +120,22 @@ export default function App() {
         {activePage === 'trust' && <TrustPage />}
         {activePage === 'roadmap' && <RoadmapPage setActivePage={setActivePage} />}
       </main>
+
+      {/* Global Interactive Overlays */}
+      <CommandPalette
+        isOpen={isCommandPaletteOpen}
+        setIsOpen={setIsCommandPaletteOpen}
+        setActivePage={setActivePage}
+        onResetDemo={handleResetDemo}
+      />
+
+      <OnboardingWizard
+        isOpen={isOnboardingOpen}
+        onClose={() => setIsOnboardingOpen(false)}
+        setActivePage={setActivePage}
+      />
+
+      <FeedbackWidget />
 
       <Footer setActivePage={setActivePage} />
     </div>

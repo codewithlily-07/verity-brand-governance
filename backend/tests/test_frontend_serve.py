@@ -8,3 +8,4 @@ def test_frontend_spa_serving():
     assert res.status_code == 200
     assert "<!DOCTYPE html>" in res.text
     assert "VERITY" in res.text
+

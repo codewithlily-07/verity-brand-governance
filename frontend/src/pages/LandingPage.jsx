@@ -348,3 +348,4 @@ export function LandingPage({ setActivePage }) {
     </div>
   );
 }
+

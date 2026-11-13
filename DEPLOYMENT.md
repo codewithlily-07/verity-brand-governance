@@ -75,3 +75,4 @@ When running on free-tier container services (such as Render or Fly.io):
 - If the instance goes to sleep after inactivity, the first incoming HTTP request wakes the server within 15–25 seconds.
 - The VERITY frontend includes a non-blocking connection banner ("Connecting to Verity Engine...").
 - To prevent sleeping during live evaluation, configure a free periodic health ping (e.g. UptimeRobot) targeting `https://<YOUR-APP>/api/health` every 10 minutes.
+

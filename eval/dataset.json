@@ -30,3 +30,4 @@
   {"id": 29, "text": "Our platform supports 500% results across all student categories.", "type": "social", "should_flag": true, "expected_rules": ["R2", "FACT-01"]},
   {"id": 30, "text": "Verity Learning offers live and recorded classes for learners of all backgrounds.", "type": "social", "should_flag": false, "expected_rules": []}
 ]
+

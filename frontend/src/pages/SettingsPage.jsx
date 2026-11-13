@@ -142,3 +142,4 @@ export function SettingsPage({ role, setRole, onResetDemo }) {
     </div>
   );
 }
+
