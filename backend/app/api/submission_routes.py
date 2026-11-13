@@ -1,0 +1,449 @@
+import hashlib
+import time
+from fastapi import APIRouter, Depends, HTTPException, Request, UploadFile, File, Form
+from sqlalchemy.orm import Session
+from typing import List, Dict, Any, Optional
+from backend.app.core.database import get_db
+from backend.app.models.verity_models import (
+    Workspace, BrandProfile, Submission, SubmissionVersion,
+    AnalysisRun, Finding, AuditEvent
+)
+from backend.app.engine.verity_engine import VerityAnalysisEngine, diff_words
+from backend.app.llm.adapter import llm_adapter
+from backend.app.parsers.document_parsers import parse_uploaded_file
+from backend.app.api.brand_routes import get_or_create_profile
+from backend.app.schemas.verity_schemas import (
+    SubmissionCreate, SubmissionDetailResponse, SubmissionVersionResponse,
+    AnalysisResultResponse, FindingResponse
+)
+
+router = APIRouter(prefix="/submissions", tags=["Submissions & Analysis"])
+
+def extract_brand_dict(profile: BrandProfile) -> Dict[str, Any]:
+    return {
+        "name": profile.name,
+        "rules": [
+            {
+                "id": r.id,
+                "code": r.code,
+                "category": r.category,
+                "title": r.title,
+                "description": r.description,
+                "rule_type": r.rule_type,
+                "pattern": r.pattern,
+                "prefer_term": r.prefer_term,
+                "avoid_term": r.avoid_term,
+                "severity": r.severity
+            }
+            for r in profile.rules if r.is_active
+        ],
+        "facts": [
+            {
+                "id": f.id,
+                "code": f.code,
+                "name": f.name,
+                "statement": f.statement,
+                "source": f.source
+            }
+            for f in profile.facts if f.status == "approved"
+        ],
+        "passages": [
+            {
+                "id": p.id,
+                "text": p.passage_text,
+                "heading": p.heading,
+                "page": p.page_number
+            }
+            for p in profile.passages
+        ],
+        "terminology": [
+            {
+                "avoid": t.avoid,
+                "prefer": t.prefer,
+                "note": t.note
+            }
+            for t in profile.terms
+        ],
+        "palette": profile.palette_json or []
+    }
+
+async def execute_analysis_pipeline(
+    db: Session,
+    version: SubmissionVersion,
+    profile: BrandProfile,
+    content_type: str
+) -> AnalysisRun:
+    start_time = time.time()
+    brand_dict = extract_brand_dict(profile)
+    engine = VerityAnalysisEngine(brand_dict)
+
+    # Optional Layer 3: AI analysis
+    llm_findings = None
+    ai_status = "unavailable"
+    if llm_adapter.is_configured():
+        llm_findings, ai_msg = await llm_adapter.analyze_context(
+            content=version.content,
+            rules=brand_dict["rules"],
+            passages=brand_dict["passages"],
+            facts=brand_dict["facts"]
+        )
+        ai_status = "ok" if llm_findings is not None else "unavailable"
+    else:
+        ai_status = "skipped"
+
+    results = engine.run_analysis(
+        content=version.content,
+        content_type=content_type,
+        image_meta=version.image_meta_json,
+        fg_color=version.fg_color,
+        bg_color=version.bg_color,
+        alt_text=version.alt_text,
+        llm_findings=llm_findings
+    )
+    results["layers"]["ai"] = ai_status
+
+    duration_ms = int((time.time() - start_time) * 1000)
+
+    # Persist AnalysisRun
+    run = AnalysisRun(
+        submission_version_id=version.id,
+        stage="completed",
+        mode_flags_json=results["layers"],
+        duration_ms=duration_ms
+    )
+    db.add(run)
+    db.flush()
+
+    import uuid
+    for item in results["findings"]:
+        finding = Finding(
+            id=str(uuid.uuid4()),
+            analysis_run_id=run.id,
+            category=item["category"],
+            severity=item["severity"],
+            title=item["title"],
+            quote=item["quote"],
+            start_offset=item["start_offset"],
+            end_offset=item["end_offset"],
+            rule_id=item.get("rule_id"),
+            rule_text=item.get("rule_text"),
+            evidence_json=item.get("evidence", {}),
+            explanation=item["explanation"],
+            suggested_replacement=item.get("suggested_replacement"),
+            rationale=item.get("rationale"),
+            verdict=item["verdict"],
+            confidence=item.get("confidence", 1.0),
+            layer=item.get("layer", "rules"),
+            status="open"
+        )
+        db.add(finding)
+
+    db.commit()
+    return run
+
+@router.post("", response_model=Dict[str, Any])
+async def create_submission(
+    payload: SubmissionCreate,
+    request: Request,
+    db: Session = Depends(get_db)
+):
+    if not payload.content or not payload.content.strip():
+        raise HTTPException(status_code=400, detail="Content cannot be empty.")
+
+    profile = get_or_create_profile(db, request)
+    workspace_id = profile.workspace_id
+
+    content_hash = hashlib.sha256(payload.content.encode("utf-8")).hexdigest()
+
+    submission = Submission(
+        workspace_id=workspace_id,
+        brand_profile_id=profile.id,
+        title=payload.title,
+        content_type=payload.content_type,
+        campaign=payload.campaign,
+        status="Draft",
+        author_name=payload.author_name,
+        author_role=payload.author_role
+    )
+    db.add(submission)
+    db.flush()
+
+    version = SubmissionVersion(
+        submission_id=submission.id,
+        version_number=1,
+        content=payload.content,
+        content_hash=content_hash,
+        fg_color=payload.fg_color,
+        bg_color=payload.bg_color,
+        alt_text=payload.alt_text
+    )
+    db.add(version)
+    db.flush()
+
+    # Run analysis immediately
+    run = await execute_analysis_pipeline(db, version, profile, payload.content_type)
+
+    # Log audit event
+    db.add(AuditEvent(
+        workspace_id=workspace_id,
+        submission_id=submission.id,
+        event_type="submission_created",
+        details_json={"version": 1, "title": payload.title, "findings": len(run.findings)},
+        actor_name=payload.author_name,
+        actor_role=payload.author_role,
+        version_number=1
+    ))
+    db.commit()
+
+    return {
+        "submission_id": submission.id,
+        "version_id": version.id,
+        "version_number": 1,
+        "content_hash": content_hash,
+        "status": submission.status,
+        "run_id": run.id
+    }
+
+@router.post("/upload")
+async def create_submission_from_file(
+    request: Request,
+    title: str = Form(...),
+    content_type: str = Form("document"),
+    campaign: Optional[str] = Form(None),
+    alt_text: Optional[str] = Form(None),
+    author_name: str = Form("Creator"),
+    file: UploadFile = File(...),
+    db: Session = Depends(get_db)
+):
+    profile = get_or_create_profile(db, request)
+    contents = await file.read()
+    if len(contents) > 10 * 1024 * 1024:
+        raise HTTPException(status_code=400, detail="File exceeds 10MB limit")
+
+    parsed = parse_uploaded_file(file.filename, contents)
+    extracted_text = parsed.get("text", "").strip()
+    if not extracted_text:
+        raise HTTPException(status_code=400, detail="Could not extract text from document.")
+
+    submission_payload = SubmissionCreate(
+        title=title,
+        content_type=content_type,
+        campaign=campaign,
+        content=extracted_text,
+        alt_text=alt_text,
+        author_name=author_name
+    )
+    return await create_submission(submission_payload, request, db)
+
+@router.get("", response_model=List[Dict[str, Any]])
+def list_submissions(request: Request, db: Session = Depends(get_db)):
+    profile = get_or_create_profile(db, request)
+    submissions = db.query(Submission).filter(
+        Submission.workspace_id == profile.workspace_id
+    ).order_by(Submission.created_at.desc()).all()
+
+    out = []
+    for s in submissions:
+        latest_version = s.versions[-1] if s.versions else None
+        findings_count = 0
+        if latest_version and latest_version.analysis_runs:
+            latest_run = latest_version.analysis_runs[-1]
+            findings_count = len(latest_run.findings)
+
+        out.append({
+            "id": s.id,
+            "title": s.title,
+            "content_type": s.content_type,
+            "campaign": s.campaign,
+            "status": s.status,
+            "version_count": len(s.versions),
+            "findings_count": findings_count,
+            "created_at": s.created_at,
+            "updated_at": s.updated_at,
+            "author_name": s.author_name
+        })
+    return out
+
+@router.get("/{submission_id}")
+def get_submission_detail(submission_id: str, db: Session = Depends(get_db)):
+    sub = db.query(Submission).filter(Submission.id == submission_id).first()
+    if not sub:
+        raise HTTPException(status_code=404, detail="Submission not found")
+
+    versions_data = []
+    for v in sub.versions:
+        run_data = None
+        if v.analysis_runs:
+            lr = v.analysis_runs[-1]
+            findings_data = [
+                {
+                    "id": f.id,
+                    "category": f.category,
+                    "severity": f.severity,
+                    "title": f.title,
+                    "quote": f.quote,
+                    "start_offset": f.start_offset,
+                    "end_offset": f.end_offset,
+                    "rule_id": f.rule_id,
+                    "rule_text": f.rule_text,
+                    "evidence": f.evidence_json or {},
+                    "explanation": f.explanation,
+                    "suggested_replacement": f.suggested_replacement,
+                    "rationale": f.rationale,
+                    "verdict": f.verdict,
+                    "confidence": f.confidence,
+                    "layer": f.layer,
+                    "status": f.status,
+                    "user_edited_replacement": f.user_edited_replacement,
+                    "dismiss_reason": f.dismiss_reason,
+                    "challenge_reason": f.challenge_reason
+                }
+                for f in lr.findings
+            ]
+            run_data = {
+                "id": lr.id,
+                "stage": lr.stage,
+                "mode_flags": lr.mode_flags_json or {},
+                "duration_ms": lr.duration_ms,
+                "findings": findings_data
+            }
+
+        versions_data.append({
+            "id": v.id,
+            "version_number": v.version_number,
+            "content": v.content,
+            "content_hash": v.content_hash,
+            "fg_color": v.fg_color,
+            "bg_color": v.bg_color,
+            "alt_text": v.alt_text,
+            "created_at": v.created_at,
+            "analysis_run": run_data
+        })
+
+    decisions_data = [
+        {
+            "id": d.id,
+            "submission_version_id": d.submission_version_id,
+            "content_hash": d.content_hash,
+            "decision": d.decision,
+            "reviewer_name": d.reviewer_name,
+            "reviewer_role": d.reviewer_role,
+            "reason": d.reason,
+            "override_used": d.override_used,
+            "override_reason": d.override_reason,
+            "created_at": d.created_at
+        }
+        for d in sub.decisions
+    ]
+
+    comments_data = [
+        {
+            "id": c.id,
+            "submission_version_id": c.submission_version_id,
+            "user_name": c.user_name,
+            "user_role": c.user_role,
+            "comment_text": c.comment_text,
+            "created_at": c.created_at
+        }
+        for c in sub.comments
+    ]
+
+    return {
+        "id": sub.id,
+        "workspace_id": sub.workspace_id,
+        "brand_profile_id": sub.brand_profile_id,
+        "title": sub.title,
+        "content_type": sub.content_type,
+        "campaign": sub.campaign,
+        "status": sub.status,
+        "author_name": sub.author_name,
+        "author_role": sub.author_role,
+        "created_at": sub.created_at,
+        "updated_at": sub.updated_at,
+        "versions": versions_data,
+        "decisions": decisions_data,
+        "comments": comments_data
+    }
+
+@router.post("/{submission_id}/versions")
+async def create_new_version(
+    submission_id: str,
+    payload: Dict[str, Any],
+    request: Request,
+    db: Session = Depends(get_db)
+):
+    """
+    Saves revised content as a new version.
+    Rule: Approval applies to one exact version. Any edit creates a new version,
+    and previous approval no longer covers it!
+    """
+    sub = db.query(Submission).filter(Submission.id == submission_id).first()
+    if not sub:
+        raise HTTPException(status_code=404, detail="Submission not found")
+
+    new_content = payload.get("content", "").strip()
+    if not new_content:
+        raise HTTPException(status_code=400, detail="Content cannot be empty")
+
+    new_version_num = len(sub.versions) + 1
+    content_hash = hashlib.sha256(new_content.encode("utf-8")).hexdigest()
+
+    version = SubmissionVersion(
+        submission_id=sub.id,
+        version_number=new_version_num,
+        content=new_content,
+        content_hash=content_hash,
+        fg_color=payload.get("fg_color"),
+        bg_color=payload.get("bg_color"),
+        alt_text=payload.get("alt_text")
+    )
+    db.add(version)
+    
+    # State machine transition: If it was approved, changes requested, etc., it becomes 'Resubmitted' or 'In Review'
+    sub.status = "Resubmitted"
+    db.flush()
+
+    profile = db.query(BrandProfile).filter(BrandProfile.id == sub.brand_profile_id).first()
+    run = await execute_analysis_pipeline(db, version, profile, sub.content_type)
+
+    db.add(AuditEvent(
+        workspace_id=sub.workspace_id,
+        submission_id=sub.id,
+        event_type="version_created",
+        details_json={"version": new_version_num, "findings": len(run.findings)},
+        actor_name=payload.get("author_name", "Creator"),
+        actor_role="creator",
+        version_number=new_version_num
+    ))
+    db.commit()
+
+    return {
+        "status": "version_created",
+        "version_id": version.id,
+        "version_number": new_version_num,
+        "content_hash": content_hash,
+        "run_id": run.id
+    }
+
+@router.patch("/{submission_id}/status")
+def update_submission_status(
+    submission_id: str,
+    payload: Dict[str, str],
+    db: Session = Depends(get_db)
+):
+    sub = db.query(Submission).filter(Submission.id == submission_id).first()
+    if not sub:
+        raise HTTPException(status_code=404, detail="Submission not found")
+    new_status = payload.get("status")
+    if not new_status:
+        raise HTTPException(status_code=400, detail="Missing status")
+    sub.status = new_status
+    db.commit()
+    return {"status": "updated", "submission_status": sub.status}
+
+@router.post("/diff")
+def compute_diff(payload: Dict[str, str]):
+    original = payload.get("original", "")
+    revised = payload.get("revised", "")
+    diff_tokens = diff_words(original, revised)
+    return {"diff": diff_tokens}
