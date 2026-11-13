@@ -1,12 +1,26 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { 
   Shield, Sparkles, User, RefreshCw, Bell, Command, 
-  HelpCircle, CheckCircle2, ExternalLink
+  HelpCircle, CheckCircle2, ExternalLink, LogIn, LogOut, Check
 } from 'lucide-react';
+import { markNotificationRead, clearAllNotifications } from '../lib/api';
 
-export function Navbar({ activePage, setActivePage, role, setRole, onResetDemo, onOpenCommandPalette, onOpenOnboarding }) {
+export function Navbar({ 
+  activePage, 
+  setActivePage, 
+  role, 
+  setRole, 
+  onResetDemo, 
+  onOpenCommandPalette, 
+  onOpenOnboarding,
+  currentUser,
+  onLogout,
+  onSelectSubmission
+}) {
   const [notifications, setNotifications] = useState([]);
   const [showNotes, setShowNotes] = useState(false);
+  const dropdownRef = useRef(null);
+  const bellButtonRef = useRef(null);
 
   const loadNotifications = async () => {
     try {
@@ -26,13 +40,80 @@ export function Navbar({ activePage, setActivePage, role, setRole, onResetDemo, 
     return () => clearInterval(interval);
   }, []);
 
+  // Click-outside and Escape listener with proper cleanup
+  useEffect(() => {
+    function handleClickOutside(event) {
+      if (
+        showNotes &&
+        dropdownRef.current && 
+        !dropdownRef.current.contains(event.target) &&
+        bellButtonRef.current &&
+        !bellButtonRef.current.contains(event.target)
+      ) {
+        setShowNotes(false);
+      }
+    }
+
+    function handleKeyDown(event) {
+      if (event.key === 'Escape' && showNotes) {
+        setShowNotes(false);
+        if (bellButtonRef.current) bellButtonRef.current.focus();
+      }
+    }
+
+    if (showNotes) {
+      document.addEventListener('mousedown', handleClickOutside);
+      document.addEventListener('keydown', handleKeyDown);
+    }
+
+    return () => {
+      document.removeEventListener('mousedown', handleClickOutside);
+      document.removeEventListener('keydown', handleKeyDown);
+    };
+  }, [showNotes]);
+
   const unreadCount = notifications.filter(n => !n.read).length;
 
-  const markAllRead = async () => {
+  const handleMarkAllRead = async () => {
     try {
-      await fetch('/api/notifications/clear', { method: 'POST' });
+      await clearAllNotifications();
       setNotifications(prev => prev.map(n => ({ ...n, read: true })));
-    } catch (e) {}
+    } catch (e) {
+      console.error('Failed to clear notifications:', e);
+    }
+  };
+
+  const handleNotificationClick = async (notif) => {
+    if (!notif.read) {
+      try {
+        await markNotificationRead(notif.id);
+        setNotifications(prev => prev.map(n => n.id === notif.id ? { ...n, read: true } : n));
+      } catch (e) {}
+    }
+    
+    setShowNotes(false);
+    if (notif.link && notif.link.includes('/submissions/')) {
+      const parts = notif.link.split('/');
+      const subId = parts[parts.length - 1];
+      if (onSelectSubmission) onSelectSubmission(subId);
+      setActivePage('results');
+    }
+  };
+
+  const formatTimestamp = (dateStr) => {
+    if (!dateStr) return '';
+    try {
+      const d = new Date(dateStr);
+      const diffMs = Date.now() - d.getTime();
+      const diffMins = Math.floor(diffMs / 60000);
+      if (diffMins < 1) return 'Just now';
+      if (diffMins < 60) return `${diffMins}m ago`;
+      const diffHours = Math.floor(diffMins / 60);
+      if (diffHours < 24) return `${diffHours}h ago`;
+      return d.toLocaleDateString([], { month: 'short', day: 'numeric' });
+    } catch (e) {
+      return '';
+    }
   };
 
   return (
@@ -64,6 +145,7 @@ export function Navbar({ activePage, setActivePage, role, setRole, onResetDemo, 
               { id: 'dashboard', label: 'Dashboard' },
               { id: 'new-review', label: 'New Review' },
               { id: 'brand-hub', label: 'Brand Hub' },
+              { id: 'review', label: 'Review Centre' },
               { id: 'submissions', label: 'History' },
               { id: 'insights', label: 'Insights & Heatmap' },
               { id: 'trust', label: 'Trust & AI' },
@@ -81,7 +163,7 @@ export function Navbar({ activePage, setActivePage, role, setRole, onResetDemo, 
             ))}
           </nav>
 
-          {/* Right Controls: Command Palette, Notifications, Role, Reset */}
+          {/* Right Controls: Command Palette, Notifications, Role, Auth, Reset */}
           <div className="flex items-center gap-2 sm:gap-3">
             
             {/* Command Palette Button */}
@@ -89,6 +171,7 @@ export function Navbar({ activePage, setActivePage, role, setRole, onResetDemo, 
               onClick={onOpenCommandPalette}
               className="hidden sm:flex items-center gap-1.5 px-2.5 py-1 rounded-lg bg-navy-2/60 border border-gray-700 hover:border-gold text-gray-300 hover:text-white text-xs transition-all"
               title="Open Command Palette (Ctrl+K or ⌘K)"
+              aria-label="Open Command Palette"
             >
               <Command className="w-3.5 h-3.5 text-gold" />
               <span className="text-[11px] font-mono">⌘K</span>
@@ -99,47 +182,84 @@ export function Navbar({ activePage, setActivePage, role, setRole, onResetDemo, 
               onClick={onOpenOnboarding}
               className="p-1.5 text-gray-300 hover:text-gold rounded-lg transition-colors"
               title="Open Onboarding Wizard"
+              aria-label="Open Onboarding Wizard"
             >
               <HelpCircle className="w-4 h-4" />
             </button>
 
-            {/* Notifications Bell */}
+            {/* Notifications Bell Dropdown */}
             <div className="relative">
               <button
-                onClick={() => setShowNotes(!showNotes)}
+                ref={bellButtonRef}
+                onClick={() => setShowNotes(prev => !prev)}
                 className="p-1.5 text-gray-300 hover:text-gold rounded-lg transition-colors relative"
                 title="System Notifications"
+                aria-haspopup="true"
+                aria-expanded={showNotes}
+                aria-label={`System Notifications, ${unreadCount} unread`}
               >
                 <Bell className="w-4 h-4" />
                 {unreadCount > 0 && (
                   <span className="absolute top-1 right-1 w-2 h-2 rounded-full bg-coral animate-ping" />
                 )}
                 {unreadCount > 0 && (
-                  <span className="absolute top-0.5 right-0.5 w-2 h-2 rounded-full bg-coral" />
+                  <span className="absolute top-0.5 right-0.5 min-w-[14px] h-[14px] px-0.5 text-[9px] font-bold rounded-full bg-coral text-white flex items-center justify-center">
+                    {unreadCount > 9 ? '9+' : unreadCount}
+                  </span>
                 )}
               </button>
 
               {/* Notifications Dropdown Panel */}
               {showNotes && (
-                <div className="absolute right-0 mt-2 w-80 bg-white rounded-2xl border border-gray-200 shadow-2xl z-50 text-xs text-ink overflow-hidden animate-fadeIn">
+                <div 
+                  ref={dropdownRef}
+                  className="absolute right-0 mt-2 w-84 sm:w-96 bg-white rounded-2xl border border-gray-200 shadow-2xl z-50 text-xs text-ink overflow-hidden animate-fadeIn"
+                  role="region"
+                  aria-label="Notifications Panel"
+                >
                   <div className="p-3 bg-mist border-b border-gray-200 flex items-center justify-between">
-                    <span className="font-bold text-xs">Governance Notifications</span>
-                    <button onClick={markAllRead} className="text-[10px] text-gold hover:underline">
-                      Mark all read
-                    </button>
+                    <div className="flex items-center gap-2">
+                      <span className="font-bold text-xs text-ink">Notifications</span>
+                      {unreadCount > 0 && (
+                        <span className="px-1.5 py-0.5 rounded-full bg-coral/10 text-coral font-bold text-[10px]">
+                          {unreadCount} unread
+                        </span>
+                      )}
+                    </div>
+                    {unreadCount > 0 && (
+                      <button 
+                        onClick={handleMarkAllRead} 
+                        className="text-[11px] text-gold hover:text-gold-light font-medium flex items-center gap-1 transition-colors"
+                      >
+                        <Check className="w-3 h-3" />
+                        Mark all read
+                      </button>
+                    )}
                   </div>
 
-                  <div className="max-h-64 overflow-y-auto divide-y divide-gray-100">
+                  <div className="max-h-80 overflow-y-auto divide-y divide-gray-100">
                     {notifications.length === 0 ? (
-                      <p className="p-4 text-center text-gray-400 italic">No notifications.</p>
+                      <div className="p-6 text-center text-gray-400">
+                        <Bell className="w-6 h-6 mx-auto mb-2 opacity-30" />
+                        <p className="font-medium text-xs">No notifications yet</p>
+                        <p className="text-[10px] text-gray-400 mt-0.5">Events and alerts will appear here as reviews occur.</p>
+                      </div>
                     ) : (
                       notifications.map(n => (
-                        <div key={n.id} className={`p-3 hover:bg-mist/50 transition-colors ${!n.read ? 'bg-champagne/20 font-medium' : ''}`}>
-                          <span className="font-bold block text-ink">{n.title}</span>
-                          <p className="text-[11px] text-gray-600 mt-0.5">{n.message}</p>
-                          <span className="text-[9px] text-gray-400 block mt-1">
-                            {new Date(n.created_at).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
-                          </span>
+                        <div 
+                          key={n.id} 
+                          onClick={() => handleNotificationClick(n)}
+                          className={`p-3.5 hover:bg-mist/70 transition-colors cursor-pointer text-left ${!n.read ? 'bg-champagne/15' : ''}`}
+                        >
+                          <div className="flex items-start justify-between gap-2">
+                            <span className={`font-semibold text-xs text-ink ${!n.read ? 'text-midnight font-bold' : ''}`}>
+                              {n.title}
+                            </span>
+                            <span className="text-[10px] text-gray-400 whitespace-nowrap">
+                              {formatTimestamp(n.created_at)}
+                            </span>
+                          </div>
+                          <p className="text-[11px] text-gray-600 mt-1 leading-snug">{n.message}</p>
                         </div>
                       ))
                     )}
@@ -162,6 +282,35 @@ export function Navbar({ activePage, setActivePage, role, setRole, onResetDemo, 
                 <option value="admin" className="bg-navy text-white">Admin</option>
               </select>
             </div>
+
+            {/* User Auth or Sign In Button */}
+            {currentUser ? (
+              <div className="flex items-center gap-2">
+                <button
+                  onClick={() => setActivePage('profile')}
+                  className="px-2.5 py-1 rounded-lg bg-navy-2/80 border border-gold/40 hover:border-gold text-xs font-medium text-white transition-all"
+                  title="View User Profile"
+                >
+                  {currentUser.name ? currentUser.name.split(' ')[0] : 'Profile'}
+                </button>
+                <button
+                  onClick={onLogout}
+                  className="p-1.5 text-gray-400 hover:text-coral rounded-lg transition-colors"
+                  title="Sign Out"
+                >
+                  <LogOut className="w-3.5 h-3.5" />
+                </button>
+              </div>
+            ) : (
+              <button
+                onClick={() => setActivePage('login')}
+                className="flex items-center gap-1 px-2.5 py-1 rounded-lg bg-gold hover:bg-gold-light text-midnight text-xs font-bold transition-all shadow"
+                title="Sign in with an account"
+              >
+                <LogIn className="w-3 h-3" />
+                <span>Sign In</span>
+              </button>
+            )}
 
             {/* Reset Demo Button */}
             <button

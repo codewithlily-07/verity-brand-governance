@@ -158,3 +158,94 @@ export async function getAIStatus() {
   return await res.json();
 }
 
+// Authentication API methods
+export async function loginUser(email, password) {
+  const res = await fetch(`${BASE_URL}/auth/login`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    credentials: 'include',
+    body: JSON.stringify({ email, password })
+  });
+  if (!res.ok) {
+    const err = await res.json();
+    throw new Error(err.detail || 'Login failed');
+  }
+  return await res.json();
+}
+
+export async function registerUser(name, email, organisation_name, password) {
+  const res = await fetch(`${BASE_URL}/auth/register`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    credentials: 'include',
+    body: JSON.stringify({ name, email, organisation_name, password })
+  });
+  if (!res.ok) {
+    const err = await res.json();
+    throw new Error(err.detail || 'Registration failed');
+  }
+  return await res.json();
+}
+
+export async function getMe() {
+  const res = await fetch(`${BASE_URL}/auth/me`, { credentials: 'include' });
+  if (!res.ok) return null;
+  return await res.json();
+}
+
+export async function logoutUser() {
+  const res = await fetch(`${BASE_URL}/auth/logout`, {
+    method: 'POST',
+    credentials: 'include'
+  });
+  return await res.json();
+}
+
+export async function forgotPassword(email) {
+  const res = await fetch(`${BASE_URL}/auth/forgot-password`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ email })
+  });
+  return await res.json();
+}
+
+export async function resetPassword(token, new_password) {
+  const res = await fetch(`${BASE_URL}/auth/reset-password`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ token, new_password })
+  });
+  if (!res.ok) {
+    const err = await res.json();
+    throw new Error(err.detail || 'Password reset failed');
+  }
+  return await res.json();
+}
+
+export async function updateProfile(data) {
+  const res = await fetch(`${BASE_URL}/auth/profile`, {
+    method: 'PUT',
+    headers: { 'Content-Type': 'application/json' },
+    credentials: 'include',
+    body: JSON.stringify(data)
+  });
+  return await res.json();
+}
+
+export async function markNotificationRead(id) {
+  const res = await fetch(`${BASE_URL}/notifications/${id}/read`, {
+    method: 'PATCH',
+    credentials: 'include'
+  });
+  return await res.json();
+}
+
+export async function clearAllNotifications() {
+  const res = await fetch(`${BASE_URL}/notifications/clear`, {
+    method: 'POST',
+    credentials: 'include'
+  });
+  return await res.json();
+}
+

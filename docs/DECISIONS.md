@@ -120,3 +120,4 @@ Implement a zero-friction demo session route (`POST /api/demo/session`) that iss
 - **Positive:** Complete isolation between concurrent evaluators.
 - **Positive:** Resetting demo data affects only the caller's workspace.
 - **Positive:** Real Supabase authentication remains available for enterprise tenant accounts.
+

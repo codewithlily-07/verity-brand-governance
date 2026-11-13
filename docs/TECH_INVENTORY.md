@@ -86,3 +86,4 @@
 | **Render / Railway / Docker** | Deployment Targets | Prepared via `Dockerfile`, `docker-compose.yml`, and `render.yaml` |
 | **Supabase** | Cloud Auth & Storage | Supported via server-side JWT verification and S3-compatible storage endpoints |
 | **Localhost** | Evaluation Target | Default execution on `http://127.0.0.1:8000` |
+

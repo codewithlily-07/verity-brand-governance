@@ -13,6 +13,7 @@ from backend.app.api.finding_routes import router as finding_router
 from backend.app.api.review_routes import router as review_router
 from backend.app.api.insights_routes import router as insights_router
 from backend.app.api.notification_feedback_routes import router as extra_router
+from backend.app.api.auth_routes import router as auth_router
 
 # Create DB tables
 Base.metadata.create_all(bind=engine)
@@ -42,6 +43,7 @@ app.include_router(finding_router, prefix="/api")
 app.include_router(review_router, prefix="/api")
 app.include_router(insights_router, prefix="/api")
 app.include_router(extra_router, prefix="/api")
+app.include_router(auth_router, prefix="/api")
 
 # Serve Frontend static assets if built
 frontend_dist = os.path.abspath(os.path.join(os.path.dirname(__file__), "../../frontend/dist"))

@@ -251,3 +251,4 @@ def generate_submission_pdf(submission_data: dict, score_data: dict = None) -> b
 
     doc.build(story)
     return buffer.getvalue()
+

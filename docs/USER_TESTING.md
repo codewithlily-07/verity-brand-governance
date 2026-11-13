@@ -66,3 +66,4 @@ Based on user testing notes, the following enhancements have been scheduled for 
 1. **Automated Read-Only Share Links:** Allow reviewers to generate an expiring public preview link for external legal counsel.
 2. **Keyboard Shortcut Sheet (`?`):** Enhance the command palette (⌘K) with navigation hotkeys (`g d` for Dashboard, `g r` for New Review).
 3. **Batch Multi-File Submission:** Allow drag-and-drop of multiple documents for asynchronous parallel queue analysis.
+

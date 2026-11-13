@@ -101,3 +101,4 @@ export function CommandPalette({ isOpen, setIsOpen, setActivePage, onResetDemo }
     </div>
   );
 }
+

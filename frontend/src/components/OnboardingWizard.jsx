@@ -218,3 +218,4 @@ export function OnboardingWizard({ isOpen, onClose, setActivePage }) {
     </div>
   );
 }
+

@@ -36,14 +36,14 @@ export function LandingPage({ setActivePage }) {
             </div>
 
             <h1 className="font-serif text-4xl sm:text-5xl lg:text-6xl font-bold tracking-tight text-white mb-6 leading-tight">
-              Consistent. Compliant. <br />
+              Your Brand. Your Standards. <br />
               <span className="text-transparent bg-clip-text bg-gradient-to-r from-gold via-gold-light to-champagne">
-                Trustworthy.
+                Every Piece of Content.
               </span>
             </h1>
 
             <p className="text-lg text-gray-300 mb-10 leading-relaxed max-w-2xl mx-auto">
-              VERITY checks content <span className="text-white font-medium">before publication</span> against your approved guidelines, facts, and visual identity. Every finding is evidence-linked, every correction preserves intent, and <strong className="text-gold">humans retain 100% final approval authority</strong>.
+              VERITY ensures every piece of content reflects your brand standards before publication. Detect inconsistencies, verify approved information, receive evidence-backed corrections and maintain control through human review.
             </p>
 
             <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
@@ -56,13 +56,11 @@ export function LandingPage({ setActivePage }) {
               </button>
 
               <button
-                onClick={() => {
-                  const el = document.getElementById('how-it-works');
-                  if (el) el.scrollIntoView({ behavior: 'smooth' });
-                }}
-                className="w-full sm:w-auto px-6 py-3.5 rounded-xl bg-navy hover:bg-navy-2 text-white border border-gray-700/60 font-medium transition-all"
+                onClick={() => setActivePage('dashboard')}
+                className="w-full sm:w-auto px-6 py-3.5 rounded-xl bg-navy hover:bg-navy-2 text-white border border-gray-700/60 font-medium transition-all flex items-center justify-center gap-2"
               >
-                Explore How It Works
+                <span>Explore Demo Workspace</span>
+                <ChevronRight className="w-4 h-4 text-gold" />
               </button>
             </div>
 

@@ -60,3 +60,4 @@ stateDiagram-v2
 - **Multi-Tenant / Guest Isolation:** Every visitor is allocated an isolated workspace UUID stored in a session cookie.
 - **Strict Query Scoping:** All database queries for brand guidelines, rules, approved facts, submissions, and audit events are strictly parameterized by `workspace_id`.
 - **Zero Cross-Contamination:** Evaluators and judges run independent evaluations without overwriting shared brand data.
+

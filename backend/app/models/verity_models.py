@@ -12,10 +12,22 @@ def gen_uuid():
 def utcnow():
     return datetime.now(timezone.utc)
 
+class Organisation(Base):
+    __tablename__ = "organisations"
+
+    id = Column(String(36), primary_key=True, default=gen_uuid)
+    name = Column(String(255), nullable=False)
+    slug = Column(String(100), nullable=True)
+    is_demo = Column(Boolean, default=False)
+    created_at = Column(DateTime(timezone=True), default=utcnow)
+
+    memberships = relationship("Membership", back_populates="organisation", cascade="all, delete-orphan")
+
 class Workspace(Base):
     __tablename__ = "workspaces"
 
     id = Column(String(36), primary_key=True, default=gen_uuid)
+    organisation_id = Column(String(36), ForeignKey("organisations.id"), nullable=True)
     name = Column(String(255), default="Default Workspace")
     is_demo = Column(Boolean, default=True)
     settings_json = Column(JSON, default=dict)
@@ -30,11 +42,29 @@ class User(Base):
     __tablename__ = "users"
 
     id = Column(String(36), primary_key=True, default=gen_uuid)
-    workspace_id = Column(String(36), ForeignKey("workspaces.id"), nullable=False)
+    workspace_id = Column(String(36), ForeignKey("workspaces.id"), nullable=True)
     name = Column(String(255), nullable=False)
-    email = Column(String(255), nullable=True)
-    role = Column(String(50), default="creator")  # creator | reviewer | admin
+    email = Column(String(255), unique=True, index=True, nullable=True)
+    password_hash = Column(String(255), nullable=True)
+    role = Column(String(50), default="creator")  # creator | reviewer | admin | owner
+    is_active = Column(Boolean, default=True)
+    reset_token = Column(String(255), nullable=True)
+    reset_token_expires = Column(DateTime(timezone=True), nullable=True)
     created_at = Column(DateTime(timezone=True), default=utcnow)
+
+    memberships = relationship("Membership", back_populates="user", cascade="all, delete-orphan")
+
+class Membership(Base):
+    __tablename__ = "memberships"
+
+    id = Column(String(36), primary_key=True, default=gen_uuid)
+    organisation_id = Column(String(36), ForeignKey("organisations.id"), nullable=False)
+    user_id = Column(String(36), ForeignKey("users.id"), nullable=False)
+    role = Column(String(50), default="creator") # owner | admin | reviewer | creator | viewer
+    created_at = Column(DateTime(timezone=True), default=utcnow)
+
+    organisation = relationship("Organisation", back_populates="memberships")
+    user = relationship("User", back_populates="memberships")
 
 class BrandProfile(Base):
     __tablename__ = "brand_profiles"

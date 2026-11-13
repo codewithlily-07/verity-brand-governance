@@ -16,7 +16,11 @@ import { GovernanceInsightsPage } from './pages/GovernanceInsightsPage';
 import { SettingsPage } from './pages/SettingsPage';
 import { TrustPage } from './pages/TrustPage';
 import { RoadmapPage } from './pages/RoadmapPage';
-import { initSession, resetDemo } from './lib/api';
+import { LoginPage } from './pages/LoginPage';
+import { RegisterPage } from './pages/RegisterPage';
+import { ForgotPasswordPage } from './pages/ForgotPasswordPage';
+import { ProfilePage } from './pages/ProfilePage';
+import { initSession, resetDemo, getMe, logoutUser } from './lib/api';
 
 export default function App() {
   const [activePage, setActivePage] = useState('landing');
@@ -25,11 +29,17 @@ export default function App() {
   const [isInitializing, setIsInitializing] = useState(true);
   const [isCommandPaletteOpen, setIsCommandPaletteOpen] = useState(false);
   const [isOnboardingOpen, setIsOnboardingOpen] = useState(false);
+  const [currentUser, setCurrentUser] = useState(null);
 
   useEffect(() => {
     async function bootstrap() {
       try {
         await initSession();
+        const user = await getMe();
+        if (user) {
+          setCurrentUser(user);
+          if (user.role) setRole(user.role);
+        }
       } catch (err) {
         console.error('Session initialization error:', err);
       } finally {
@@ -51,6 +61,22 @@ export default function App() {
     }
   };
 
+  const handleLoginSuccess = (user) => {
+    setCurrentUser(user);
+    if (user?.role) setRole(user.role);
+  };
+
+  const handleLogout = async () => {
+    try {
+      await logoutUser();
+      setCurrentUser(null);
+      setRole('creator');
+      setActivePage('landing');
+    } catch (err) {
+      console.error('Logout error:', err);
+    }
+  };
+
   return (
     <div className="min-h-screen flex flex-col bg-ivory font-sans text-ink selection:bg-champagne selection:text-ink relative">
       
@@ -63,11 +89,40 @@ export default function App() {
         onResetDemo={handleResetDemo}
         onOpenCommandPalette={() => setIsCommandPaletteOpen(true)}
         onOpenOnboarding={() => setIsOnboardingOpen(true)}
+        currentUser={currentUser}
+        onLogout={handleLogout}
+        onSelectSubmission={(id) => {
+          setSelectedSubmissionId(id);
+          setActivePage('results');
+        }}
       />
 
       {/* Main View Router */}
       <main className="flex-grow">
         {activePage === 'landing' && <LandingPage setActivePage={setActivePage} />}
+        {activePage === 'login' && (
+          <LoginPage 
+            setActivePage={setActivePage} 
+            onLoginSuccess={handleLoginSuccess} 
+          />
+        )}
+        {activePage === 'register' && (
+          <RegisterPage 
+            setActivePage={setActivePage} 
+            onRegisterSuccess={handleLoginSuccess} 
+          />
+        )}
+        {activePage === 'forgot-password' && (
+          <ForgotPasswordPage setActivePage={setActivePage} />
+        )}
+        {activePage === 'profile' && (
+          <ProfilePage 
+            setActivePage={setActivePage} 
+            currentUser={currentUser} 
+            onLogout={handleLogout}
+            onProfileUpdated={(updated) => setCurrentUser(prev => ({ ...prev, ...updated }))}
+          />
+        )}
         {activePage === 'dashboard' && (
           <DashboardPage 
             setActivePage={setActivePage} 
