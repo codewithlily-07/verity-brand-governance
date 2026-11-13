@@ -1,60 +1,64 @@
 import React, { useState } from 'react';
 import { motion } from 'framer-motion';
-import { Settings, FileUp, Cpu, GitCompare, ShieldCheck, ChevronRight } from 'lucide-react';
+import { Settings, FileUp, Cpu, GitCompare, ShieldCheck } from 'lucide-react';
 
+/**
+ * 5-Step Connected Workflow Journey
+ * 01 Brand Setup
+ * 02 Content Submission
+ * 03 Intelligent Analysis
+ * 04 Evidence and Corrections
+ * 05 Human Approval
+ * Connected with animated gold line as active step changes.
+ */
 export function WorkflowJourney() {
-  const [activeStep, setActiveStep] = useState(2); // default to engine step
+  const [activeStep, setActiveStep] = useState(2); // default to Intelligent Analysis
 
   const steps = [
     {
       num: '01',
       title: 'Brand Setup',
       icon: Settings,
-      short: 'Guidelines Ingest',
-      desc: 'Define approved voice, facts, terminology & upload PDF guidelines into tenant vault.',
-      detail: 'Creates strict regex dictionaries, embedding vectors, and token prohibitions for tenant isolation.',
+      desc: 'Define approved voice, canonical terminology, prohibited claims, and upload guideline documents.',
+      detail: 'Compiles tenant-isolated regex dictionaries, vector fact embeddings, and editorial tone guidelines.',
     },
     {
       num: '02',
-      title: 'Submit Copy',
+      title: 'Content Submission',
       icon: FileUp,
-      short: 'Multi-Channel Input',
-      desc: 'Paste ad copy, email drafts, or upload documents (PDF, DOCX) for pre-publication review.',
-      detail: 'Extracts clean AST paragraphs, preserving layout metadata and author ownership.',
+      desc: 'Paste social copy, ad headlines, email drafts, or upload documents (PDF, DOCX) for pre-publication screening.',
+      detail: 'Extracts clean AST paragraphs, preserving layout metadata and author provenance.',
     },
     {
       num: '03',
-      title: '3-Layer Engine',
+      title: 'Intelligent Analysis',
       icon: Cpu,
-      short: 'Tri-Tier Analysis',
-      desc: 'Deterministic rules, fact retrieval, and validated AI analyze content with 0 hallucination.',
-      detail: 'Scores compliance against R1-R6 rulesets, pulls exact corroborating fact citations.',
+      desc: '3-Layer defensive engine scans draft tokens, flags violations, and queries fact store with zero hallucination.',
+      detail: 'Executes deterministic rule verification (L1) and vector semantic retrieval (L2) in under 12ms.',
     },
     {
       num: '04',
-      title: 'Intent Diff',
+      title: 'Evidence & Corrections',
       icon: GitCompare,
-      short: 'Side-by-Side Review',
       desc: 'Review evidence-backed findings and accept side-by-side revisions with word-level diffs.',
-      detail: 'Protects creator tone while swapping prohibited phrases with verified fact statements.',
+      detail: 'Preserves creator intent while replacing prohibited claims with approved fact citations.',
     },
     {
       num: '05',
-      title: 'Human Sign-off',
+      title: 'Human Approval',
       icon: ShieldCheck,
-      short: 'Cryptographic Audit',
       desc: 'Reviewer verifies and approves exact version hash. Fully audited with SHA-256 seal.',
-      detail: 'Persists immutable audit log with reviewer timestamp and exportable compliance certificates.',
+      detail: 'Binds immutable sign-off authority to user credentials and generates verifiable PDF compliance reports.',
     },
   ];
 
   return (
-    <div className="w-full">
+    <div id="how-it-works" className="w-full">
       {/* 5-Step Connected Progress Bar on desktop */}
-      <div className="relative mb-8 hidden md:block">
-        <div className="absolute top-1/2 left-8 right-8 -translate-y-1/2 h-[2px] bg-gray-300 -z-0" />
+      <div className="relative mb-10 hidden md:block">
+        <div className="absolute top-6 left-12 right-12 h-[2px] bg-gray-200 -z-0" />
         <motion.div
-          className="absolute top-1/2 left-8 -translate-y-1/2 h-[2px] bg-gold -z-0"
+          className="absolute top-6 left-12 h-[2px] bg-[#C6A15B] -z-0"
           animate={{ width: `${(activeStep / (steps.length - 1)) * 90}%` }}
           transition={{ duration: 0.5, ease: 'easeInOut' }}
         />
@@ -75,17 +79,17 @@ export function WorkflowJourney() {
                 <div
                   className={`w-12 h-12 rounded-2xl flex items-center justify-center transition-all ${
                     isCurrent
-                      ? 'bg-gold text-midnight ring-4 ring-gold/25 shadow-glow scale-110'
+                      ? 'bg-[#C6A15B] text-[#101B35] ring-4 ring-[#C6A15B]/30 shadow-lg scale-110'
                       : isCompleted
-                      ? 'bg-navy text-gold-light'
+                      ? 'bg-[#101B35] text-[#E6C77B]'
                       : 'bg-white text-gray-400 border border-gray-300'
                   }`}
                 >
                   <Icon className="w-5 h-5" />
                 </div>
                 <span
-                  className={`font-mono text-xs font-bold mt-2 ${
-                    isCurrent ? 'text-gold' : 'text-gray-500'
+                  className={`font-mono text-xs font-bold mt-2.5 ${
+                    isCurrent ? 'text-[#C6A15B]' : 'text-gray-500'
                   }`}
                 >
                   {step.num}
@@ -116,27 +120,27 @@ export function WorkflowJourney() {
               onClick={() => setActiveStep(idx)}
               className={`rounded-2xl p-5 border transition-all cursor-pointer flex flex-col justify-between ${
                 isSelected
-                  ? 'bg-white border-gold shadow-card-hover ring-1 ring-gold/40'
+                  ? 'bg-white border-[#C6A15B] shadow-card-hover ring-1 ring-[#C6A15B]/50'
                   : 'bg-white/80 border-gray-200/90 shadow-sm hover:border-gray-300'
               }`}
             >
               <div>
                 <div className="flex items-center justify-between mb-3">
-                  <span className="font-serif text-2xl font-bold text-gold/60">{step.num}</span>
+                  <span className="font-serif text-2xl font-bold text-[#C6A15B]/70">{step.num}</span>
                   <div
                     className={`w-8 h-8 rounded-lg flex items-center justify-center ${
-                      isSelected ? 'bg-gold/20 text-gold' : 'bg-mist text-gray-500'
+                      isSelected ? 'bg-[#C6A15B]/20 text-[#C6A15B]' : 'bg-mist text-gray-500'
                     }`}
                   >
                     <Icon className="w-4 h-4" />
                   </div>
                 </div>
-                <h4 className="font-bold text-ink text-sm mb-1">{step.title}</h4>
+                <h4 className="font-bold text-ink text-sm mb-1.5">{step.title}</h4>
                 <p className="text-xs text-gray-600 leading-relaxed mb-3">{step.desc}</p>
               </div>
 
               {isSelected && (
-                <div className="mt-2 pt-2 border-t border-gold/20 text-[11px] text-gray-500 font-sans italic">
+                <div className="mt-2 pt-2.5 border-t border-[#C6A15B]/20 text-[11px] text-gray-500 font-sans italic">
                   {step.detail}
                 </div>
               )}
@@ -147,4 +151,3 @@ export function WorkflowJourney() {
     </div>
   );
 }
-

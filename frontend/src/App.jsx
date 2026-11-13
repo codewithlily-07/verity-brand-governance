@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { Navbar } from './components/Navbar';
+import { PublicNavbar } from './components/PublicNavbar';
 import { Footer } from './components/Footer';
 import { CommandPalette } from './components/CommandPalette';
 import { FeedbackWidget } from './components/FeedbackWidget';
@@ -80,22 +81,26 @@ export default function App() {
   return (
     <div className="min-h-screen flex flex-col bg-ivory font-sans text-ink selection:bg-champagne selection:text-ink relative">
       
-      {/* Navigation Header */}
-      <Navbar
-        activePage={activePage}
-        setActivePage={setActivePage}
-        role={role}
-        setRole={setRole}
-        onResetDemo={handleResetDemo}
-        onOpenCommandPalette={() => setIsCommandPaletteOpen(true)}
-        onOpenOnboarding={() => setIsOnboardingOpen(true)}
-        currentUser={currentUser}
-        onLogout={handleLogout}
-        onSelectSubmission={(id) => {
-          setSelectedSubmissionId(id);
-          setActivePage('results');
-        }}
-      />
+      {/* Navigation Header: Public Gold Navbar on landing, Workspace Navbar inside app */}
+      {activePage === 'landing' ? (
+        <PublicNavbar setActivePage={setActivePage} />
+      ) : (
+        <Navbar
+          activePage={activePage}
+          setActivePage={setActivePage}
+          role={role}
+          setRole={setRole}
+          onResetDemo={handleResetDemo}
+          onOpenCommandPalette={() => setIsCommandPaletteOpen(true)}
+          onOpenOnboarding={() => setIsOnboardingOpen(true)}
+          currentUser={currentUser}
+          onLogout={handleLogout}
+          onSelectSubmission={(id) => {
+            setSelectedSubmissionId(id);
+            setActivePage('results');
+          }}
+        />
+      )}
 
       {/* Main View Router */}
       <main className="flex-grow">
