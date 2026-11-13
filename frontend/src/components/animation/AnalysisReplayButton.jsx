@@ -13,11 +13,12 @@ export function AnalysisReplayButton({
   onReplay,
 }) {
   const stages = [
-    { id: 0, label: '1. Brand Crest' },
-    { id: 1, label: '2. Document' },
-    { id: 2, label: '3. Laser Scan' },
-    { id: 3, label: '4. Evidence Diff' },
-    { id: 4, label: '5. Human Approval' },
+    { id: 1, label: '1. Brand Crest' },
+    { id: 2, label: '2. Document' },
+    { id: 3, label: '3. Laser Scan' },
+    { id: 4, label: '4. Evidence' },
+    { id: 5, label: '5. Corrections' },
+    { id: 6, label: '6. Approved Seal' },
   ];
 
   return (

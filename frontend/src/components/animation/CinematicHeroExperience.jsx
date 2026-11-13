@@ -251,8 +251,8 @@ export function CinematicHeroExperience({ onNavigateReview, onNavigateDashboard 
       {/* Interactive Control Toolbar */}
       <div className="relative z-10 mt-4">
         <AnalysisReplayButton
-          currentStage={currentFrame - 1}
-          setStage={(idx) => setCurrentFrame(idx + 1)}
+          currentStage={currentFrame}
+          setStage={(stageId) => setCurrentFrame(stageId)}
           isPaused={isPaused}
           setIsPaused={setIsPaused}
           onReplay={handleReplay}
