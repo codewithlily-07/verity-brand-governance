@@ -226,7 +226,7 @@ def generate_submission_pdf(submission_data: dict, score_data: dict = None) -> b
             ],
             [
                 Paragraph(f"<b>Audit Remarks:</b> {latest_decision.get('reason') or 'No remarks recorded.'}", body_style),
-                Paragraph(f"<b>Timestamp:</b> {latest_decision.get('created_at')[:19]} UTC", subtitle_style),
+                Paragraph(f"<b>Timestamp:</b> {str(latest_decision.get('created_at', ''))[:19]} UTC", subtitle_style),
             ]
         ]
         t_dec = Table(dec_table_data, colWidths=[240, 300])

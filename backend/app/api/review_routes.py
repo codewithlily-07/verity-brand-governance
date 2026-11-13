@@ -119,6 +119,7 @@ def submit_review_decision(
     return {
         "status": "decision_recorded",
         "decision_id": dec.id,
+        "submission_status": sub.status,
         "new_submission_status": sub.status,
         "version_number": version.version_number,
         "content_hash": version.content_hash,

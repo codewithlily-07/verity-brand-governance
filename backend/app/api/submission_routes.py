@@ -196,6 +196,7 @@ async def create_submission(
     db.commit()
 
     return {
+        "id": submission.id,
         "submission_id": submission.id,
         "version_id": version.id,
         "version_number": 1,
@@ -418,6 +419,7 @@ async def create_new_version(
     db.commit()
 
     return {
+        "id": version.id,
         "status": "version_created",
         "version_id": version.id,
         "version_number": new_version_num,

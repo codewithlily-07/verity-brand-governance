@@ -17,6 +17,22 @@ router = APIRouter(prefix="/brand", tags=["Brand Knowledge Hub"])
 
 def get_or_create_profile(db: Session, request: Request) -> BrandProfile:
     workspace_id = request.cookies.get("verity_workspace_id")
+    if not workspace_id:
+        auth_header = request.headers.get("Authorization")
+        token = None
+        if auth_header and auth_header.startswith("Bearer "):
+            token = auth_header.split(" ")[1]
+        elif request.cookies.get("verity_token"):
+            token = request.cookies.get("verity_token")
+        if token:
+            try:
+                import jwt
+                from backend.app.api.auth_routes import SECRET_KEY, ALGORITHM
+                payload = jwt.decode(token, SECRET_KEY, algorithms=[ALGORITHM])
+                workspace_id = payload.get("workspace_id")
+            except Exception:
+                pass
+
     profile = None
     if workspace_id:
         profile = db.query(BrandProfile).filter(BrandProfile.workspace_id == workspace_id).first()

@@ -783,6 +783,52 @@ class VerityAnalysisEngine:
                             "status": "open"
                         })
 
+        # 1.8 Custom Saved Brand Rules
+        builtin_codes = {"R1", "R2", "R3", "R4", "R5", "R6", "R7", "A11Y-01", "A11Y-CONTRAST", "VIS-01", "SEC-01", "TERM-01"}
+        for cr in self.rules:
+            c_code = cr.get("code")
+            if not c_code or c_code in builtin_codes:
+                continue
+            
+            c_type = cr.get("rule_type", "phrase")
+            c_pat = cr.get("pattern") or cr.get("avoid_term")
+            if not c_pat:
+                continue
+
+            matches = []
+            if c_type in ["phrase", "competitor", "claim_policy"]:
+                pat_regex = r"(?<!\w)" + escape_regex(c_pat) + r"(?!\w)"
+                matches = find_all_matches(pat_regex, content)
+            elif c_type == "regex":
+                matches = find_all_matches(c_pat, content)
+            elif c_type == "term_map":
+                pat_regex = r"(?<!\w)" + escape_regex(c_pat) + r"(?!\w)"
+                matches = find_all_matches(pat_regex, content)
+
+            for cm in matches:
+                findings.append({
+                    "id": f"{c_code}:{cm['start']}-{cm['end']}",
+                    "category": cr.get("category", "Messaging"),
+                    "severity": cr.get("severity", "medium"),
+                    "title": cr.get("title", f"Rule violation: {c_code}"),
+                    "quote": cm["quote"],
+                    "start_offset": cm["start"],
+                    "end_offset": cm["end"],
+                    "rule_id": c_code,
+                    "rule_text": cr.get("description", "Brand guideline policy requirement."),
+                    "evidence": {
+                        "source": cr.get("source_ref", "Brand Guidelines"),
+                        "text": cr.get("source_excerpt") or cr.get("description", "Configured brand rule.")
+                    },
+                    "explanation": cr.get("description", f"Violates brand rule {c_code}."),
+                    "suggested_replacement": cr.get("prefer_term"),
+                    "rationale": f"Replace with approved alternative: {cr.get('prefer_term')}" if cr.get("prefer_term") else "Remove non-compliant phrase.",
+                    "verdict": VERDICT_RULE_VIOLATION,
+                    "confidence": 1.0,
+                    "layer": "rules",
+                    "status": "open"
+                })
+
         # -------------------------------------------------------------
         # Layer 2: Retrieval-Grounded Analysis (Claims & Facts)
         # Checks sentences against approved facts and guideline passages.
