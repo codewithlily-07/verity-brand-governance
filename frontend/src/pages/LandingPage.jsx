@@ -8,6 +8,7 @@ import {
 
 import { VerityCinematicVisual } from '../components/animation/VerityCinematicVisual';
 import { CinematicHeroExperience } from '../components/animation/CinematicHeroExperience';
+import { ProblemSection } from '../components/animation/ProblemSection';
 import { SectionDivider } from '../components/animation/SectionDivider';
 import { FourLayersArchitecture } from '../components/animation/FourLayersArchitecture';
 import { WorkflowJourney } from '../components/animation/WorkflowJourney';
@@ -79,7 +80,7 @@ export function LandingPage({ setActivePage }) {
               <button
                 type="button"
                 onClick={() => setActivePage('new-review')}
-                className="w-full sm:w-auto px-8 py-3.5 rounded-xl bg-[#C6A15B] hover:bg-[#E6C77B] text-[#101B35] font-bold shadow-lg transition-all flex items-center justify-center gap-2 group active:scale-95 text-sm uppercase tracking-wide"
+                className="btn-gold-sweep w-full sm:w-auto px-8 py-3.5 rounded-xl bg-[#C6A15B] hover:bg-[#E6C77B] text-[#101B35] font-bold shadow-lg transition-all flex items-center justify-center gap-2 group active:scale-95 text-sm uppercase tracking-wide"
               >
                 <span>Start Reviewing Content</span>
                 <ArrowRight className="w-4 h-4 transition-transform group-hover:translate-x-1" />
@@ -217,6 +218,12 @@ export function LandingPage({ setActivePage }) {
           </div>
         </div>
       </section>
+
+      {/* Section Divider */}
+      <SectionDivider />
+
+      {/* The Pre-Publication Dilemma & Problem Section */}
+      <ProblemSection />
 
       {/* Section Divider */}
       <SectionDivider />
@@ -391,7 +398,7 @@ export function LandingPage({ setActivePage }) {
               <button
                 type="button"
                 onClick={() => setActivePage('new-review')}
-                className="px-8 py-3.5 rounded-xl bg-[#C6A15B] hover:bg-[#E6C77B] text-[#101B35] font-bold shadow-lg transition-all active:scale-95"
+                className="btn-gold-sweep px-8 py-3.5 rounded-xl bg-[#C6A15B] hover:bg-[#E6C77B] text-[#101B35] font-bold shadow-lg transition-all active:scale-95"
               >
                 Launch New Review
               </button>
