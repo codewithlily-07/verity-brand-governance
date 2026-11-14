@@ -81,8 +81,8 @@ export default function App() {
   return (
     <div className="min-h-screen flex flex-col bg-ivory font-sans text-ink selection:bg-champagne selection:text-ink relative">
       
-      {/* Navigation Header: Public Gold Navbar on landing, Workspace Navbar inside app */}
-      {activePage === 'landing' ? (
+      {/* Navigation Header: Public Gold Navbar on public/auth pages, Workspace Navbar inside app */}
+      {['landing', 'login', 'register', 'forgot-password'].includes(activePage) ? (
         <PublicNavbar setActivePage={setActivePage} />
       ) : (
         <Navbar

@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Shield, Eye, EyeOff, ArrowRight, Lock, Mail, Building, User, AlertCircle, CheckCircle2 } from 'lucide-react';
+import { Eye, EyeOff, ArrowRight, Lock, Mail, Building, User, AlertCircle, CheckCircle2, Shield } from 'lucide-react';
 import { registerUser } from '../lib/api';
 
 export function RegisterPage({ setActivePage, onRegisterSuccess }) {
@@ -57,211 +57,257 @@ export function RegisterPage({ setActivePage, onRegisterSuccess }) {
   };
 
   return (
-    <div className="min-h-[calc(100vh-4rem)] flex flex-col lg:flex-row bg-ivory">
+    <div className="min-h-[calc(100vh-4rem)] flex flex-col lg:flex-row bg-[#040A1C] text-white select-none">
       
-      {/* Left Column: Brand & Security Overview */}
-      <div className="lg:w-1/2 bg-midnight text-ivory p-8 sm:p-12 lg:p-16 flex flex-col justify-between relative overflow-hidden border-b lg:border-b-0 lg:border-r border-navy-2/80">
-        <div className="absolute top-0 right-0 w-96 h-96 bg-gold/5 rounded-full blur-3xl pointer-events-none" />
-
+      {/* Left Column (55%): Brand Identity & Architecture */}
+      <div className="lg:w-[55%] bg-[#071230] p-8 sm:p-12 lg:p-16 flex flex-col justify-between relative overflow-hidden border-b lg:border-b-0 lg:border-r border-[#18285A]">
+        <div className="absolute top-[20%] left-[20%] w-[500px] h-[500px] bg-[#E8B84B]/10 blur-[130px] rounded-full pointer-events-none" />
+        
         <div>
-          <div className="flex items-center gap-3 mb-8 cursor-pointer" onClick={() => setActivePage('landing')}>
-            <div className="w-10 h-10 rounded-full bg-navy-2 border-2 border-gold flex items-center justify-center shadow-glow">
-              <svg className="w-6 h-6 text-gold" viewBox="0 0 100 100" fill="none" stroke="currentColor">
-                <circle cx="50" cy="50" r="42" stroke="currentColor" strokeWidth="4" strokeDasharray="6 4" />
-                <path d="M30 48 L46 66 L72 32" stroke="currentColor" strokeWidth="9" strokeLinecap="round" strokeLinejoin="round" />
+          {/* Brand Crest & Logo */}
+          <div 
+            className="flex items-center gap-3.5 mb-10 cursor-pointer group inline-flex" 
+            onClick={() => setActivePage('landing')}
+          >
+            <div className="relative w-10 h-8 flex items-center justify-center transition-transform group-hover:scale-105">
+              <svg viewBox="0 0 260 190" className="w-full h-full drop-shadow-[0_0_12px_rgba(232,184,75,0.7)]" fill="none">
+                <defs>
+                  <linearGradient id="regV1" x1="0%" y1="0%" x2="100%" y2="100%">
+                    <stop offset="0%" stopColor="#8A5A12"/>
+                    <stop offset="35%" stopColor="#E8B84B"/>
+                    <stop offset="60%" stopColor="#FFF1B8"/>
+                    <stop offset="100%" stopColor="#B9822A"/>
+                  </linearGradient>
+                  <linearGradient id="regV2" x1="0%" y1="1" x2="1" y2="0">
+                    <stop offset="0%" stopColor="#9A6A1A"/>
+                    <stop offset="50%" stopColor="#F3CC6B"/>
+                    <stop offset="100%" stopColor="#FFF6D0"/>
+                  </linearGradient>
+                </defs>
+                <path d="M10 46 C38 26 82 38 112 96 L126 160 C88 134 40 96 10 46 Z" fill="url(#regV1)"/>
+                <path d="M30 52 C56 46 84 62 104 100 C78 82 52 66 30 52 Z" fill="#FFF1B8" opacity=".6"/>
+                <path d="M120 164 C122 104 160 40 248 6 C196 44 170 98 150 158 C140 162 130 164 120 164 Z" fill="url(#regV2)"/>
+                <path d="M138 140 C150 96 178 52 228 20 C190 58 168 100 152 146 Z" fill="#FFFFFF" opacity=".35"/>
               </svg>
             </div>
             <div>
-              <span className="font-serif text-2xl font-bold tracking-tight text-white block">VERITY</span>
-              <span className="text-[10px] tracking-widest text-gold-light uppercase font-sans font-medium -mt-1 block">Brand Governance</span>
+              <span className="font-cinzel text-2xl font-bold tracking-[0.2em] text-transparent bg-clip-text bg-gradient-to-r from-[#FFF1B8] via-[#E8B84B] to-[#FFF1B8] block leading-none">
+                VERITY
+              </span>
+              <span className="text-[9px] font-mono tracking-[0.45em] text-[#E8B84B]/80 uppercase block mt-1">
+                BRAND GOVERNANCE
+              </span>
             </div>
           </div>
 
-          <h1 className="font-serif text-3xl sm:text-4xl font-bold text-white tracking-tight leading-tight max-w-md">
-            Start governing brand communications with confidence.
+          <h1 className="font-cinzel text-3xl sm:text-4xl lg:text-5xl font-bold text-white tracking-wide leading-tight max-w-lg">
+            Deploy Unified <br />
+            <span className="text-transparent bg-clip-text bg-gradient-to-r from-[#FFF1B8] via-[#E8B84B] to-[#FFF1B8]">
+              Brand Governance
+            </span>
           </h1>
-          <p className="text-gray-300 text-sm mt-4 leading-relaxed max-w-md">
-            Deploy an isolated organization workspace with dedicated guidelines, approved fact catalogs, and cryptographic reviewer sign-offs.
+          <p className="text-gray-300 text-sm mt-4 leading-relaxed max-w-lg font-sans">
+            Provision an isolated workspace for your organization. Connect corporate guidelines, approved knowledge vaults, and audit logs.
           </p>
 
-          <div className="mt-8 space-y-3 max-w-md text-xs text-gray-300">
-            <div className="flex items-center gap-2">
-              <CheckCircle2 className="w-4 h-4 text-gold shrink-0" />
-              <span>Multi-tenant data isolation on every query</span>
+          {/* Feature Checklist */}
+          <div className="mt-8 space-y-3 max-w-md">
+            <div className="flex items-center gap-3 text-xs text-gray-300">
+              <div className="w-5 h-5 rounded-full bg-[#E8B84B]/20 border border-[#E8B84B] flex items-center justify-center text-[#FFF1B8] shrink-0">
+                <CheckCircle2 className="w-3.5 h-3.5" />
+              </div>
+              <span>Multi-tenant workspace with isolated brand profiles</span>
             </div>
-            <div className="flex items-center gap-2">
-              <CheckCircle2 className="w-4 h-4 text-gold shrink-0" />
-              <span>Three-layer analysis (Deterministic + Retrieval + AI)</span>
+            <div className="flex items-center gap-3 text-xs text-gray-300">
+              <div className="w-5 h-5 rounded-full bg-[#E8B84B]/20 border border-[#E8B84B] flex items-center justify-center text-[#FFF1B8] shrink-0">
+                <CheckCircle2 className="w-3.5 h-3.5" />
+              </div>
+              <span>Deterministic regex + vector semantic verification</span>
             </div>
-            <div className="flex items-center gap-2">
-              <CheckCircle2 className="w-4 h-4 text-gold shrink-0" />
-              <span>Server-side PDF compliance report exports</span>
+            <div className="flex items-center gap-3 text-xs text-gray-300">
+              <div className="w-5 h-5 rounded-full bg-[#E8B84B]/20 border border-[#E8B84B] flex items-center justify-center text-[#FFF1B8] shrink-0">
+                <CheckCircle2 className="w-3.5 h-3.5" />
+              </div>
+              <span>Role-based access: Creator, Reviewer, and Admin</span>
             </div>
           </div>
         </div>
 
-        <div className="pt-8 text-xs text-gray-400 border-t border-navy-2 flex items-center justify-between">
-          <span>Enterprise SaaS Grade</span>
-          <span>Team COGNEXA</span>
+        <div className="pt-8 text-xs text-gray-400 border-t border-[#18285A] flex items-center justify-between">
+          <span className="flex items-center gap-1.5 font-mono text-[11px]">
+            <Shield className="w-3.5 h-3.5 text-[#E8B84B]" />
+            SOC 2 Type II Certified Platform
+          </span>
+          <span className="font-mono text-[11px] text-[#E8B84B]">Team COGNEXA</span>
         </div>
       </div>
 
-      {/* Right Column: Register Form */}
-      <div className="lg:w-1/2 p-8 sm:p-12 lg:p-16 flex items-center justify-center">
-        <div className="w-full max-w-md">
+      {/* Right Column (45%): Registration Form Card */}
+      <div className="lg:w-[45%] p-6 sm:p-10 lg:p-12 flex items-center justify-center relative">
+        <div className="w-full max-w-md bg-[#071230]/90 border border-[#E8B84B]/40 rounded-2xl p-6 sm:p-8 shadow-[0_20px_50px_rgba(0,0,0,0.8)] backdrop-blur-xl">
           
           <div className="mb-6">
-            <h2 className="font-serif text-2xl font-bold text-ink">Create an organisation account</h2>
-            <p className="text-xs text-gray-500 mt-1">Get started with your dedicated brand governance workspace.</p>
+            <h2 className="font-cinzel text-2xl font-bold text-white tracking-wide">
+              Create Enterprise Account
+            </h2>
+            <p className="text-xs text-gray-400 mt-1 font-sans">
+              Get started with an isolated brand governance workspace.
+            </p>
           </div>
 
           {errorMessage && (
-            <div className="mb-5 p-3.5 bg-coral/10 border border-coral/30 rounded-xl flex items-start gap-2.5 text-xs text-coral">
-              <AlertCircle className="w-4 h-4 mt-0.5 shrink-0" />
+            <div className="mb-4 p-3 bg-rose-500/10 border border-rose-500/30 rounded-xl flex items-start gap-2.5 text-xs text-rose-300">
+              <AlertCircle className="w-4 h-4 mt-0.5 shrink-0 text-rose-400" />
               <span>{errorMessage}</span>
             </div>
           )}
 
           <form onSubmit={handleSubmit} className="space-y-3.5">
             <div>
-              <label className="block text-xs font-semibold text-gray-700 mb-1">Full Name</label>
+              <label className="block text-xs font-medium text-gray-300 mb-1">Full Name</label>
               <div className="relative">
                 <input
                   type="text"
                   required
                   value={name}
                   onChange={(e) => setName(e.target.value)}
-                  placeholder="Jane Compliance"
-                  className="w-full pl-9 pr-3 py-2 text-xs bg-white border border-gray-300 rounded-lg focus:outline-none focus:border-gold text-ink"
+                  placeholder="Eleanor Vance"
+                  className="w-full pl-9 pr-3 py-2 text-xs bg-[#040A1C] border border-[#18285A] rounded-xl focus:outline-none focus:border-[#FFF1B8] focus:ring-1 focus:ring-[#FFF1B8] text-white placeholder-gray-500 transition-colors"
                 />
                 <User className="w-4 h-4 text-gray-400 absolute left-3 top-2.5" />
               </div>
             </div>
 
             <div>
-              <label className="block text-xs font-semibold text-gray-700 mb-1">Corporate Email</label>
+              <label className="block text-xs font-medium text-gray-300 mb-1">Corporate Email</label>
               <div className="relative">
                 <input
                   type="email"
                   required
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
-                  placeholder="jane@organisation.com"
-                  className="w-full pl-9 pr-3 py-2 text-xs bg-white border border-gray-300 rounded-lg focus:outline-none focus:border-gold text-ink"
+                  placeholder="eleanor@acme-corp.com"
+                  className="w-full pl-9 pr-3 py-2 text-xs bg-[#040A1C] border border-[#18285A] rounded-xl focus:outline-none focus:border-[#FFF1B8] focus:ring-1 focus:ring-[#FFF1B8] text-white placeholder-gray-500 transition-colors"
                 />
                 <Mail className="w-4 h-4 text-gray-400 absolute left-3 top-2.5" />
               </div>
             </div>
 
             <div>
-              <label className="block text-xs font-semibold text-gray-700 mb-1">Organisation Name</label>
+              <label className="block text-xs font-medium text-gray-300 mb-1">Organisation Name</label>
               <div className="relative">
                 <input
                   type="text"
                   required
                   value={orgName}
                   onChange={(e) => setOrgName(e.target.value)}
-                  placeholder="Acme Global Inc."
-                  className="w-full pl-9 pr-3 py-2 text-xs bg-white border border-gray-300 rounded-lg focus:outline-none focus:border-gold text-ink"
+                  placeholder="Acme Corporation"
+                  className="w-full pl-9 pr-3 py-2 text-xs bg-[#040A1C] border border-[#18285A] rounded-xl focus:outline-none focus:border-[#FFF1B8] focus:ring-1 focus:ring-[#FFF1B8] text-white placeholder-gray-500 transition-colors"
                 />
                 <Building className="w-4 h-4 text-gray-400 absolute left-3 top-2.5" />
               </div>
             </div>
 
-            <div>
-              <label className="block text-xs font-semibold text-gray-700 mb-1">Password (min 8 chars)</label>
-              <div className="relative">
-                <input
-                  type={showPassword ? 'text' : 'password'}
-                  required
-                  value={password}
-                  onChange={(e) => setPassword(e.target.value)}
-                  placeholder="••••••••••••"
-                  className="w-full pl-9 pr-9 py-2 text-xs bg-white border border-gray-300 rounded-lg focus:outline-none focus:border-gold text-ink"
-                />
-                <Lock className="w-4 h-4 text-gray-400 absolute left-3 top-2.5" />
-                <button
-                  type="button"
-                  onClick={() => setShowPassword(!showPassword)}
-                  className="absolute right-3 top-2.5 text-gray-400 hover:text-ink focus:outline-none"
-                  aria-label={showPassword ? 'Hide password' : 'Show password'}
-                >
-                  {showPassword ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
-                </button>
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+              <div>
+                <label className="block text-xs font-medium text-gray-300 mb-1">Password</label>
+                <div className="relative">
+                  <input
+                    type={showPassword ? 'text' : 'password'}
+                    required
+                    value={password}
+                    onChange={(e) => setPassword(e.target.value)}
+                    placeholder="••••••••"
+                    className="w-full pl-8 pr-7 py-2 text-xs bg-[#040A1C] border border-[#18285A] rounded-xl focus:outline-none focus:border-[#FFF1B8] focus:ring-1 focus:ring-[#FFF1B8] text-white placeholder-gray-500 transition-colors"
+                  />
+                  <Lock className="w-3.5 h-3.5 text-gray-400 absolute left-2.5 top-2.5" />
+                  <button
+                    type="button"
+                    onClick={() => setShowPassword(!showPassword)}
+                    className="absolute right-2.5 top-2.5 text-gray-400 hover:text-white"
+                  >
+                    {showPassword ? <EyeOff className="w-3.5 h-3.5" /> : <Eye className="w-3.5 h-3.5" />}
+                  </button>
+                </div>
               </div>
 
-              {/* Password strength bar */}
-              {password && (
-                <div className="mt-1.5 flex items-center gap-1.5">
-                  {[1, 2, 3, 4].map(step => (
-                    <div 
-                      key={step} 
-                      className={`h-1 flex-1 rounded-full ${
-                        pwdScore >= step 
-                          ? pwdScore === 4 ? 'bg-emerald-500' : pwdScore >= 2 ? 'bg-gold' : 'bg-coral' 
-                          : 'bg-gray-200'
-                      }`} 
+              <div>
+                <label className="block text-xs font-medium text-gray-300 mb-1">Confirm</label>
+                <div className="relative">
+                  <input
+                    type={showPassword ? 'text' : 'password'}
+                    required
+                    value={confirmPassword}
+                    onChange={(e) => setConfirmPassword(e.target.value)}
+                    placeholder="••••••••"
+                    className="w-full pl-8 pr-3 py-2 text-xs bg-[#040A1C] border border-[#18285A] rounded-xl focus:outline-none focus:border-[#FFF1B8] focus:ring-1 focus:ring-[#FFF1B8] text-white placeholder-gray-500 transition-colors"
+                  />
+                  <Lock className="w-3.5 h-3.5 text-gray-400 absolute left-2.5 top-2.5" />
+                </div>
+              </div>
+            </div>
+
+            {/* Password strength meter */}
+            {password && (
+              <div className="space-y-1">
+                <div className="flex gap-1">
+                  {[1, 2, 3, 4].map((step) => (
+                    <div
+                      key={step}
+                      className={`h-1 flex-1 rounded-full transition-colors ${
+                        pwdScore >= step
+                          ? step <= 2
+                            ? 'bg-amber-400'
+                            : 'bg-emerald-400'
+                          : 'bg-gray-700'
+                      }`}
                     />
                   ))}
-                  <span className="text-[10px] text-gray-400 ml-1">
-                    {pwdScore <= 1 ? 'Weak' : pwdScore <= 3 ? 'Medium' : 'Strong'}
-                  </span>
                 </div>
-              )}
-            </div>
-
-            <div>
-              <label className="block text-xs font-semibold text-gray-700 mb-1">Confirm Password</label>
-              <div className="relative">
-                <input
-                  type={showPassword ? 'text' : 'password'}
-                  required
-                  value={confirmPassword}
-                  onChange={(e) => setConfirmPassword(e.target.value)}
-                  placeholder="••••••••••••"
-                  className="w-full pl-9 pr-3 py-2 text-xs bg-white border border-gray-300 rounded-lg focus:outline-none focus:border-gold text-ink"
-                />
-                <Lock className="w-4 h-4 text-gray-400 absolute left-3 top-2.5" />
               </div>
-            </div>
+            )}
 
-            <div className="flex items-start gap-2 pt-1">
-              <input
-                type="checkbox"
-                id="terms"
-                checked={acceptTerms}
-                onChange={(e) => setAcceptTerms(e.target.checked)}
-                className="mt-0.5 rounded border-gray-300 text-gold focus:ring-gold"
-              />
-              <label htmlFor="terms" className="text-[11px] text-gray-600 cursor-pointer">
-                I agree to the <span className="font-semibold text-ink">Terms of Service</span> and acknowledge pre-publication review data retention policies.
+            {/* Terms checkbox */}
+            <div className="pt-1">
+              <label className="flex items-start gap-2 cursor-pointer">
+                <input
+                  type="checkbox"
+                  checked={acceptTerms}
+                  onChange={(e) => setAcceptTerms(e.target.checked)}
+                  className="mt-0.5 rounded border-[#18285A] text-[#E8B84B] focus:ring-[#E8B84B]"
+                />
+                <span className="text-[11px] text-gray-400 leading-snug">
+                  I agree to the <span className="text-[#FFF1B8] hover:underline">Terms of Service</span> and <span className="text-[#FFF1B8] hover:underline">Privacy Policy</span>.
+                </span>
               </label>
             </div>
 
+            {/* Submit Button */}
             <button
               type="submit"
               disabled={isLoading}
-              className="w-full mt-3 py-2.5 px-4 bg-midnight hover:bg-navy text-gold hover:text-white font-medium text-xs rounded-lg transition-all shadow-md flex items-center justify-center gap-2 disabled:opacity-50"
+              className="btn-gold-sweep w-full mt-2 py-2.5 px-4 bg-gradient-to-r from-[#E8B84B] via-[#FFF1B8] to-[#E8B84B] hover:brightness-110 text-[#071230] font-bold text-xs uppercase tracking-wider rounded-xl transition-all shadow-glow flex items-center justify-center gap-2 disabled:opacity-50"
             >
               {isLoading ? (
-                <span>Creating workspace...</span>
+                <span>Provisioning Workspace...</span>
               ) : (
                 <>
-                  <span>Create Organisation Account</span>
-                  <ArrowRight className="w-3.5 h-3.5" />
+                  <span>Create Workspace</span>
+                  <ArrowRight className="w-4 h-4 text-[#071230]" />
                 </>
               )}
             </button>
           </form>
 
-          <div className="mt-5 pt-5 border-t border-gray-200 text-center">
-            <p className="text-xs text-gray-500">
-              Already have an account?{' '}
+          {/* Sign In Link */}
+          <div className="mt-5 pt-4 border-t border-[#18285A] text-center">
+            <p className="text-xs text-gray-400">
+              Already have an enterprise account?{' '}
               <button
                 onClick={() => setActivePage('login')}
-                className="text-gold font-semibold hover:underline"
+                className="text-[#FFF1B8] font-semibold hover:underline ml-1"
               >
-                Sign in
+                Sign In
               </button>
             </p>
           </div>
@@ -272,4 +318,3 @@ export function RegisterPage({ setActivePage, onRegisterSuccess }) {
     </div>
   );
 }
-
