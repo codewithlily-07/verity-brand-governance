@@ -16,13 +16,26 @@
 @tailwind components;
 @tailwind utilities;
 
+:root {
+  --color-navy: #0A1230;
+  --color-deep-navy: #060B1F;
+  --color-card-navy: #111B3D;
+  --color-gold: #D4AF37;
+  --color-gold-light: #F3D98B;
+  --color-ivory: #F5F1E6;
+  --color-muted: #9AA6C7;
+  --color-emerald: #2ECC9A;
+  --color-amber: #F5A623;
+  --color-red: #E5484D;
+}
+
 @layer base {
   body {
-    @apply bg-void text-ivory font-sans antialiased min-h-screen selection:bg-gold/30 selection:text-white;
+    @apply bg-deep-navy text-ivory font-sans antialiased min-h-screen selection:bg-gold/30 selection:text-white;
   }
 
   h1, h2, h3, .font-serif {
-    font-family: 'Fraunces', serif;
+    font-family: 'Cormorant Garamond', 'Fraunces', serif;
   }
 
   .font-cinzel {
@@ -44,27 +57,59 @@
   height: 8px;
 }
 ::-webkit-scrollbar-track {
-  background: #071230;
+  background: #060B1F;
 }
 ::-webkit-scrollbar-thumb {
   background: #8A5A12;
   border-radius: 4px;
 }
 ::-webkit-scrollbar-thumb:hover {
-  background: #E8B84B;
+  background: #D4AF37;
+}
+
+/* Fluid Typography */
+.text-fluid-h1 {
+  font-size: clamp(2.25rem, 5vw + 1rem, 4.25rem);
+  line-height: 1.12;
+}
+
+.text-fluid-h2 {
+  font-size: clamp(1.75rem, 3.5vw + 0.5rem, 3rem);
+  line-height: 1.2;
+}
+
+.text-fluid-p {
+  font-size: clamp(1rem, 1.1vw + 0.2rem, 1.125rem);
+  line-height: 1.65;
+}
+
+/* Glass Card styling with gold-tinted border and hover lift */
+.verity-glass-card {
+  background: rgba(17, 27, 61, 0.75);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  border: 1px solid rgba(212, 175, 55, 0.25);
+  border-radius: 18px;
+  transition: transform 0.28s cubic-bezier(0.16, 1, 0.3, 1), box-shadow 0.28s ease, border-color 0.28s ease;
+}
+
+.verity-glass-card:hover {
+  transform: translateY(-4px);
+  border-color: rgba(243, 217, 139, 0.55);
+  box-shadow: 0 16px 36px -8px rgba(6, 11, 31, 0.8), 0 0 25px rgba(212, 175, 55, 0.25);
 }
 
 /* Metallic gold text gradient */
 .text-gold-metallic {
-  background: linear-gradient(135deg, #8A5A12 0%, #E8B84B 35%, #FFF1B8 55%, #E8B84B 80%, #8A5A12 100%);
+  background: linear-gradient(135deg, #8A5A12 0%, #D4AF37 35%, #F3D98B 55%, #D4AF37 80%, #8A5A12 100%);
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
-  filter: drop-shadow(0 2px 14px rgba(232, 184, 75, 0.45));
+  filter: drop-shadow(0 2px 14px rgba(212, 175, 55, 0.45));
 }
 
 /* Gold stroke gradient for text / outlines */
 .border-gold-gradient {
-  border-image: linear-gradient(135deg, rgba(255, 241, 184, 0.8), rgba(232, 184, 75, 0.6), rgba(138, 90, 18, 0.4)) 1;
+  border-image: linear-gradient(135deg, rgba(243, 217, 139, 0.8), rgba(212, 175, 55, 0.6), rgba(138, 90, 18, 0.4)) 1;
 }
 
 /* Shimmer animation */
@@ -74,20 +119,20 @@
 }
 
 .animate-shimmer {
-  background: linear-gradient(90deg, rgba(232,184,75,0.1) 0%, rgba(255,241,184,0.35) 50%, rgba(232,184,75,0.1) 100%);
+  background: linear-gradient(90deg, rgba(212,175,55,0.1) 0%, rgba(243,217,139,0.35) 50%, rgba(212,175,55,0.1) 100%);
   background-size: 200% 100%;
   animation: shimmer 2.5s infinite;
 }
 
 /* Diff highlights */
 .diff-del {
-  @apply bg-coral/15 text-coral line-through px-1 rounded mx-0.5;
+  @apply bg-red/15 text-red line-through px-1 rounded mx-0.5;
 }
 .diff-add {
-  @apply bg-teal/20 text-teal font-medium px-1 rounded mx-0.5;
+  @apply bg-emerald/20 text-emerald font-medium px-1 rounded mx-0.5;
 }
 .diff-same {
-  @apply text-ink;
+  @apply text-ivory;
 }
 
 /* Button light sweep on hover */
@@ -127,5 +172,15 @@
   left: 0;
   width: 100%;
   height: 1.5px;
-  background: linear-gradient(90deg, transparent, #8A5A12 10%, #E8B84B 50%, #FFF1B8 70%, #8A5A12 90%, transparent);
+  background: linear-gradient(90deg, transparent, #8A5A12 10%, #D4AF37 50%, #F3D98B 70%, #8A5A12 90%, transparent);
+}
+
+/* Accessible Reduced Motion */
+@media (prefers-reduced-motion: reduce) {
+  *, ::before, ::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
 }

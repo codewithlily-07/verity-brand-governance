@@ -16,6 +16,9 @@ import { SubmissionHistoryPage } from './pages/SubmissionHistoryPage';
 import { GovernanceInsightsPage } from './pages/GovernanceInsightsPage';
 import { SettingsPage } from './pages/SettingsPage';
 import { TrustPage } from './pages/TrustPage';
+import { ProductPage } from './pages/ProductPage';
+import { HowItWorksPage } from './pages/HowItWorksPage';
+import { ResourcesPage } from './pages/ResourcesPage';
 import { RoadmapPage } from './pages/RoadmapPage';
 import { LoginPage } from './pages/LoginPage';
 import { RegisterPage } from './pages/RegisterPage';
@@ -79,11 +82,11 @@ export default function App() {
   };
 
   return (
-    <div className="min-h-screen flex flex-col bg-ivory font-sans text-ink selection:bg-champagne selection:text-ink relative">
+    <div className="min-h-screen flex flex-col bg-[#060B1F] font-sans text-[#F5F1E6] selection:bg-[#D4AF37]/30 selection:text-white relative">
       
       {/* Navigation Header: Public Gold Navbar on public/auth pages, Workspace Navbar inside app */}
-      {['landing', 'login', 'register', 'forgot-password'].includes(activePage) ? (
-        <PublicNavbar setActivePage={setActivePage} />
+      {['landing', 'login', 'register', 'forgot-password', 'product', 'how-it-works', 'trust-security', 'resources'].includes(activePage) ? (
+        <PublicNavbar activePage={activePage} setActivePage={setActivePage} />
       ) : (
         <Navbar
           activePage={activePage}
@@ -105,6 +108,10 @@ export default function App() {
       {/* Main View Router */}
       <main className="flex-grow">
         {activePage === 'landing' && <LandingPage setActivePage={setActivePage} />}
+        {activePage === 'product' && <ProductPage setActivePage={setActivePage} />}
+        {activePage === 'how-it-works' && <HowItWorksPage setActivePage={setActivePage} />}
+        {activePage === 'trust-security' && <TrustPage setActivePage={setActivePage} />}
+        {activePage === 'resources' && <ResourcesPage setActivePage={setActivePage} />}
         {activePage === 'login' && (
           <LoginPage 
             setActivePage={setActivePage} 
