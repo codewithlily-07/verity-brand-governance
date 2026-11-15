@@ -249,3 +249,41 @@ export async function clearAllNotifications() {
   return await res.json();
 }
 
+export async function switchRole(role) {
+  const res = await fetch(`${BASE_URL}/auth/switch-role`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    credentials: 'include',
+    body: JSON.stringify({ role })
+  });
+  if (!res.ok) {
+    const err = await res.json();
+    throw new Error(err.detail || 'Failed to switch role');
+  }
+  return await res.json();
+}
+
+export async function runGuidedDemo() {
+  const res = await fetch(`${BASE_URL}/submissions/run-guided-demo`, {
+    method: 'POST',
+    credentials: 'include'
+  });
+  if (!res.ok) {
+    const err = await res.json();
+    throw new Error(err.detail || 'Failed to run guided demo');
+  }
+  return await res.json();
+}
+
+export async function verifySubmissionIntegrity(submissionId) {
+  const res = await fetch(`${BASE_URL}/submissions/${submissionId}/verify-integrity`, {
+    method: 'POST',
+    credentials: 'include'
+  });
+  if (!res.ok) {
+    const err = await res.json();
+    throw new Error(err.detail || 'Failed to verify integrity');
+  }
+  return await res.json();
+}
+

@@ -91,29 +91,29 @@ export function SettingsPage({ role, setRole, onResetDemo }) {
             <Sparkles className="w-4 h-4 text-gold" />
             <span>AI Architecture & Model Transparency</span>
           </div>
-          <p className="text-gray-500 mb-4 leading-relaxed">
+          <p className="text-[#374151] mb-4 leading-relaxed">
             VERITY operates on a strict multi-layer principle: Layer 1 (Deterministic Rules) and Layer 2 (Approved Fact Retrieval) always run. Layer 3 (Contextual AI) is strictly advisory and fails over safely.
           </p>
 
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 bg-mist/60 p-4 rounded-xl border border-gray-200 font-mono text-[11px]">
             <div>
-              <span className="text-gray-400 block font-sans text-[10px] uppercase font-bold">Provider Configuration</span>
+              <span className="text-[#4B5563] block font-sans text-[11px] uppercase font-bold">Provider Configuration</span>
               <span className="font-bold text-ink">{aiStatus?.provider || 'gemini'} ({aiStatus?.model || 'gemini-1.5-flash'})</span>
             </div>
 
             <div>
-              <span className="text-gray-400 block font-sans text-[10px] uppercase font-bold">Runtime Status</span>
-              <span className={`font-bold ${aiStatus?.has_api_key ? 'text-teal' : 'text-amber-800'}`}>
+              <span className="text-[#4B5563] block font-sans text-[11px] uppercase font-bold">Runtime Status</span>
+              <span className={`font-bold ${aiStatus?.has_api_key ? 'text-[#065F46]' : 'text-amber-800'}`}>
                 {aiStatus?.status === 'active' ? 'Active & Validating' : 'Graceful Fallback Mode (Rule + FTS Active)'}
               </span>
             </div>
 
-            <div className="sm:col-span-2 pt-2 border-t border-gray-200 font-sans text-gray-600">
+            <div className="sm:col-span-2 pt-2 border-t border-gray-200 font-sans text-[#374151]">
               {aiStatus?.message}
             </div>
           </div>
 
-          <div className="mt-4 p-3 rounded-xl bg-teal/10 border border-teal/30 text-teal flex items-center gap-2">
+          <div className="mt-4 p-3 rounded-xl bg-[#D1FAE5] border border-[#065F46]/30 text-[#065F46] flex items-center gap-2">
             <Shield className="w-4 h-4 flex-shrink-0" />
             <span>Content Data Privacy Guarantee: Customer content is inert data only and is never used to train external models.</span>
           </div>

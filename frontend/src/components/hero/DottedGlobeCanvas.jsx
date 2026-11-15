@@ -1,14 +1,17 @@
 import React, { useEffect, useRef } from 'react';
 
 /**
- * 2D Canvas rendering:
- * 1. Rotating 3D Fibonacci Dotted Sphere:
- *    - ~950 points on a Fibonacci sphere
- *    - Light fall-off from top-left, fading gracefully to the right
- *    - Sized to be perfectly concentric with parent circle
- * 2. Continuously rising gold dust particles
+ * High-performance, Retina-crisp Fibonacci Dotted Sphere
+ * - 900 points with true 3D perspective projection and depth fade
+ * - Front dots are larger and brighter; back dots are smaller and dim
+ * - Pure 1:1 spherical aspect ratio (perfect circle)
+ * - DevicePixelRatio scaling for razor-sharp rendering on HiDPI screens
+ * - Rotation on Y axis (~60s per turn)
+ * - Random twinkling highlights
+ * - Visibility API listener (pauses RAF when tab is hidden)
+ * - Adaptive dot reduction if frame budget is exceeded
  */
-export function DottedGlobeCanvas({ active = true, progress = 1 }) {
+export function DottedGlobeCanvas({ active = true }) {
   const canvasRef = useRef(null);
 
   useEffect(() => {
@@ -17,135 +20,183 @@ export function DottedGlobeCanvas({ active = true, progress = 1 }) {
     const ctx = canvas.getContext('2d');
     let animationFrameId;
 
-    let width = (canvas.width = canvas.parentElement?.clientWidth || 500);
-    let height = (canvas.height = canvas.parentElement?.clientHeight || 500);
+    let dpr = window.devicePixelRatio || 1;
+    let cssWidth = 500;
+    let cssHeight = 500;
 
-    const handleResize = () => {
+    const resize = () => {
       if (!canvas || !canvas.parentElement) return;
-      width = canvas.width = canvas.parentElement.clientWidth || 500;
-      height = canvas.height = canvas.parentElement.clientHeight || 500;
+      const rect = canvas.parentElement.getBoundingClientRect();
+      cssWidth = rect.width || 500;
+      cssHeight = rect.height || 500;
+      dpr = window.devicePixelRatio || 1;
+      canvas.width = Math.round(cssWidth * dpr);
+      canvas.height = Math.round(cssHeight * dpr);
+      canvas.style.width = `${cssWidth}px`;
+      canvas.style.height = `${cssHeight}px`;
     };
-    window.addEventListener('resize', handleResize);
 
-    // 1. Generate Fibonacci Sphere Points (~950 points)
-    const numPoints = 950;
+    resize();
+    window.addEventListener('resize', resize);
+
+    // Generate Fibonacci Sphere Points
+    let targetNumPoints = 900;
     const phi = Math.PI * (3 - Math.sqrt(5)); // Golden angle
 
-    const spherePoints = [];
-    for (let i = 0; i < numPoints; i++) {
-      const y = 1 - (i / (numPoints - 1)) * 2; // y goes from 1 to -1
-      const radiusAtY = Math.sqrt(1 - y * y); // radius at y
-      const theta = phi * i; // golden angle increment
-      const x = Math.cos(theta) * radiusAtY;
-      const z = Math.sin(theta) * radiusAtY;
-      spherePoints.push({ x, y, z, baseAlpha: Math.random() * 0.4 + 0.6 });
-    }
+    const generatePoints = (count) => {
+      const pts = [];
+      for (let i = 0; i < count; i++) {
+        const y = 1 - (i / (count - 1)) * 2; // -1 to 1
+        const radiusAtY = Math.sqrt(Math.max(0, 1 - y * y));
+        const theta = phi * i;
+        const x = Math.cos(theta) * radiusAtY;
+        const z = Math.sin(theta) * radiusAtY;
+        pts.push({
+          x,
+          y,
+          z,
+          twinkleSpeed: Math.random() * 0.05 + 0.015,
+          twinklePhase: Math.random() * Math.PI * 2,
+          isTwinkler: Math.random() < 0.15,
+        });
+      }
+      return pts;
+    };
 
-    // 2. Upward drifting gold dust particles pool (45 particles)
-    const particleCount = 45;
-    const particles = Array.from({ length: particleCount }, () => ({
-      x: Math.random() * width,
-      y: height + Math.random() * 100,
-      radius: Math.random() * 1.6 + 0.5,
-      speedY: Math.random() * 0.6 + 0.3,
-      speedX: (Math.random() - 0.5) * 0.25,
-      alpha: Math.random() * 0.7 + 0.2,
-      twinkleSpeed: Math.random() * 0.04 + 0.01,
-      twinklePhase: Math.random() * Math.PI * 2,
-    }));
+    let spherePoints = generatePoints(targetNumPoints);
+
+    // Frame Budget Monitoring for 60fps
+    let consecutiveSlowFrames = 0;
+    let isThrottled = false;
+    let lastFrameTime = performance.now();
+
+    // Light source vector from upper-left forward (-0.5, -0.5, 0.7)
+    const lightX = -0.5;
+    const lightY = -0.5;
+    const lightZ = 0.7;
+    const lightLen = Math.hypot(lightX, lightY, lightZ);
+    const nlx = lightX / lightLen;
+    const nly = lightY / lightLen;
+    const nlz = lightZ / lightLen;
 
     let rotationAngle = 0;
+    // 60s per full turn (2 * PI in 3600 frames at 60fps => ~0.00174 rad/frame)
+    const rotationSpeed = 0.00174;
 
-    const render = () => {
-      ctx.clearRect(0, 0, width, height);
+    let isTabVisible = !document.hidden;
+    const handleVisibilityChange = () => {
+      isTabVisible = !document.hidden;
+      if (isTabVisible) {
+        lastFrameTime = performance.now();
+        animationFrameId = requestAnimationFrame(render);
+      } else {
+        cancelAnimationFrame(animationFrameId);
+      }
+    };
+    document.addEventListener('visibilitychange', handleVisibilityChange);
 
-      const centerX = width * 0.5;
-      const centerY = height * 0.5;
-      const sphereRadius = Math.min(width, height) * 0.45;
+    const render = (now) => {
+      if (!isTabVisible) return;
 
-      // A. Upward Floating Gold Particles
-      for (let i = 0; i < particles.length; i++) {
-        const p = particles[i];
-        p.y -= p.speedY;
-        p.x += p.speedX;
-        p.twinklePhase += p.twinkleSpeed;
-
-        if (p.y < -10) {
-          p.y = height + Math.random() * 30;
-          p.x = Math.random() * width;
+      // Monitor frame budget
+      const delta = now - lastFrameTime;
+      lastFrameTime = now;
+      if (delta > 24) {
+        consecutiveSlowFrames++;
+        if (consecutiveSlowFrames > 25 && !isThrottled) {
+          isThrottled = true;
+          targetNumPoints = 500;
+          spherePoints = generatePoints(targetNumPoints);
         }
-
-        const twinkle = 0.5 + Math.sin(p.twinklePhase) * 0.5;
-        const currentAlpha = p.alpha * twinkle;
-
-        ctx.beginPath();
-        ctx.arc(p.x, p.y, p.radius, 0, Math.PI * 2);
-        ctx.fillStyle = `rgba(243, 217, 139, ${currentAlpha * progress})`;
-        ctx.shadowBlur = 5;
-        ctx.shadowColor = 'rgba(212, 175, 55, 0.4)';
-        ctx.fill();
+      } else {
+        consecutiveSlowFrames = Math.max(0, consecutiveSlowFrames - 1);
       }
 
-      // B. Rotating Fibonacci Dotted Globe
-      rotationAngle += 0.0032;
+      ctx.save();
+      ctx.scale(dpr, dpr);
+      ctx.clearRect(0, 0, cssWidth, cssHeight);
+
+      const centerX = cssWidth * 0.5;
+      const centerY = cssHeight * 0.5;
+      // Pure 1:1 circle radius (46% of container dimension)
+      const radius = Math.min(cssWidth, cssHeight) * 0.46;
+
+      rotationAngle += rotationSpeed;
       const cosA = Math.cos(rotationAngle);
       const sinA = Math.sin(rotationAngle);
 
-      // Light vector pointing from upper-left forward (-0.55, -0.55, 0.62)
-      const lightX = -0.55;
-      const lightY = -0.55;
-      const lightZ = 0.62;
+      // Camera distance for perspective projection
+      const cameraDistance = 2.6;
 
-      for (let i = 0; i < spherePoints.length; i++) {
+      const len = spherePoints.length;
+      for (let i = 0; i < len; i++) {
         const pt = spherePoints[i];
 
-        // Rotate point around Y axis
+        // Rotate around Y axis
         const rotX = pt.x * cosA - pt.z * sinA;
         const rotZ = pt.x * sinA + pt.z * cosA;
         const rotY = pt.y;
 
-        // Front-facing points only (rotZ > -0.25)
-        if (rotZ > -0.25) {
-          const dot = rotX * lightX + rotY * lightY + rotZ * lightZ;
-          const illumination = Math.max(0.04, dot);
+        // Perspective factor: z goes from -1 (back) to +1 (front)
+        const perspective = cameraDistance / (cameraDistance - rotZ * 0.7);
 
-          const projX = centerX + rotX * sphereRadius;
-          const projY = centerY + rotY * sphereRadius * 0.96;
+        // Project strictly 1:1 with no aspect distortion
+        const projX = centerX + rotX * radius * perspective;
+        const projY = centerY + rotY * radius * perspective;
 
-          const dotSize = (0.7 + (rotZ + 1) * 0.7) * (0.8 + illumination * 0.6);
-          const alpha = (0.05 + illumination * 0.88) * pt.baseAlpha * progress;
+        // Depth fade: front is brighter & larger, back is dimmer & smaller
+        const normalizedZ = (rotZ + 1) * 0.5; // 0 (back) to 1 (front)
+        const dotIllumination = Math.max(0, rotX * nlx + rotY * nly + rotZ * nlz);
 
-          ctx.beginPath();
-          ctx.arc(projX, projY, Math.max(0.6, dotSize), 0, Math.PI * 2);
-
-          if (illumination > 0.5) {
-            ctx.fillStyle = `rgba(243, 217, 139, ${alpha})`;
-            ctx.shadowBlur = 4;
-            ctx.shadowColor = 'rgba(212, 175, 55, 0.4)';
-          } else {
-            ctx.fillStyle = `rgba(212, 175, 55, ${alpha * 0.8})`;
-            ctx.shadowBlur = 0;
-          }
-          ctx.fill();
+        // Soft center clearance on front face so emblem typography is 100% crisp & unobstructed
+        const distFromCenter = Math.hypot(rotX, rotY);
+        let centerClearance = 1.0;
+        if (rotZ > 0.1 && distFromCenter < 0.35) {
+          centerClearance = Math.max(0.18, distFromCenter / 0.35);
         }
+
+        // Base size: 0.7px to 2.2px
+        let size = (0.65 + normalizedZ * 1.35 + dotIllumination * 0.4) * perspective * 0.75 * (0.8 + centerClearance * 0.2);
+        // Base alpha: 0.18 (back) to 0.92 (front)
+        let alpha = (0.18 + normalizedZ * 0.65 + dotIllumination * 0.22) * centerClearance;
+
+        if (pt.isTwinkler) {
+          pt.twinklePhase += pt.twinkleSpeed;
+          const twinkle = 0.6 + Math.sin(pt.twinklePhase) * 0.4;
+          alpha *= twinkle;
+          size *= (0.85 + twinkle * 0.25);
+        }
+
+        ctx.beginPath();
+        ctx.arc(projX, projY, Math.max(0.5, size), 0, Math.PI * 2);
+
+        // Ivory-gold tint: front dots warmer champagne gold, back dots soft cream ivory
+        if (normalizedZ > 0.6) {
+          ctx.fillStyle = `rgba(243, 217, 139, ${Math.min(1, alpha)})`;
+        } else {
+          ctx.fillStyle = `rgba(247, 242, 231, ${Math.min(1, alpha)})`;
+        }
+        ctx.fill();
       }
 
+      ctx.restore();
       animationFrameId = requestAnimationFrame(render);
     };
 
-    render();
+    animationFrameId = requestAnimationFrame(render);
 
     return () => {
-      window.removeEventListener('resize', handleResize);
       cancelAnimationFrame(animationFrameId);
+      window.removeEventListener('resize', resize);
+      document.removeEventListener('visibilitychange', handleVisibilityChange);
     };
-  }, [active, progress]);
+  }, [active]);
 
   return (
     <canvas
       ref={canvasRef}
-      className="absolute inset-0 w-full h-full pointer-events-none z-10"
-      style={{ opacity: active ? 1 : 0, transition: 'opacity 0.8s ease-in-out' }}
+      className="w-full h-full block pointer-events-none"
+      style={{ display: 'block' }}
     />
   );
 }

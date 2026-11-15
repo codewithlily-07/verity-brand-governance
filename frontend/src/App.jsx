@@ -12,13 +12,13 @@ import { NewReviewPage } from './pages/NewReviewPage';
 import { AnalysisResultsPage } from './pages/AnalysisResultsPage';
 import { CorrectionPage } from './pages/CorrectionPage';
 import { ReviewApprovalPage } from './pages/ReviewApprovalPage';
-import { SubmissionHistoryPage } from './pages/SubmissionHistoryPage';
 import { GovernanceInsightsPage } from './pages/GovernanceInsightsPage';
 import { SettingsPage } from './pages/SettingsPage';
 import { TrustPage } from './pages/TrustPage';
 import { ProductPage } from './pages/ProductPage';
 import { HowItWorksPage } from './pages/HowItWorksPage';
 import { ResourcesPage } from './pages/ResourcesPage';
+import { QualityPage } from './pages/QualityPage';
 import { RoadmapPage } from './pages/RoadmapPage';
 import { LoginPage } from './pages/LoginPage';
 import { RegisterPage } from './pages/RegisterPage';
@@ -34,6 +34,49 @@ export default function App() {
   const [isCommandPaletteOpen, setIsCommandPaletteOpen] = useState(false);
   const [isOnboardingOpen, setIsOnboardingOpen] = useState(false);
   const [currentUser, setCurrentUser] = useState(null);
+  const [isWakingServer, setIsWakingServer] = useState(false);
+
+  // Sync initial URL pathname
+  useEffect(() => {
+    const rawPath = window.location.pathname.replace(/^\//, '').toLowerCase();
+    const validPages = [
+      'product', 'how-it-works', 'trust-security', 'resources', 'quality',
+      'login', 'register', 'forgot-password', 'profile', 'dashboard',
+      'brand-hub', 'new-review', 'results', 'correction', 'review',
+      'insights', 'settings', 'trust', 'roadmap'
+    ];
+    if (rawPath === 'trust-security' || rawPath === 'trust') {
+      setActivePage('trust-security');
+    } else if (validPages.includes(rawPath)) {
+      setActivePage(rawPath);
+    }
+  }, []);
+
+  // Listen to browser Back/Forward navigation
+  useEffect(() => {
+    const onPop = () => {
+      const p = window.location.pathname.replace(/^\//, '').toLowerCase() || 'landing';
+      if (p === 'trust') setActivePage('trust-security');
+      else setActivePage(p);
+    };
+    window.addEventListener('popstate', onPop);
+    return () => window.removeEventListener('popstate', onPop);
+  }, []);
+
+  const navigateTo = (page) => {
+    setActivePage(page);
+    const urlPath = page === 'landing' ? '/' : `/${page}`;
+    window.history.pushState(null, '', urlPath);
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  };
+
+  useEffect(() => {
+    // If initialization takes longer than 2.5s (e.g. cloud instance cold start), show friendly message
+    const timer = setTimeout(() => {
+      if (isInitializing) setIsWakingServer(true);
+    }, 2500);
+    return () => clearTimeout(timer);
+  }, [isInitializing]);
 
   useEffect(() => {
     async function bootstrap() {
@@ -48,16 +91,17 @@ export default function App() {
         console.error('Session initialization error:', err);
       } finally {
         setIsInitializing(false);
+        setIsWakingServer(false);
       }
     }
     bootstrap();
   }, []);
 
   const handleResetDemo = async () => {
-    if (window.confirm('Reset this demo workspace back to fresh initial state? All your edits will be restored to Verity Learning demo defaults.')) {
+    if (window.confirm('Reset this demo workspace back to fresh initial state? All test submissions will be cleared and brand rules/facts restored.')) {
       try {
         await resetDemo();
-        alert('Workspace reseeded successfully!');
+        alert('Workspace reset successfully! Submissions cleared.');
         window.location.reload();
       } catch (err) {
         alert('Reset failed: ' + err.message);
@@ -68,6 +112,7 @@ export default function App() {
   const handleLoginSuccess = (user) => {
     setCurrentUser(user);
     if (user?.role) setRole(user.role);
+    navigateTo('dashboard');
   };
 
   const handleLogout = async () => {
@@ -75,22 +120,43 @@ export default function App() {
       await logoutUser();
       setCurrentUser(null);
       setRole('creator');
-      setActivePage('landing');
+      navigateTo('landing');
     } catch (err) {
       console.error('Logout error:', err);
     }
   };
 
+  const isPublicPage = [
+    'landing', 'login', 'register', 'forgot-password', 
+    'product', 'how-it-works', 'trust-security', 'resources', 'quality'
+  ].includes(activePage);
+
   return (
-    <div className="min-h-screen flex flex-col bg-[#060B1F] font-sans text-[#F5F1E6] selection:bg-[#D4AF37]/30 selection:text-white relative">
+    <div 
+      className={`min-h-screen flex flex-col font-sans relative ${
+        isPublicPage 
+          ? (activePage === 'quality' ? 'bg-[#F7F2E7]' : 'bg-[#050A1F] text-[#F7F2E7]') + ' selection:bg-[#D4AF37]/30 selection:text-white' 
+          : 'theme-light text-[#2B3345] selection:bg-[#D4AF37]/30 selection:text-[#0A1230]'
+      }`}
+      style={!isPublicPage ? { background: 'linear-gradient(180deg, #F6F1E7 0%, #FBF8F1 100%)' } : {}}
+    >
+      {/* Friendly Cold Start Waking Banner */}
+      {isWakingServer && (
+        <div className="fixed top-0 left-0 right-0 z-50 bg-[#0A1230] border-b border-[#D4AF37]/50 text-[#F7F2E7] px-4 py-2.5 shadow-2xl flex items-center justify-center gap-3 text-sm">
+          <span className="w-2.5 h-2.5 rounded-full bg-[#D4AF37] animate-ping" />
+          <span>
+            <strong className="text-[#D4AF37]">Waking the server...</strong> Cloud free instances spin down after inactivity (approx 25–45s). Connecting your isolated demo session...
+          </span>
+        </div>
+      )}
       
-      {/* Navigation Header: Public Gold Navbar on public/auth pages, Workspace Navbar inside app */}
-      {['landing', 'login', 'register', 'forgot-password', 'product', 'how-it-works', 'trust-security', 'resources'].includes(activePage) ? (
-        <PublicNavbar activePage={activePage} setActivePage={setActivePage} />
+      {/* Navigation Header */}
+      {isPublicPage ? (
+        <PublicNavbar activePage={activePage} setActivePage={navigateTo} />
       ) : (
         <Navbar
           activePage={activePage}
-          setActivePage={setActivePage}
+          setActivePage={navigateTo}
           role={role}
           setRole={setRole}
           onResetDemo={handleResetDemo}
@@ -100,36 +166,37 @@ export default function App() {
           onLogout={handleLogout}
           onSelectSubmission={(id) => {
             setSelectedSubmissionId(id);
-            setActivePage('results');
+            navigateTo('results');
           }}
         />
       )}
 
       {/* Main View Router */}
       <main className="flex-grow">
-        {activePage === 'landing' && <LandingPage setActivePage={setActivePage} />}
-        {activePage === 'product' && <ProductPage setActivePage={setActivePage} />}
-        {activePage === 'how-it-works' && <HowItWorksPage setActivePage={setActivePage} />}
-        {activePage === 'trust-security' && <TrustPage setActivePage={setActivePage} />}
-        {activePage === 'resources' && <ResourcesPage setActivePage={setActivePage} />}
+        {activePage === 'landing' && <LandingPage setActivePage={navigateTo} />}
+        {activePage === 'product' && <ProductPage setActivePage={navigateTo} />}
+        {activePage === 'how-it-works' && <HowItWorksPage setActivePage={navigateTo} />}
+        {(activePage === 'trust-security' || activePage === 'trust') && <TrustPage setActivePage={navigateTo} />}
+        {activePage === 'resources' && <ResourcesPage setActivePage={navigateTo} />}
+        {activePage === 'quality' && <QualityPage setActivePage={navigateTo} />}
         {activePage === 'login' && (
           <LoginPage 
-            setActivePage={setActivePage} 
+            setActivePage={navigateTo} 
             onLoginSuccess={handleLoginSuccess} 
           />
         )}
         {activePage === 'register' && (
           <RegisterPage 
-            setActivePage={setActivePage} 
+            setActivePage={navigateTo} 
             onRegisterSuccess={handleLoginSuccess} 
           />
         )}
         {activePage === 'forgot-password' && (
-          <ForgotPasswordPage setActivePage={setActivePage} />
+          <ForgotPasswordPage setActivePage={navigateTo} />
         )}
         {activePage === 'profile' && (
           <ProfilePage 
-            setActivePage={setActivePage} 
+            setActivePage={navigateTo} 
             currentUser={currentUser} 
             onLogout={handleLogout}
             onProfileUpdated={(updated) => setCurrentUser(prev => ({ ...prev, ...updated }))}
@@ -137,14 +204,14 @@ export default function App() {
         )}
         {activePage === 'dashboard' && (
           <DashboardPage 
-            setActivePage={setActivePage} 
+            setActivePage={navigateTo} 
             setSelectedSubmissionId={setSelectedSubmissionId} 
           />
         )}
         {activePage === 'brand-hub' && <BrandHubPage />}
         {activePage === 'new-review' && (
           <NewReviewPage 
-            setActivePage={setActivePage} 
+            setActivePage={navigateTo} 
             setSelectedSubmissionId={setSelectedSubmissionId} 
             role={role} 
           />
@@ -152,31 +219,26 @@ export default function App() {
         {activePage === 'results' && (
           <AnalysisResultsPage 
             submissionId={selectedSubmissionId} 
-            setActivePage={setActivePage} 
+            setActivePage={navigateTo} 
             role={role} 
           />
         )}
         {activePage === 'correction' && (
           <CorrectionPage 
             submissionId={selectedSubmissionId} 
-            setActivePage={setActivePage} 
+            setActivePage={navigateTo} 
             role={role} 
           />
         )}
         {activePage === 'review' && (
           <ReviewApprovalPage 
             submissionId={selectedSubmissionId} 
-            setActivePage={setActivePage} 
+            setActivePage={navigateTo} 
             role={role} 
+            onRoleChange={setRole}
           />
         )}
-        {activePage === 'submissions' && (
-          <SubmissionHistoryPage 
-            setActivePage={setActivePage} 
-            setSelectedSubmissionId={setSelectedSubmissionId} 
-          />
-        )}
-        {activePage === 'insights' && <GovernanceInsightsPage setActivePage={setActivePage} />}
+        {activePage === 'insights' && <GovernanceInsightsPage setActivePage={navigateTo} />}
         {activePage === 'settings' && (
           <SettingsPage 
             role={role} 
@@ -184,27 +246,37 @@ export default function App() {
             onResetDemo={handleResetDemo} 
           />
         )}
-        {activePage === 'trust' && <TrustPage />}
-        {activePage === 'roadmap' && <RoadmapPage setActivePage={setActivePage} />}
+        {activePage === 'roadmap' && <RoadmapPage setActivePage={navigateTo} />}
       </main>
 
       {/* Global Interactive Overlays */}
       <CommandPalette
         isOpen={isCommandPaletteOpen}
         setIsOpen={setIsCommandPaletteOpen}
-        setActivePage={setActivePage}
+        setActivePage={navigateTo}
         onResetDemo={handleResetDemo}
       />
 
       <OnboardingWizard
         isOpen={isOnboardingOpen}
         onClose={() => setIsOnboardingOpen(false)}
-        setActivePage={setActivePage}
+        setActivePage={navigateTo}
       />
 
       <FeedbackWidget />
 
-      <Footer setActivePage={setActivePage} />
+      {/* Footers: Marketing Footer on Public Pages, Slim One-Line Footer inside App */}
+      {isPublicPage ? (
+        <Footer setActivePage={navigateTo} />
+      ) : (
+        <footer className="py-4 border-t border-[#E6DDC8] bg-[#F6F1E7] text-center text-xs font-sans text-[#5B6478]">
+          <div className="max-w-[1400px] mx-auto px-4 flex flex-col sm:flex-row items-center justify-between gap-2">
+            <span>© 2026 VERITY · WCC Forge 48 · Team Cognexa</span>
+            <span className="font-medium text-[#8A5A12]">AI findings are advisory; an authorised human reviewer owns final approval.</span>
+            <span>Test Brand: Verity Learning (SQLite verity.db)</span>
+          </div>
+        </footer>
+      )}
     </div>
   );
 }
