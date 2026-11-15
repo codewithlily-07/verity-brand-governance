@@ -24,9 +24,8 @@ Gadidamalla Bhanu Rasool
 
 ### Question 3: Link to the Functioning Project (Live Deployed URL)
 ```
-[DEPLOYED_URL_PLACEHOLDER]
+https://verity-brand-governance.onrender.com
 ```
-*(Note: Replace with your deployed Render / Railway URL once deployed)*
 
 ---
 
