@@ -3,19 +3,18 @@
 **Event:** WCC Forge 48  
 **Challenge:** Inkloom AI Problem Statement  
 **Project:** VERITY — Intelligent Brand Governance Platform  
+**Team Leader Email:** sowmyavookoti@gmail.com  
 
 ---
 
-## Team Contributions Statement
+## Member Ownership Matrix
 
-| Team Member | Primary Role | Key Areas of Ownership |
-|---|---|---|
-| **Member 1** | Full-Stack & System Architect | Backend FastAPI architecture, SQLite/PostgreSQL schema modeling, hybrid retrieval layer, and state-machine transitions. |
-| **Member 2** | AI Engineer & Algorithm Designer | 3-Layer analysis engine, phrase-variant regex generators, fact conflict retrieval, and prompt injection defense. |
-| **Member 3** | Frontend Lead & UX Designer | React SPA implementation, animated landing page simulation, side-by-side diff workspace, and design system tokens. |
-| **Member 4** | QA & Evaluation Engineer | 30-sample benchmark evaluation harness, test suite automation (pytest), and governance telemetry reporting. |
+| Team Member | Role / Focus | Specific Components & Deliverables Owned |
+| :--- | :--- | :--- |
+| **Vookoti Sowmya** *(Team Leader)* | [To be completed by team] | [To be completed by team] |
+| **Gadidamalla Bhanu Rasool** | [To be completed by team] | [To be completed by team] |
 
 ---
 
-*Note: This statement is prepared for team verification and submission review.*
-
+### Verification and Sign-off
+Both team members contributed to the design, implementation, evaluation, and documentation of VERITY during the WCC Forge 48 hackathon build window. All details above reflect genuine project ownership.
