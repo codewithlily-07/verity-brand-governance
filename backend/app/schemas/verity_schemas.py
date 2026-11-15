@@ -67,6 +67,19 @@ class VisualAssetSchema(BaseModel):
     class Config:
         from_attributes = True
 
+class BrandSourceSchema(BaseModel):
+    id: Optional[str] = None
+    filename: str
+    file_type: str = "pdf"
+    page_count: int = 1
+    owner: str = "Brand Governance / Legal"
+    version: str = "v2.4"
+    status: str = "Current"
+    passages_count: int = 0
+
+    class Config:
+        from_attributes = True
+
 class BrandProfileResponse(BaseModel):
     id: str
     workspace_id: str
@@ -79,6 +92,7 @@ class BrandProfileResponse(BaseModel):
     facts: List[FactSchema] = []
     terms: List[TermSchema] = []
     visual_assets: List[VisualAssetSchema] = []
+    sources: List[BrandSourceSchema] = []
 
     class Config:
         from_attributes = True

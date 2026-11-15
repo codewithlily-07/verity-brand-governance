@@ -44,6 +44,9 @@ class UpdateProfileRequest(BaseModel):
     name: Optional[str] = None
     role: Optional[str] = None
 
+class SwitchRoleRequest(BaseModel):
+    role: str
+
 
 def hash_password(password: str) -> str:
     pwd_bytes = password.encode('utf-8')
@@ -250,7 +253,9 @@ def login_user(payload: LoginRequest, response: Response, db: Session = Depends(
 
 
 @router.get("/me")
-def get_me(user: User = Depends(get_current_user), db: Session = Depends(get_db)):
+def get_me(user: Optional[User] = Depends(get_current_user_optional), db: Session = Depends(get_db)):
+    if not user:
+        return None
     membership = db.query(Membership).filter(Membership.user_id == user.id).first()
     org_name = None
     if membership:
@@ -273,6 +278,59 @@ def get_me(user: User = Depends(get_current_user), db: Session = Depends(get_db)
 def logout_user(response: Response):
     response.delete_cookie("verity_token")
     return {"status": "logged_out"}
+
+
+@router.post("/switch-role")
+def switch_role(payload: SwitchRoleRequest, response: Response, db: Session = Depends(get_db)):
+    role = payload.role.lower()
+    if role not in ("creator", "manager", "admin", "reviewer"):
+        raise HTTPException(status_code=400, detail="Invalid role specified.")
+    email = f"{role}@verity.internal"
+    user = db.query(User).filter(User.email == email).first()
+    if not user:
+        names = {
+            "creator": "Alex Chen (Creator)",
+            "manager": "Samira Patel (Manager)",
+            "admin": "Jordan Taylor (Admin)",
+            "reviewer": "Elena Vance (Reviewer)"
+        }
+        ws = db.query(Workspace).first()
+        user = User(
+            email=email,
+            name=names.get(role, f"{role.title()} User"),
+            role=role,
+            password_hash=hash_password("Password123!"),
+            workspace_id=ws.id if ws else None,
+            is_active=True
+        )
+        db.add(user)
+        db.commit()
+        db.refresh(user)
+
+    token = create_access_token({
+        "sub": user.id,
+        "email": user.email,
+        "name": user.name,
+        "role": user.role,
+        "workspace_id": user.workspace_id
+    })
+    response.set_cookie(
+        key="verity_token",
+        value=token,
+        httponly=True,
+        max_age=ACCESS_TOKEN_EXPIRE_HOURS * 3600,
+        samesite="lax"
+    )
+    return {
+        "status": "success",
+        "user": {
+            "id": user.id,
+            "name": user.name,
+            "email": user.email,
+            "role": user.role,
+            "workspace_id": user.workspace_id
+        }
+    }
 
 
 @router.post("/forgot-password")

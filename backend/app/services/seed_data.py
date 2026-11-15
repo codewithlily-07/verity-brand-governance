@@ -1,41 +1,89 @@
 import hashlib
+import bcrypt
 from datetime import datetime, timezone, timedelta
 from sqlalchemy.orm import Session
 from backend.app.models.verity_models import (
     Workspace, BrandProfile, BrandRule, ApprovedFact, Terminology,
-    VisualAsset, SourcePassage, Submission, SubmissionVersion,
-    AnalysisRun, Finding, ReviewDecision, Comment, AuditEvent
+    VisualAsset, SourcePassage, BrandSource, User, Membership, Organisation
 )
+
+def hash_password(password: str) -> str:
+    pwd_bytes = password.encode('utf-8')
+    salt = bcrypt.gensalt(rounds=12)
+    return bcrypt.hashpw(pwd_bytes, salt).decode('utf-8')
 
 def seed_demo_workspace(db: Session, workspace_id: str) -> BrandProfile:
     """
-    Idempotently seeds the demo workspace with:
-    - Verity Learning brand profile
-    - Rules R1 to R7
+    Seeds the test workspace with:
+    - Test brand profile: "Verity Learning (Test Brand)"
+    - Rules R1 to R7 (all initialized with 0 flags)
     - Approved Facts F-01 to F-03
     - Terminology glossary
     - Visual assets
-    - Guideline passages
-    - Sample historical submissions for governance insights
+    - Guideline passages & brand sources with owner and version
+    - Seeded users for the 4 roles (Creator, Manager, Admin, Reviewer)
+    NO fake pre-made submissions or invented authors.
     """
+    org = db.query(Organisation).first()
+    if not org:
+        org = Organisation(name="Verity Governance Org", slug="verity-gov")
+        db.add(org)
+        db.flush()
+
+    ws = db.query(Workspace).filter(Workspace.id == workspace_id).first()
+    if not ws:
+        ws = Workspace(id=workspace_id, organisation_id=org.id, name="Test Brand Workspace", slug="test-brand")
+        db.add(ws)
+        db.flush()
+    elif not ws.organisation_id:
+        ws.organisation_id = org.id
+        db.flush()
+
+    # Seed the 4 official users
+    official_users = [
+        {"email": "creator@verity.internal", "name": "Alex Chen (Creator)", "role": "creator"},
+        {"email": "manager@verity.internal", "name": "Samira Patel (Manager)", "role": "manager"},
+        {"email": "admin@verity.internal", "name": "Jordan Taylor (Admin)", "role": "admin"},
+        {"email": "reviewer@verity.internal", "name": "Elena Vance (Reviewer)", "role": "reviewer"},
+    ]
+    default_pw = hash_password("Password123!")
+
+    for u_info in official_users:
+        existing_u = db.query(User).filter(User.email == u_info["email"]).first()
+        if not existing_u:
+            new_u = User(
+                email=u_info["email"],
+                name=u_info["name"],
+                role=u_info["role"],
+                password_hash=default_pw,
+                workspace_id=workspace_id,
+                is_active=True
+            )
+            db.add(new_u)
+            db.flush()
+            db.add(Membership(organisation_id=org.id, user_id=new_u.id, role=u_info["role"]))
+        else:
+            existing_u.role = u_info["role"]
+            existing_u.name = u_info["name"]
+
     profile = db.query(BrandProfile).filter(BrandProfile.workspace_id == workspace_id).first()
     if profile:
+        profile.name = "Verity Learning (Test Brand)"
+        db.commit()
         return profile
 
-    now = datetime.now(timezone.utc)
-
-    # 1. Create Brand Profile
+    # 1. Create Brand Profile (Labelled Test Brand)
     profile = BrandProfile(
         workspace_id=workspace_id,
-        name="Verity Learning",
-        tagline="Consistent. Compliant. Trustworthy.",
+        name="Verity Learning (Test Brand)",
+        tagline="Consistent. Compliant. Trustworthy. (Test Brand)",
         voice_attributes=["professional", "trustworthy", "helpful"],
         audience="learners and parents",
         palette_json=[
             {"name": "Midnight Navy", "hex": "#0A1128", "role": "primary"},
-            {"name": "Verity Gold", "hex": "#C8A35A", "role": "accent"},
-            {"name": "Ivory Light", "hex": "#FBF9F3", "role": "background"},
-            {"name": "Champagne Soft", "hex": "#F5ECD2", "role": "surface"}
+            {"name": "Verity Gold", "hex": "#D4AF37", "role": "accent"},
+            {"name": "Ivory Warm", "hex": "#F6F1E7", "role": "background"},
+            {"name": "Cream Surface", "hex": "#EFE6D2", "role": "surface"}
         ],
         neutrals_allowed=True,
         palette_tolerance=30.0
@@ -43,7 +91,7 @@ def seed_demo_workspace(db: Session, workspace_id: str) -> BrandProfile:
     db.add(profile)
     db.flush()
 
-    # 2. Add Rules (R1 - R7)
+    # 2. Add Rules (R1 - R7) with 0 initial flags
     rules_data = [
         BrandRule(
             brand_profile_id=profile.id,
@@ -55,7 +103,7 @@ def seed_demo_workspace(db: Session, workspace_id: str) -> BrandProfile:
             severity="medium",
             prefer_term="Verity Learning",
             source_ref="Brand Identity Guide §1.2",
-            times_flagged=4,
+            times_flagged=0,
             times_dismissed=0,
             times_challenged=0
         ),
@@ -70,7 +118,7 @@ def seed_demo_workspace(db: Session, workspace_id: str) -> BrandProfile:
             severity="high",
             source_ref="Regulatory Compliance Guide §3.1",
             source_excerpt="Educational providers cannot legally promise guaranteed employment or outcome percentages without accredited disclaimers.",
-            times_flagged=8,
+            times_flagged=0,
             times_dismissed=0,
             times_challenged=0
         ),
@@ -83,9 +131,9 @@ def seed_demo_workspace(db: Session, workspace_id: str) -> BrandProfile:
             rule_type="claim_policy",
             severity="high",
             source_ref="Marketing Truth in Advertising Policy §4.2",
-            times_flagged=6,
-            times_dismissed=1,
-            times_challenged=1
+            times_flagged=0,
+            times_dismissed=0,
+            times_challenged=0
         ),
         BrandRule(
             brand_profile_id=profile.id,
@@ -96,7 +144,7 @@ def seed_demo_workspace(db: Session, workspace_id: str) -> BrandProfile:
             rule_type="competitor",
             severity="high",
             source_ref="Legal & Trademark Standards §2.4",
-            times_flagged=2,
+            times_flagged=0,
             times_dismissed=0,
             times_challenged=0
         ),
@@ -104,12 +152,13 @@ def seed_demo_workspace(db: Session, workspace_id: str) -> BrandProfile:
             brand_profile_id=profile.id,
             code="R5",
             category="Messaging",
-            title="Mandatory disclaimers and unsubscribe disclosures",
-            description="Ads must include 'Terms apply.'; marketing emails must include an unsubscribe notice.",
+            title="Mandatory disclaimer for promotional enrollment offers",
+            description="All marketing and advertisements promoting enrollments must include the phrase 'Terms apply.'",
             rule_type="required_element",
-            severity="medium",
-            source_ref="Consumer Protection & CAN-SPAM Policy §5.0",
-            times_flagged=5,
+            prefer_term="Terms apply.",
+            severity="high",
+            source_ref="Regulatory Compliance Guide §1.5",
+            times_flagged=0,
             times_dismissed=0,
             times_challenged=0
         ),
@@ -117,25 +166,26 @@ def seed_demo_workspace(db: Session, workspace_id: str) -> BrandProfile:
             brand_profile_id=profile.id,
             code="R6",
             category="Tone",
-            title="Professional voice, no slang, maximum 1 exclamation mark",
-            description="Maintain a professional and trustworthy voice. Prohibit slang like 'guys' and limit exclamation marks.",
+            title="Over-casual slang and excessive exclamation marks",
+            description="Avoid informal slang like 'guys' or 'gonna', and restrict exclamation points to at most one per paragraph.",
             rule_type="regex",
+            pattern=r"\b(guys|gonna|wanna|kinda)\b|!{2,}",
             severity="low",
             source_ref="Editorial Stylebook §2.1",
-            times_flagged=12,
-            times_dismissed=5,
-            times_challenged=3 # Rules possibly unclear candidate!
+            times_flagged=0,
+            times_dismissed=0,
+            times_challenged=0
         ),
         BrandRule(
             brand_profile_id=profile.id,
             code="R7",
             category="Accessibility",
-            title="Accessibility: descriptive alt text and WCAG AA contrast (4.5:1)",
-            description="All imagery requires descriptive alt text. Text contrast against background must be at least 4.5:1.",
+            title="Descriptive link text and image text alternatives",
+            description="Hyperlinks must not use bare 'click here' or 'learn more' without identifying destination context.",
             rule_type="accessibility",
             severity="medium",
-            source_ref="Digital Accessibility Standards (WCAG 2.1 AA)",
-            times_flagged=3,
+            source_ref="Digital Accessibility Standards §5.2",
+            times_flagged=0,
             times_dismissed=0,
             times_challenged=0
         )
@@ -147,98 +197,86 @@ def seed_demo_workspace(db: Session, workspace_id: str) -> BrandProfile:
         ApprovedFact(
             brand_profile_id=profile.id,
             code="F-01",
-            name="Online Learning Platform Support",
-            statement="The platform supports online learning.",
-            source="Product Documentation v3.4 (Verified Jan 2026)",
-            category="Product Capabilities",
-            last_updated=now - timedelta(days=30),
-            status="approved"
+            name="Platform Learning Formats",
+            statement="Verity Learning supports online learning with live and recorded classes.",
+            source="Verity Learning Product Specification 2026 §2.1",
+            category="Product Facts"
         ),
         ApprovedFact(
             brand_profile_id=profile.id,
             code="F-02",
-            name="Class Formats",
-            statement="Verity Learning offers live and recorded classes.",
-            source="Curriculum Overview 2026",
-            category="Curriculum & Delivery",
-            last_updated=now - timedelta(days=20),
-            status="approved"
+            name="Learner Progress Analytics",
+            statement="Learners can track their progress in a real-time dashboard.",
+            source="Verity Learning Product Specification 2026 §4.3",
+            category="Product Facts"
         ),
         ApprovedFact(
             brand_profile_id=profile.id,
             code="F-03",
-            name="Student Progress Tracking",
-            statement="Learners can track their progress in a dashboard.",
-            source="Platform Feature Matrix Q1 2026",
-            category="Student Experience",
-            last_updated=now - timedelta(days=15),
-            status="approved"
+            name="Support Availability Hours",
+            statement="Student academic support is available Monday through Friday from 8:00 AM to 8:00 PM IST.",
+            source="Operations Manual v3.2 §1.1",
+            category="Operations Facts"
         )
     ]
     db.add_all(facts_data)
 
-    # 4. Add Terminology
+    # 4. Add Terminology Glossary
     terms_data = [
         Terminology(
             brand_profile_id=profile.id,
-            avoid="users",
-            prefer="learners",
-            context="Product & Marketing",
-            note="We center on human educational growth. Use 'learners' rather than impersonal tech terms like 'users'."
+            prefer="Verity Learning",
+            avoid="Verity learning, verity learning, Verity Edu",
+            context="Company brand name",
+            note="Always capitalize both V and L."
         ),
         Terminology(
             brand_profile_id=profile.id,
-            avoid="classes",
-            prefer="courses",
-            context="Course Catalog",
-            note="Use 'courses' when referring to full curriculum offerings; reserve 'classes' only for individual live sessions."
+            prefer="learners",
+            avoid="users, customers, clients",
+            context="Audience designation",
+            note="Use 'learners' rather than impersonal terms like 'users'."
+        ),
+        Terminology(
+            brand_profile_id=profile.id,
+            prefer="mentors",
+            avoid="tutors, trainers",
+            context="Instructional staff",
+            note="Instructors who guide classes are titled 'mentors'."
         )
     ]
     db.add_all(terms_data)
 
-    # 5. Visual Assets
-    assets_data = [
-        VisualAsset(
-            brand_profile_id=profile.id,
-            name="Midnight Navy",
-            asset_type="palette_color",
-            hex_color="#0A1128",
-            role="primary"
-        ),
-        VisualAsset(
-            brand_profile_id=profile.id,
-            name="Verity Gold",
-            asset_type="palette_color",
-            hex_color="#C8A35A",
-            role="accent"
-        ),
-        VisualAsset(
-            brand_profile_id=profile.id,
-            name="Ivory Light",
-            asset_type="palette_color",
-            hex_color="#FBF9F3",
-            role="background"
-        )
-    ]
-    db.add_all(assets_data)
+    # 5. Add Brand Source Documents
+    source1 = BrandSource(
+        brand_profile_id=profile.id,
+        filename="Verity_Learning_Brand_Identity_v2.4.pdf",
+        file_type="pdf",
+        raw_text="Verity Learning Official Brand Identity Guide. Tone is encouraging, measured, and academic. Always write 'Verity Learning' with capital V and capital L. Refer to our audience as learners rather than users or customers.",
+        page_count=18
+    )
+    source2 = BrandSource(
+        brand_profile_id=profile.id,
+        filename="Regulatory_Compliance_and_Claims_Policy_2026.docx",
+        file_type="docx",
+        raw_text="Regulatory Compliance and Truth-in-Advertising Policy. Prohibited: absolute guarantees such as 100% results. Educational outcomes vary based on individual participation. Promotional advertising requires 'Terms apply.'",
+        page_count=12
+    )
+    db.add_all([source1, source2])
+    db.flush()
 
-    # 6. Guideline Passages (For retrieval Layer 2)
+    # 6. Add Guideline Passages
     passages_data = [
         SourcePassage(
+            source_id=source1.id,
             brand_profile_id=profile.id,
-            passage_text="Verity Learning is dedicated to providing high-quality, verified educational experiences. Our platform supports online learning through interactive courseware, live mentor sessions, and structured self-paced review.",
-            page_number=1,
-            heading="Introduction & Core Mission",
-            word_count=29
+            passage_text="Never claim 100% guaranteed results, employment placement, or outcome certainty in any public ad copy. Outcomes vary by learner participation.",
+            page_number=8,
+            heading="Compliance & Claims Standards",
+            word_count=23
         ),
         SourcePassage(
-            brand_profile_id=profile.id,
-            passage_text="Marketing communications must never make unverified guarantees. Outright promises of job placement, 100% exam scores, or unconditional results are strictly prohibited by both federal guidelines and our brand charter.",
-            page_number=3,
-            heading="Claims & Compliance Standards",
-            word_count=32
-        ),
-        SourcePassage(
+            source_id=source2.id,
             brand_profile_id=profile.id,
             passage_text="Always write 'Verity Learning' with capital V and capital L. Refer to our audience as learners rather than users or customers. Tone should be encouraging yet measured.",
             page_number=4,
@@ -247,97 +285,6 @@ def seed_demo_workspace(db: Session, workspace_id: str) -> BrandProfile:
         )
     ]
     db.add_all(passages_data)
-
-    # 7. Seed Demonstration Submissions (Labeled "Demonstration data")
-    # Sub 1: Approved submission with clean history
-    sub1_content = "Verity Learning supports online learning with live and recorded classes. Learners can track their progress in a dashboard.\n\nTerms apply."
-    sub1_hash = hashlib.sha256(sub1_content.encode("utf-8")).hexdigest()
-    sub1 = Submission(
-        workspace_id=workspace_id,
-        brand_profile_id=profile.id,
-        title="Q1 Course Launch Announcement [Demonstration data]",
-        content_type="advertisement",
-        campaign="Spring 2026 Enrollments",
-        status="Approved",
-        author_name="Priya Sharma",
-        author_role="creator",
-        created_at=now - timedelta(days=3),
-        updated_at=now - timedelta(days=2)
-    )
-    db.add(sub1)
-    db.flush()
-
-    v1_1 = SubmissionVersion(
-        submission_id=sub1.id,
-        version_number=1,
-        content=sub1_content,
-        content_hash=sub1_hash,
-        created_at=now - timedelta(days=3)
-    )
-    db.add(v1_1)
-    db.flush()
-
-    dec1 = ReviewDecision(
-        submission_id=sub1.id,
-        submission_version_id=v1_1.id,
-        content_hash=sub1_hash,
-        decision="approve",
-        reviewer_name="Elena Vance",
-        reviewer_role="reviewer",
-        reason="Fully compliant with brand terminology, approved facts F-01 & F-02, and required ad disclaimer.",
-        created_at=now - timedelta(days=2)
-    )
-    db.add(dec1)
-
-    comm1 = Comment(
-        submission_id=sub1.id,
-        submission_version_id=v1_1.id,
-        user_name="Elena Vance",
-        user_role="reviewer",
-        comment_text="Great copy! Cites verified facts and includes the mandatory Terms apply disclaimer.",
-        created_at=now - timedelta(days=2)
-    )
-    db.add(comm1)
-
-    # Sub 2: In Review with resolved and pending findings
-    sub2_content = "Verity Learning offers live and recorded classes for all learners."
-    sub2_hash = hashlib.sha256(sub2_content.encode("utf-8")).hexdigest()
-    sub2 = Submission(
-        workspace_id=workspace_id,
-        brand_profile_id=profile.id,
-        title="Student Welcome Newsletter [Demonstration data]",
-        content_type="email",
-        campaign="Onboarding Series",
-        status="In Review",
-        author_name="Marcus Reed",
-        author_role="creator",
-        created_at=now - timedelta(hours=6),
-        updated_at=now - timedelta(hours=2)
-    )
-    db.add(sub2)
-    db.flush()
-
-    v2_1 = SubmissionVersion(
-        submission_id=sub2.id,
-        version_number=1,
-        content=sub2_content,
-        content_hash=sub2_hash,
-        created_at=now - timedelta(hours=6)
-    )
-    db.add(v2_1)
-    db.flush()
-
-    # Audit events
-    db.add(AuditEvent(
-        workspace_id=workspace_id,
-        submission_id=sub1.id,
-        event_type="submission_approved",
-        details_json={"version": 1, "reviewer": "Elena Vance"},
-        actor_name="Elena Vance",
-        actor_role="reviewer",
-        version_number=1,
-        timestamp=now - timedelta(days=2)
-    ))
 
     db.commit()
     return profile

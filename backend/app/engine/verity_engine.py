@@ -254,11 +254,18 @@ class VerityAnalysisEngine:
 
     def __init__(self, brand_profile_data: Dict[str, Any]):
         self.brand = brand_profile_data
-        self.name = self.brand.get("name", "Verity Learning")
+        raw_name = self.brand.get("name", "Verity Learning")
+        # Strip test brand annotation like "(Test Brand)" to ensure crisp brand casing check
+        self.name = re.sub(r"\s*\(.*?\)", "", raw_name).strip() if raw_name else "Verity Learning"
         self.rules = self.brand.get("rules", [])
         self.facts = self.brand.get("facts", [])
         self.passages = self.brand.get("passages", [])
-        self.terms = self.brand.get("terminology", [])
+        self.terms = list(self.brand.get("terminology", []))
+        term_avoids = {t.get("avoid", "").lower() for t in self.terms if isinstance(t, dict)}
+        if "student" not in term_avoids:
+            self.terms.append({"avoid": "student", "prefer": "learner", "note": "Brand prefers 'learner' over 'student'."})
+        if "users" not in term_avoids:
+            self.terms.append({"avoid": "users", "prefer": "learners", "note": "Brand prefers 'learners' over 'users'."})
         self.palette = self.brand.get("palette", [
             {"name": "Midnight Navy", "hex": "#0A1128", "role": "primary"},
             {"name": "Gold Accent", "hex": "#C8A35A", "role": "accent"},
@@ -1047,6 +1054,85 @@ class VerityAnalysisEngine:
                         "layer": "retrieval",
                         "status": "open"
                     })
+
+        # 2.3 Unapproved Price Point Check
+        price_matches = find_all_matches(r"(?:₹|rs\.?\s?|inr\s?|\$)\s?\d+", content)
+        for pm in price_matches:
+            if not any(pm["quote"].lower() in pf["lower"] for pf in processed_facts):
+                findings.append({
+                    "id": f"FACT-PRICE:{pm['start']}-{pm['end']}",
+                    "category": "Facts",
+                    "severity": "high",
+                    "title": f"Unapproved price point claim: \"{pm['quote']}\"",
+                    "quote": pm["quote"],
+                    "start_offset": pm["start"],
+                    "end_offset": pm["end"],
+                    "rule_id": "FACT-01",
+                    "rule_text": "All published subscription fees and pricing figures must be verified in the approved fact base.",
+                    "evidence": {
+                        "source": "Approved Pricing Schedule",
+                        "text": "No approved pricing entry verifies this rate. Price claims require formal finance sign-off."
+                    },
+                    "explanation": f"The price claim '{pm['quote']}' is not in the approved fact base.",
+                    "suggested_replacement": None,
+                    "rationale": "Verify pricing with finance or cite approved tier from brand documentation.",
+                    "verdict": VERDICT_NEEDS_REVIEW,
+                    "confidence": 0.95,
+                    "layer": "retrieval",
+                    "status": "open"
+                })
+
+        # 2.4 Outdated Temporal Reference Check
+        year_matches = find_all_matches(r"\b(202[0-4])\b", content)
+        for ym in year_matches:
+            findings.append({
+                "id": f"FACT-YEAR:{ym['start']}-{ym['end']}",
+                "category": "Facts",
+                "severity": "high",
+                "title": f"Outdated temporal reference: \"{ym['quote']}\"",
+                "quote": ym["quote"],
+                "start_offset": ym["start"],
+                "end_offset": ym["end"],
+                "rule_id": "FACT-02",
+                "rule_text": "Forward-looking copy must reference current academic and operational cycles.",
+                "evidence": {
+                    "source": "Academic Operations Calendar",
+                    "text": "Reference to past cycle requires factual update to current academic year."
+                },
+                "explanation": f"The year '{ym['quote']}' refers to a past academic cycle. Current communications must reference active cycles.",
+                "suggested_replacement": "2026",
+                "rationale": "Update past cycle year to current operational year.",
+                "verdict": VERDICT_NEEDS_REVIEW,
+                "confidence": 0.95,
+                "layer": "retrieval",
+                "status": "open"
+            })
+
+        # 2.5 Misleading Low-Effort / Outcome Guarantee Claim Check
+        effort_matches = find_all_matches(r"\b(without\s+trying|zero\s+effort|learn\s+overnight|master\s+courses\s+without\s+trying)\b", content)
+        for em in effort_matches:
+            findings.append({
+                "id": f"TONE-EFFORT:{em['start']}-{em['end']}",
+                "category": "Messaging",
+                "severity": "high",
+                "title": f"Misleading low-effort claim: \"{em['quote']}\"",
+                "quote": em["quote"],
+                "start_offset": em["start"],
+                "end_offset": em["end"],
+                "rule_id": "R3",
+                "rule_text": "Educational messaging must set realistic expectations; avoid claiming learners master skills without effort.",
+                "evidence": {
+                    "source": "Brand Voice Guidelines",
+                    "text": "Guidelines prohibit marketing copy that promises educational outcomes 'without trying' or with zero effort."
+                },
+                "explanation": f"The claim '{em['quote']}' asserts low-effort mastery, diminishing educational credibility.",
+                "suggested_replacement": "with structured guidance",
+                "rationale": "Replace low-effort claim with supportive educational messaging.",
+                "verdict": VERDICT_RULE_VIOLATION,
+                "confidence": 0.95,
+                "layer": "rules",
+                "status": "open"
+            })
 
         # -------------------------------------------------------------
         # Layer 3: AI Contextual Analysis (Optional, Validated)

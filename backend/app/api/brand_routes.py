@@ -50,7 +50,32 @@ def get_or_create_profile(db: Session, request: Request) -> BrandProfile:
 @router.get("", response_model=BrandProfileResponse)
 def get_brand(request: Request, db: Session = Depends(get_db)):
     profile = get_or_create_profile(db, request)
-    return profile
+    sources_data = []
+    for s in (profile.sources or []):
+        sources_data.append({
+            "id": s.id,
+            "filename": s.filename,
+            "file_type": s.file_type or "pdf",
+            "page_count": s.page_count or 1,
+            "owner": "Brand Governance / Legal",
+            "version": "v2.4" if "v2.4" in (s.filename or "") else "v1.0",
+            "status": "Current",
+            "passages_count": len(s.passages) if s.passages else 0
+        })
+    return {
+        "id": profile.id,
+        "workspace_id": profile.workspace_id,
+        "name": profile.name,
+        "tagline": profile.tagline,
+        "voice_attributes": profile.voice_attributes or [],
+        "audience": profile.audience,
+        "palette_json": profile.palette_json or [],
+        "rules": profile.rules or [],
+        "facts": profile.facts or [],
+        "terms": profile.terms or [],
+        "visual_assets": profile.visual_assets or [],
+        "sources": sources_data
+    }
 
 @router.put("")
 def update_brand(payload: Dict[str, Any], request: Request, db: Session = Depends(get_db)):

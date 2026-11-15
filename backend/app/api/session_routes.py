@@ -1,5 +1,6 @@
 from fastapi import APIRouter, Depends, Response, Request
 from sqlalchemy.orm import Session
+from backend.app.core.config import settings
 from backend.app.core.database import get_db
 from backend.app.models.verity_models import Workspace, AuditEvent
 from backend.app.services.seed_data import seed_demo_workspace
@@ -14,6 +15,21 @@ def health_check():
         "service": "VERITY",
         "version": "1.0.0",
         "timestamp": "2026-11-13T13:37:14Z"
+    }
+
+@router.get("/ai/status")
+def get_ai_status():
+    api_key_configured = bool(getattr(settings, "GEMINI_API_KEY", None) or getattr(settings, "OPENAI_API_KEY", None))
+    return {
+        "status": "ready" if api_key_configured else "fallback_mode",
+        "provider": "Google Gemini API (gemini-1.5-flash)",
+        "fallback_provider": "Deterministic Heuristic Engine",
+        "temperature": 0.0,
+        "structured_outputs": True,
+        "api_key_configured": api_key_configured,
+        "offline_layer1_rules": "Enabled (100% Deterministic)",
+        "offline_layer2_retrieval": "Enabled (Local BM25 & Grounding Search)",
+        "offline_layer3_ai": "Active with Structured JSON Schema" if api_key_configured else "Advisory Standby / Safe Fallback"
     }
 
 @router.post("/session")

@@ -9,6 +9,7 @@ from backend.app.models.verity_models import (
 from backend.app.schemas.verity_schemas import (
     ReviewDecisionRequest, ReviewDecisionResponse, CommentCreate, CommentResponse
 )
+from backend.app.api.auth_routes import get_current_user_optional
 
 router = APIRouter(prefix="/submissions", tags=["Workflow & Review"])
 
@@ -42,24 +43,35 @@ def submit_review_decision(
 
     decision_type = payload.decision.lower() # approve | reject | request_changes
 
+    # Role permission check on server first: Only reviewer, admin, or owner can decide
+    user = get_current_user_optional(request, db)
+    effective_role = user.role if user else (payload.reviewer_role or "creator")
+    if effective_role not in ["reviewer", "admin", "owner"]:
+        raise HTTPException(
+            status_code=403,
+            detail=f"Permission denied: You are acting as '{effective_role.title()}'. Switch to Authorised reviewer to sign off or reject."
+        )
+
     # Map decision to state
     target_status = "Approved" if decision_type == "approve" else ("Rejected" if decision_type == "reject" else "Changes Requested")
 
     # Validate state transition
     current_status = sub.status
-    allowed = ALLOWED_TRANSITIONS.get(current_status, [])
-    # Also allow if moving to 'In Review' then to target
-    if target_status not in allowed and current_status not in ["In Review", "Resubmitted", "Submitted"]:
+    allowed = ALLOWED_TRANSITIONS.get(current_status, ["Changes Requested", "Approved", "Rejected"])
+    # Allow reviewing from Draft, Submitted, In Review, or Resubmitted
+    if current_status in ["Draft", "Submitted"]:
+        allowed = ["In Review", "Changes Requested", "Approved", "Rejected"]
+    if target_status not in allowed and current_status not in ["In Review", "Resubmitted", "Submitted", "Draft"]:
         raise HTTPException(
             status_code=409,
             detail=f"Illegal state transition from '{current_status}' to '{target_status}'. Allowed: {allowed}"
         )
 
-    # Check reason requirement: Reason required for reject and request changes
-    if decision_type in ["reject", "request_changes"] and (not payload.reason or not payload.reason.strip()):
+    # Check reason requirement: Decision note is required for all decisions
+    if not payload.reason or not payload.reason.strip():
         raise HTTPException(
             status_code=400,
-            detail=f"A clear explanation reason is required when issuing '{decision_type}'."
+            detail=f"A clear decision note is required when submitting '{decision_type}'."
         )
 
     # Check unresolved high-severity findings for approve

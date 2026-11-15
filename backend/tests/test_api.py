@@ -21,7 +21,7 @@ def test_api_session_and_brand():
     res_b = client.get("/api/brand")
     assert res_b.status_code == 200
     b_data = res_b.json()
-    assert b_data["name"] == "Verity Learning"
+    assert "Verity Learning" in b_data["name"]
     assert len(b_data["rules"]) >= 7
     assert len(b_data["facts"]) >= 3
 
@@ -56,6 +56,8 @@ def test_api_submission_flow_and_review():
         "version_id": v_id,
         "decision": "approve",
         "reviewer_name": "Elena",
+        "reviewer_role": "reviewer",
+        "reason": "Attempting approval without resolving high severity findings",
         "override_used": False
     })
     assert res_fail_app.status_code == 400
