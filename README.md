@@ -107,7 +107,7 @@ verity/
 ### Commands
 ```bash
 # 1. Clone repository
-git clone https://github.com/vookotisowmya/verity-brand-governance.git
+git clone https://github.com/codewithlily-07/verity-brand-governance.git
 cd verity-brand-governance
 
 # 2. Virtual environment & dependencies

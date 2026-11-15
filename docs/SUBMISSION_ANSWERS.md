@@ -32,9 +32,8 @@ Gadidamalla Bhanu Rasool
 
 ### Question 4: Public Source-Code Repository URL
 ```
-https://github.com/vookotisowmya/verity-brand-governance
+https://github.com/codewithlily-07/verity-brand-governance
 ```
-*(Or your exact GitHub repository URL)*
 
 ---
 
