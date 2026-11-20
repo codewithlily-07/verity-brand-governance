@@ -71,8 +71,10 @@ export function CorrectionTransition({
       <div className="space-y-1.5 text-xs font-sans rounded-lg bg-navy/80 p-2.5 border border-navy-2">
         <div className="flex items-start gap-2">
           <span className="text-[10px] font-mono uppercase text-coral/80 mt-0.5 font-bold">Draft:</span>
-          <span className="line-through text-coral/90 bg-coral/10 px-1 py-0.5 rounded">
-            "{originalText}"
+          <span className="text-coral/90 bg-coral/10 border-b border-coral/50 px-1.5 py-0.5 rounded inline-flex items-center gap-1">
+            <span className="sr-only">Original draft: </span>
+            <span aria-hidden="true" className="font-bold text-[11px] leading-none opacity-80">−</span>
+            <span>"{originalText}"</span>
           </span>
         </div>
 

@@ -121,8 +121,10 @@ export function ProblemSection() {
                     {prob.description}
                   </p>
 
-                  <div className="p-3 rounded-xl bg-[#0B1428] border border-gray-800/80 text-xs font-mono text-coral/90 mb-4 line-through decoration-coral/60">
-                    {prob.example}
+                  <div className="p-3 rounded-xl bg-[#0B1428] border border-coral/30 text-xs font-mono text-coral/90 mb-4 border-b-2 border-b-coral/60 flex items-center gap-2">
+                    <span className="sr-only">Non-compliant draft: </span>
+                    <span aria-hidden="true" className="font-bold text-sm leading-none opacity-80">−</span>
+                    <span>{prob.example}</span>
                   </div>
                 </div>
 

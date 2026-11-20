@@ -301,8 +301,11 @@ export function BrandHubPage() {
             <tbody className="divide-y divide-[#E6DDC8]/60">
               {profile.terms?.map((t, idx) => (
                 <tr key={idx} className="hover:bg-[#F6F1E7]/40">
-                  <td className="px-6 py-3.5 font-mono font-medium text-[#B91C1C] line-through">
-                    "{t.avoid}"
+                  <td className="px-6 py-3.5 font-mono font-medium text-[#B91C1C]">
+                    <span className="inline-flex items-center gap-1.5 px-2 py-0.5 rounded bg-[#B91C1C]/10 border-b-2 border-[#B91C1C]/40">
+                      <span aria-hidden="true" className="font-bold text-[11px] leading-none opacity-80">−</span>
+                      <span>"{t.avoid}"</span>
+                    </span>
                   </td>
                   <td className="px-6 py-3.5 font-mono font-bold text-[#065F46]">
                     "{t.prefer}"

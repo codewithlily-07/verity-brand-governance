@@ -227,9 +227,15 @@ export function ProductPage({ setActivePage }) {
                 </p>
 
                 {/* Mini-UI Mockup */}
-                <div className="p-2.5 bg-[#EFE6D2]/50 rounded-xl border border-[#D4AF37]/25 font-mono text-[11px] space-y-1">
-                  <div className="line-through text-[#B91C1C]">"best learning platform"</div>
-                  <div className="text-[#065F46] font-bold">"accredited learning platform"</div>
+                <div className="p-2.5 bg-[#EFE6D2]/50 rounded-xl border border-[#D4AF37]/25 font-mono text-[11px] space-y-1.5">
+                  <div className="text-[#B91C1C] flex items-center gap-1.5">
+                    <span aria-hidden="true" className="font-bold text-[10px]">−</span>
+                    <span className="border-b border-[#B91C1C]/40 px-1 py-0.5 rounded bg-[#B91C1C]/10">"best learning platform"</span>
+                  </div>
+                  <div className="text-[#065F46] font-bold flex items-center gap-1.5">
+                    <span aria-hidden="true" className="font-bold text-[10px]">+</span>
+                    <span className="border-b border-[#065F46]/40 px-1 py-0.5 rounded bg-[#065F46]/10">"accredited learning platform"</span>
+                  </div>
                 </div>
               </div>
 

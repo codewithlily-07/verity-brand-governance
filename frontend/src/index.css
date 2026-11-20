@@ -310,22 +310,29 @@ html {
   z-index: 1;
 }
 
-/* Diff highlights for analysis pages */
+/* Diff highlights for analysis pages - Gold Refinement compliant (no strike-through) */
 .diff-del {
-  background-color: rgba(200, 65, 75, 0.18);
-  color: #E55865;
-  text-decoration: line-through;
+  background-color: rgba(220, 65, 75, 0.14);
+  color: #B91C1C;
+  border-bottom: 1.5px solid rgba(220, 65, 75, 0.55);
   padding: 0 4px;
-  border-radius: 4px;
+  border-radius: 3px;
   margin: 0 2px;
+  display: inline-flex;
+  align-items: center;
+  gap: 2px;
 }
 .diff-add {
-  background-color: rgba(46, 204, 154, 0.2);
-  color: #2ECC9A;
+  background-color: rgba(16, 185, 129, 0.16);
+  color: #085C42;
+  border-bottom: 1.5px solid rgba(16, 185, 129, 0.55);
   font-weight: 500;
   padding: 0 4px;
-  border-radius: 4px;
+  border-radius: 3px;
   margin: 0 2px;
+  display: inline-flex;
+  align-items: center;
+  gap: 2px;
 }
 
 /* Accessible Reduced Motion */

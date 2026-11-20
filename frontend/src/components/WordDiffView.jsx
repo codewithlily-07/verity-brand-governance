@@ -11,14 +11,18 @@ export function WordDiffView({ diffTokens }) {
         if (token.t === 'del') {
           return (
             <span key={idx} className="diff-del" title="Removed / Prohibited">
-              {token.v}
+              <span className="sr-only">Removed: </span>
+              <span aria-hidden="true" className="font-bold text-[11px] leading-none opacity-80 mr-0.5">−</span>
+              <span>{token.v}</span>
             </span>
           );
         }
         if (token.t === 'add') {
           return (
             <span key={idx} className="diff-add" title="Added from Approved Guidelines">
-              {token.v}
+              <span className="sr-only">Added: </span>
+              <span aria-hidden="true" className="font-bold text-[11px] leading-none opacity-80 mr-0.5">+</span>
+              <span>{token.v}</span>
             </span>
           );
         }

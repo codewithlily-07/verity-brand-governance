@@ -127,19 +127,37 @@ export function OnboardingWizard({ isOpen, onClose, setActivePage }) {
                 <span>Prefer</span>
               </div>
               <div className="flex items-center justify-between text-xs">
-                <span className="text-coral line-through font-mono">"users"</span>
+                <span className="text-coral bg-coral/15 border-b border-coral/50 px-1.5 py-0.5 rounded font-mono inline-flex items-center gap-1">
+                  <span aria-hidden="true" className="font-bold text-[10px]">−</span>
+                  <span>"users"</span>
+                </span>
                 <span className="text-gray-400">➔</span>
-                <span className="text-teal font-mono font-bold">"learners"</span>
+                <span className="text-teal bg-teal/15 border-b border-teal/50 px-1.5 py-0.5 rounded font-mono font-bold inline-flex items-center gap-1">
+                  <span aria-hidden="true" className="font-bold text-[10px]">+</span>
+                  <span>"learners"</span>
+                </span>
               </div>
               <div className="flex items-center justify-between text-xs">
-                <span className="text-coral line-through font-mono">"classes"</span>
+                <span className="text-coral bg-coral/15 border-b border-coral/50 px-1.5 py-0.5 rounded font-mono inline-flex items-center gap-1">
+                  <span aria-hidden="true" className="font-bold text-[10px]">−</span>
+                  <span>"classes"</span>
+                </span>
                 <span className="text-gray-400">➔</span>
-                <span className="text-teal font-mono font-bold">"courses"</span>
+                <span className="text-teal bg-teal/15 border-b border-teal/50 px-1.5 py-0.5 rounded font-mono font-bold inline-flex items-center gap-1">
+                  <span aria-hidden="true" className="font-bold text-[10px]">+</span>
+                  <span>"courses"</span>
+                </span>
               </div>
               <div className="flex items-center justify-between text-xs">
-                <span className="text-coral line-through font-mono">"guys" (slang)</span>
+                <span className="text-coral bg-coral/15 border-b border-coral/50 px-1.5 py-0.5 rounded font-mono inline-flex items-center gap-1">
+                  <span aria-hidden="true" className="font-bold text-[10px]">−</span>
+                  <span>"guys" (slang)</span>
+                </span>
                 <span className="text-gray-400">➔</span>
-                <span className="text-teal font-mono font-bold">"everyone"</span>
+                <span className="text-teal bg-teal/15 border-b border-teal/50 px-1.5 py-0.5 rounded font-mono font-bold inline-flex items-center gap-1">
+                  <span aria-hidden="true" className="font-bold text-[10px]">+</span>
+                  <span>"everyone"</span>
+                </span>
               </div>
             </div>
           </div>
