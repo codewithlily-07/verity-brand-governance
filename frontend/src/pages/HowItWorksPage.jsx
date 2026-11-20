@@ -1,600 +1,699 @@
-import React, { useState } from 'react';
-import { motion, useReducedMotion } from 'framer-motion';
+import React, { useState, useEffect } from 'react';
+import { motion, AnimatePresence, useReducedMotion } from 'framer-motion';
 import { 
-  Cpu, Layers, Search, FileText, CheckCircle2, AlertTriangle, 
-  HelpCircle, ShieldCheck, ArrowRight, Sparkles, UserCheck, 
-  GitCommit, Clock, FileCode, Check
+  ShieldCheck, CheckCircle2, AlertTriangle, Cpu, Layers, 
+  Search, ArrowRight, ArrowLeft, UserCheck, FileCheck, Sparkles,
+  ChevronDown, ChevronUp, RefreshCw, Lock, Hash
 } from 'lucide-react';
-import { PageSubNav } from '../components/PageSubNav';
-import { TechnicalDetailsExpander } from '../components/TechnicalDetailsExpander';
 
 export function HowItWorksPage({ setActivePage }) {
   const prefersReduced = useReducedMotion();
-  const [activeLayer, setActiveLayer] = useState(0);
+  const [activeTab, setActiveTab] = useState('layers'); // 'layers' | 'workflow' | 'labels' | 'try'
+  const [selectedLayer, setSelectedLayer] = useState(0);
+  const [techOpen, setTechOpen] = useState(false);
+  const [selectedStep, setSelectedStep] = useState(0);
 
-  const handleNav = (page) => {
-    window.scrollTo({ top: 0, behavior: 'smooth' });
-    if (setActivePage) setActivePage(page);
+  // Try it yourself state
+  const [sampleText, setSampleText] = useState(
+    "Our platform guarantees 100% results and is the best learning platform in India!"
+  );
+  const [checked, setChecked] = useState(true);
+
+  // Sync with URL hash if present
+  useEffect(() => {
+    const hash = window.location.hash.replace('#', '');
+    if (['layers', 'workflow', 'labels', 'try'].includes(hash)) {
+      setActiveTab(hash);
+    }
+  }, []);
+
+  const handleTabChange = (tabId) => {
+    setActiveTab(tabId);
+    window.history.replaceState(null, '', `#${tabId}`);
   };
 
-  const sections = [
-    { id: 'four-layers', label: 'Four Layers' },
-    { id: 'timeline', label: '5-Step Workflow' },
-    { id: 'verdict-labels', label: 'Finding Labels' },
-    { id: 'try-samples', label: 'Try It Yourself' },
-  ];
-
-  const layersData = [
+  const layers = [
     {
-      step: '01',
-      name: 'Brand Rules',
-      type: 'Deterministic Engine',
-      role: 'Analyses draft in milliseconds',
-      headline: 'Layer 1: Deterministic Syntax & Rule Matching',
-      summary: 'Catches exact prohibited terms, unapproved casing, and banned absolute guarantees instantly.',
-      input: '“Our platform guarantees 100% results and is the best in India!”',
-      output: 'Flagged: Rule R2 (absolute guarantee) & Rule R3 (unsupported superlative). Severity: High.',
-      technical: [
-        'Deterministic regular expression parsing and exact pattern matching',
-        'Normalised whitespace and Unicode casing comparisons',
-        'Runs locally and synchronously with zero network latency'
+      id: 'brand-rules',
+      number: '01',
+      title: 'Brand Rules',
+      shortLine: 'Checks your draft against your own brand rules, instantly.',
+      whatItDoes: 'Layer 01 runs deterministic regular expressions, terminology dictionaries, and pattern-matching rules in under 15 milliseconds. It catches absolute guarantees, prohibited words, missing legal disclaimers, and competitor mentions before any external AI is invoked.',
+      examplePhrase: '“guarantees 100% results”',
+      exampleContext: 'Flagged by Rule R2 (Absolute Guarantees). Corporate policy permits factual capabilities, but prohibits absolute success guarantees.',
+      whatYouSee: {
+        badge: 'Rule R2 Violation',
+        severity: 'High',
+        fix: 'Change to “supports verified learning outcomes”'
+      },
+      techDetails: [
+        'Deterministic compiled regex matching with sub-15ms execution time',
+        'Direct vocabulary and casing dictionary lookup with normalized Unicode',
+        'Zero external API dependencies; operates 100% offline with zero latency',
+        'Pre-execution prompt injection defense halts malicious inputs'
       ]
     },
     {
-      step: '02',
-      name: 'Evidence Retrieval',
-      type: 'Knowledge Retrieval',
-      role: 'Grounds claims against sources',
-      headline: 'Layer 2: Retrieval-Grounded Fact Matching',
-      summary: 'Compares draft factual assertions against your indexed company fact sheets and policy documents.',
-      input: '“Subscriptions remain at Rs. 499 for the 2024 academic cycle.”',
-      output: 'Citation Gap: No approved fact for "Rs. 499" or "2024 cycle" found in current brand vault.',
-      technical: [
-        'Vector passage retrieval matching draft claims against approved guidelines',
-        'Cosine similarity scoring against tenant-partitioned knowledge chunks',
-        'Explicit missing evidence label when similarity falls below verification threshold'
+      id: 'evidence-check',
+      number: '02',
+      title: 'Evidence Check',
+      shortLine: 'Looks every claim up in your approved facts and guideline passages.',
+      whatItDoes: 'Layer 02 grounds factual and statistical assertions against your approved brand fact repository and official source passages. When copy makes empirical claims without supporting corporate facts, it flags the missing citation immediately.',
+      examplePhrase: '“the best learning platform in India”',
+      exampleContext: 'Flagged by Rule R3 (Unsupported Superlatives). No accredited third-party benchmark or approved corporate fact exists in the brand vault.',
+      whatYouSee: {
+        badge: 'Missing Citation',
+        severity: 'High',
+        fix: 'Change to “leading online learning platform in India” or cite accredited survey'
+      },
+      techDetails: [
+        'Deterministic and BM25 keyword retrieval against approved brand statements',
+        'Exact and fuzzy Jaccard token overlap scoring against verified fact catalog',
+        'Explicit missing-evidence citation label when assertion lacks verified backing',
+        'Full tenant isolation ensuring fact sheets are never co-mingled'
       ]
     },
     {
-      step: '03',
-      name: 'AI Review',
-      type: 'Contextual AI (Advisory)',
-      role: 'Interprets subtle tone nuances',
-      headline: 'Layer 3: AI Contextual Interpretation',
-      summary: 'Detects nuanced tone discrepancies, passive voice issues, and context-dependent brand claims.',
-      input: '“Our revolutionary world-class platform lets users easily master courses without trying.”',
-      output: 'Tone advisory: "Revolutionary" and "without trying" conflict with our modest, trustworthy brand voice.',
-      technical: [
-        'Google Gemini 1.5 Flash (temperature 0.0, deterministic generation)',
-        'Server-side quote grounding check rejecting any hallucinated findings',
-        'Content treated strictly as inert data to prevent prompt injection overrides'
+      id: 'ai-review',
+      number: '03',
+      title: 'AI Review (optional)',
+      shortLine: 'Reads tone and context that fixed rules cannot catch.',
+      whatItDoes: 'Layer 03 analyzes nuanced tone, passive-aggressive framing, subtle sarcasm, and contextual brand fit using strictly bounded AI prompts. If no API key is provided or the network is unavailable, Verity operates gracefully with 100% accuracy using Layers 01 and 02.',
+      examplePhrase: '“Sign up now before it is too late, guys!”',
+      exampleContext: 'Flagged for Informal Slang & Artificial Urgency. Brand guidelines recommend an authoritative, welcoming, and professional voice.',
+      whatYouSee: {
+        badge: 'Tone Mismatch',
+        severity: 'Medium',
+        fix: 'Change to “Explore our certified curriculum today.”'
+      },
+      techDetails: [
+        'Strictly bounded JSON-schema inference enforcing pre-registered rule IDs only',
+        'Zero-hallucination guardrails: the model cannot invent new rules or fake citations',
+        'Deterministic fallback: 100% functional when offline or without external AI keys',
+        'System prompt defense blocks instructions attempting to override governance'
       ]
     },
     {
-      step: '04',
-      name: 'Human Approval',
-      type: 'Authorised Reviewer',
-      role: 'Owns the final release decision',
-      headline: 'Layer 4: Human Review & Cryptographic Sign-Off',
-      summary: 'An authorised person reviews findings, inspects cited sources, and issues the binding approval.',
-      input: 'Reviewer inspects revised version v2 with all high-severity findings resolved.',
-      output: 'Approved by Elena Vance (Reviewer). SHA-256 seal generated: 8f4e2b1a... Immutable audit record logged.',
-      technical: [
-        'Approval applies exclusively to the inspected version content hash',
-        'Cryptographic SHA-256 seal binds author, reviewer, timestamp, and text',
-        'Full compliance override log preserves exception justification'
+      id: 'human-approval',
+      number: '04',
+      title: 'Human Approval',
+      shortLine: 'A person makes the final call.',
+      whatItDoes: 'Verity never publishes copy autonomously. Authorised Reviewers inspect findings, evaluate intent-preserving corrections side-by-side, and apply a cryptographic approval stamp with an immutable SHA-256 fingerprint.',
+      examplePhrase: 'Approved Version 2 (Hash: e3b0c442...)',
+      exampleContext: 'Reviewed by Elena Vance (Authorised Reviewer) with recorded audit justification and permanent cryptographic seal.',
+      whatYouSee: {
+        badge: 'Cryptographic Seal',
+        severity: 'Approved',
+        fix: 'Ready for export to CMS, email, and social publishing channels'
+      },
+      techDetails: [
+        'Role-separated sign-off gate: Creators submit; only Reviewers/Admins can approve',
+        'SHA-256 cryptographic fingerprint calculated over normalized content and metadata',
+        'Optimistic concurrency control via integer lock_version prevents race conditions',
+        'Immutable audit event trail recorded permanently in durable storage'
       ]
     }
   ];
 
+  const steps = [
+    {
+      number: '1',
+      title: 'Set Up',
+      description: 'Define your brand rules, approved facts, terminology glossary, and designated reviewers in the Brand Hub.'
+    },
+    {
+      number: '2',
+      title: 'Submit',
+      description: 'Creators draft copy directly or import campaign text. Verity creates an immutable Version 1 with a SHA-256 digest.'
+    },
+    {
+      number: '3',
+      title: 'Check',
+      description: 'The four-tier engine scans the draft in milliseconds, grounding every empirical claim against verified facts.'
+    },
+    {
+      number: '4',
+      title: 'Fix',
+      description: 'Review inline, intent-preserving replacements. Apply verified fixes with one click to generate Version 2.'
+    },
+    {
+      number: '5',
+      title: 'Approve',
+      description: 'An authorised reviewer evaluates the side-by-side diff and issues a permanent cryptographic approval stamp.'
+    }
+  ];
+
+  const currentLayer = layers[selectedLayer];
+
   return (
-    <div className="min-h-screen text-[#F7F2E7] select-none">
-      
-      {/* ==================================================
-          SECTION 1: HERO (NAVY #0A1230, Max 45vh)
-          ================================================== */}
+    <div className="w-full bg-[#FAF8F2] text-[#14203D] min-h-screen">
+
+      {/* =========================================================================
+          HERO SECTION: Midnight-to-Navy gradient with Soft Gold Glow (NO BLUE)
+          ========================================================================= */}
       <section 
-        className="relative pt-24 pb-14 px-4 sm:px-6 lg:px-8 text-center border-b border-[#D4AF37]/20 flex flex-col items-center justify-center min-h-[38vh] max-h-[45vh]"
-        style={{ backgroundColor: '#0A1230' }}
+        className="relative pt-16 pb-20 px-4 sm:px-6 lg:px-8 text-center overflow-hidden"
+        style={{
+          background: 'linear-gradient(180deg, #0A1226 0%, #101B35 100%)',
+          color: '#F4F1E8'
+        }}
       >
-        <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-[#050A1F] border border-[#D4AF37]/40 text-xs font-mono text-[#F3D98B] mb-3">
-          <Cpu className="w-3.5 h-3.5 text-[#D4AF37]" />
-          <span>FOUR-LAYER VERIFICATION PIPELINE</span>
-        </div>
-        
-        <h1 className="text-3xl sm:text-5xl font-serif font-bold text-white mb-3 tracking-tight">
-          How Verity <span className="text-gold-shimmer">Works</span>
-        </h1>
-        
-        <p className="text-[17px] text-[#F7F2E7]/85 max-w-[65ch] mx-auto font-sans leading-relaxed mb-6">
-          See how Verity checks a draft, finds the evidence, and leaves the decision to a person.
-        </p>
+        {/* Soft gold ambient glow (top right) - NO BLUE */}
+        <div 
+          className="absolute -top-24 right-0 w-96 h-96 rounded-full pointer-events-none opacity-20 blur-3xl"
+          style={{ background: 'radial-gradient(circle, #E2B857 0%, transparent 70%)' }}
+        />
 
-        <div>
-          <button
-            type="button"
-            onClick={() => handleNav('new-review')}
-            className="btn-gold-sweep px-7 py-3 rounded-xl font-bold text-sm text-[#050814] shadow-gold-glow inline-flex items-center gap-2 transition-all hover:scale-105 active:scale-95 cursor-pointer"
-            style={{
-              background: 'linear-gradient(135deg, #F3D98B, #D4AF37 50%, #A67C00)',
-            }}
-          >
-            <span>Launch Live Pipeline Demo</span>
-            <ArrowRight className="w-4 h-4 text-[#050814]" />
-          </button>
-        </div>
-      </section>
-
-      {/* Sticky Sub-navigation */}
-      <PageSubNav sections={sections} />
-
-      {/* ==================================================
-          SECTION 2: FOUR LAYERS INTERACTIVE STEPPER (CHARCOAL #0B0E14)
-          Dark elevated cards, active gold tab, travelling light pulse, technical expander.
-          Note: Layers 1-3 analyse, Layer 4 is the human decision.
-          ================================================== */}
-      <section 
-        id="four-layers"
-        className="py-24 relative overflow-hidden"
-        style={{ backgroundColor: '#0B0E14' }}
-      >
-        <div className="max-w-[1200px] mx-auto px-4 sm:px-6 lg:px-8">
-          
-          <div className="text-center max-w-2xl mx-auto mb-14">
-            <span className="text-xs font-mono font-bold tracking-widest text-[#D4AF37] uppercase block mb-2">
-              PIPELINE ARCHITECTURE
-            </span>
-            <h2 className="text-2xl sm:text-4xl font-serif font-bold text-white mb-3">
-              Four layers from analysis to decision
-            </h2>
-            <div className="title-gold-underline mx-auto mb-3" />
-            <p className="text-[17px] text-[#F7F2E7]/85 font-sans leading-relaxed">
-              Layers 1 to 3 perform automated analysis; Layer 4 is the human authority gate.
-            </p>
+        <div className="max-w-4xl mx-auto relative z-10">
+          {/* Eyebrow Chip */}
+          <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-[#17254A] border border-[#E2B857]/30 text-[#E2B857] text-xs font-semibold tracking-wider uppercase mb-5">
+            <ShieldCheck className="w-4 h-4 text-[#E2B857]" />
+            <span>4-Tier Governance Architecture</span>
           </div>
 
-          {/* Stepper Tabs Bar */}
-          <div className="relative mb-10">
-            <div className="hidden md:block absolute top-1/2 left-0 right-0 h-[2px] bg-gray-800 -translate-y-1/2 z-0" />
-            
-            <div className="grid grid-cols-2 md:grid-cols-4 gap-3 relative z-10">
-              {layersData.map((layer, idx) => {
-                const isActive = activeLayer === idx;
+          <h1 className="font-serif text-4xl sm:text-5xl lg:text-6xl font-bold tracking-tight text-[#F4F1E8] mb-5 leading-tight">
+            How Verity Works
+          </h1>
+
+          <p className="text-lg sm:text-xl text-[#D5DBEE] max-w-2xl mx-auto mb-10 leading-relaxed font-sans">
+            From raw draft to cryptographically sealed publication in four disciplined verification layers.
+          </p>
+
+          {/* Segmented Tab Controls */}
+          <div className="inline-flex p-1.5 rounded-2xl bg-[#0A1226]/80 border border-[#E2B857]/30 backdrop-blur-md shadow-2xl max-w-full overflow-x-auto">
+            {[
+              { id: 'layers', label: 'Four Layers' },
+              { id: 'workflow', label: '5-Step Workflow' },
+              { id: 'labels', label: 'Finding Labels' },
+              { id: 'try', label: 'Try It Yourself' }
+            ].map((tab) => {
+              const isActive = activeTab === tab.id;
+              return (
+                <button
+                  key={tab.id}
+                  onClick={() => handleTabChange(tab.id)}
+                  className={`px-5 py-2.5 rounded-xl text-sm sm:text-[15px] font-semibold transition-all duration-200 whitespace-nowrap outline-none focus-visible:ring-2 focus-visible:ring-[#E2B857] ${
+                    isActive
+                      ? 'bg-[#E2B857] text-[#0A1226] font-bold shadow-md'
+                      : 'text-[#F4F1E8] hover:text-[#F3EAD3] hover:bg-white/5'
+                  }`}
+                >
+                  {tab.label}
+                </button>
+              );
+            })}
+          </div>
+        </div>
+
+        {/* 48px Smooth Gradient Blend from Navy to Ivory */}
+        <div 
+          className="absolute bottom-0 left-0 right-0 h-12 pointer-events-none"
+          style={{
+            background: 'linear-gradient(180deg, transparent 0%, #FAF8F2 100%)'
+          }}
+        />
+      </section>
+
+      {/* =========================================================================
+          TAB 1: FOUR LAYERS (Warm Ivory Band #FAF8F2)
+          ========================================================================= */}
+      {activeTab === 'layers' && (
+        <section className="py-16 px-4 sm:px-6 lg:px-8 max-w-6xl mx-auto">
+          {/* Row of 4 Stepper Cards */}
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-10">
+            {layers.map((layer, idx) => {
+              const isSelected = selectedLayer === idx;
+              return (
+                <button
+                  key={layer.id}
+                  onClick={() => setSelectedLayer(idx)}
+                  className={`text-left p-5 rounded-2xl border transition-all duration-200 outline-none focus-visible:ring-2 focus-visible:ring-[#8A6A24] cursor-pointer ${
+                    isSelected
+                      ? 'bg-[#FFFFFF] border-[#E2B857] shadow-lg ring-1 ring-[#E2B857]/60'
+                      : 'bg-[#FFFFFF]/70 border-[#E6DDC8] hover:bg-[#FFFFFF] hover:border-[#E2B857]/40 shadow-sm'
+                  }`}
+                >
+                  <div className="flex items-center justify-between mb-3">
+                    <span className={`text-xs font-bold font-sans uppercase tracking-wider ${isSelected ? 'text-[#8A6A24]' : 'text-[#4A5675]'}`}>
+                      Layer {layer.number}
+                    </span>
+                    <span className={`w-6 h-6 rounded-full flex items-center justify-center text-xs font-bold ${
+                      isSelected ? 'bg-[#E2B857] text-[#0A1226]' : 'bg-[#FAF8F2] text-[#4A5675] border border-[#E6DDC8]'
+                    }`}>
+                      {idx + 1}
+                    </span>
+                  </div>
+                  <h2 className="font-serif text-lg font-bold text-[#14203D] mb-1">
+                    {layer.title}
+                  </h2>
+                  <p className="text-xs text-[#4A5675] leading-relaxed">
+                    {layer.shortLine}
+                  </p>
+                </button>
+              );
+            })}
+          </div>
+
+          {/* Selected Layer "Paper" Card (White on Ivory) */}
+          <div className="bg-[#FFFFFF] rounded-3xl border border-[#E6DDC8] p-8 sm:p-10 shadow-md">
+            <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 pb-6 mb-6 border-b border-[#E6DDC8]/60">
+              <div>
+                <span className="text-xs font-bold uppercase tracking-wider text-[#8A6A24] font-sans">
+                  Detailed Layer Specification — Layer {currentLayer.number}
+                </span>
+                <h3 className="font-serif text-2xl sm:text-3xl font-bold text-[#14203D] mt-1">
+                  {currentLayer.title}
+                </h3>
+              </div>
+              <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-[#F3EAD3] border border-[#E2B857]/40 text-[#8A6A24] text-xs font-semibold">
+                <CheckCircle2 className="w-4 h-4 text-[#1E9E78]" />
+                <span>Deterministic Integrity Active</span>
+              </div>
+            </div>
+
+            {/* What it does */}
+            <div className="mb-8">
+              <h4 className="text-sm font-bold uppercase tracking-wider text-[#14203D] mb-2 font-sans">
+                What It Does
+              </h4>
+              <p className="text-[17px] text-[#4A5675] leading-relaxed max-w-4xl font-sans">
+                {currentLayer.whatItDoes}
+              </p>
+            </div>
+
+            {/* Example (highlighted phrase) & What you see */}
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
+              <div className="p-6 rounded-2xl bg-[#FAF8F2] border border-[#E6DDC8]">
+                <h5 className="text-xs font-bold uppercase tracking-wider text-[#8A6A24] mb-2 font-sans">
+                  Example Input Phrase
+                </h5>
+                <p className="font-serif text-lg text-[#14203D] italic mb-2">
+                  {currentLayer.examplePhrase}
+                </p>
+                <p className="text-xs text-[#4A5675] leading-relaxed">
+                  {currentLayer.exampleContext}
+                </p>
+              </div>
+
+              <div className="p-6 rounded-2xl bg-[#FAF8F2] border border-[#E6DDC8] flex flex-col justify-between">
+                <div>
+                  <h5 className="text-xs font-bold uppercase tracking-wider text-[#14203D] mb-2 font-sans">
+                    What You See In The Review Centre
+                  </h5>
+                  <div className="inline-flex items-center gap-2 px-3 py-1 rounded-lg bg-[#FAF8F2] border border-[#E2B857]/40 text-[#14203D] text-xs font-semibold mb-3">
+                    <span className="w-2 h-2 rounded-full bg-[#D64550]" />
+                    <span>{currentLayer.whatYouSee.badge}</span>
+                    <span className="text-[#8A6A24] font-bold">({currentLayer.whatYouSee.severity})</span>
+                  </div>
+                </div>
+                <div className="pt-3 border-t border-[#E6DDC8]/60 text-xs text-[#1E9E78] font-medium flex items-center gap-1.5">
+                  <Check className="w-4 h-4 text-[#1E9E78] flex-shrink-0" />
+                  <span>Proposed fix: {currentLayer.whatYouSee.fix}</span>
+                </div>
+              </div>
+            </div>
+
+            {/* Collapsed Technical Details Accordion */}
+            <div className="border border-[#E6DDC8] rounded-2xl overflow-hidden">
+              <button
+                type="button"
+                onClick={() => setTechOpen(!techOpen)}
+                className="w-full px-6 py-4 bg-[#FAF8F2] hover:bg-[#F3EAD3]/50 transition-colors flex items-center justify-between text-left text-sm font-semibold text-[#14203D] outline-none focus-visible:ring-2 focus-visible:ring-[#8A6A24]"
+                aria-expanded={techOpen}
+              >
+                <span className="flex items-center gap-2 font-serif text-base font-bold">
+                  <Cpu className="w-4 h-4 text-[#8A6A24]" />
+                  Technical Specifications & Engineering Contracts
+                </span>
+                {techOpen ? <ChevronUp className="w-5 h-5 text-[#8A6A24]" /> : <ChevronDown className="w-5 h-5 text-[#8A6A24]" />}
+              </button>
+
+              {techOpen && (
+                <div className="p-6 bg-[#FFFFFF] border-t border-[#E6DDC8] text-sm text-[#4A5675] space-y-2.5 font-sans">
+                  {currentLayer.techDetails.map((detail, dIdx) => (
+                    <div key={dIdx} className="flex items-start gap-2.5">
+                      <div className="w-1.5 h-1.5 rounded-full bg-[#8A6A24] mt-2 flex-shrink-0" />
+                      <span className="leading-relaxed">{detail}</span>
+                    </div>
+                  ))}
+                </div>
+              )}
+            </div>
+          </div>
+        </section>
+      )}
+
+      {/* =========================================================================
+          TAB 2: 5-STEP WORKFLOW (Deep Slate Navy Band #101B35)
+          ========================================================================= */}
+      {activeTab === 'workflow' && (
+        <section 
+          className="py-16 px-4 sm:px-6 lg:px-8 text-[#F4F1E8]"
+          style={{ backgroundColor: '#101B35' }}
+        >
+          <div className="max-w-5xl mx-auto">
+            <div className="text-center mb-12">
+              <span className="text-xs font-semibold uppercase tracking-wider text-[#E2B857]">
+                Continuous Audit Trail
+              </span>
+              <h2 className="font-serif text-3xl sm:text-4xl font-bold text-[#F4F1E8] mt-1 mb-3">
+                The 5-Step Governance Lifecycle
+              </h2>
+              <p className="text-base text-[#D5DBEE] max-w-xl mx-auto font-sans">
+                Every piece of copy passes through five transparent checkpoints from authoring to publication.
+              </p>
+            </div>
+
+            {/* Stepper with 5 Numbered Gold Circles */}
+            <div className="flex items-center justify-between max-w-3xl mx-auto mb-12 px-2 overflow-x-auto pb-4">
+              {steps.map((st, sIdx) => {
+                const isSelected = selectedStep === sIdx;
                 return (
-                  <button
-                    key={layer.step}
-                    type="button"
-                    onClick={() => setActiveLayer(idx)}
-                    className={`p-4 rounded-2xl text-left transition-all border cursor-pointer ${
-                      isActive 
-                        ? 'bg-[#111827] border-[#D4AF37] shadow-[0_0_20px_rgba(212,175,55,0.3)] scale-[1.02]' 
-                        : 'bg-[#0B0E14] border-gray-700 hover:border-[#D4AF37]/50'
-                    }`}
-                  >
-                    <div className="flex items-center justify-between mb-1">
-                      <span className={`font-mono text-xs font-bold ${isActive ? 'text-[#F3D98B]' : 'text-[#D4AF37]'}`}>
-                        Layer {layer.step}
-                      </span>
-                      {idx === 3 && (
-                        <span className="text-[10px] px-2 py-0.5 rounded-full bg-[#2ECC9A]/20 text-[#2ECC9A] font-bold">
-                          Human
-                        </span>
-                      )}
-                    </div>
-                    <div className={`font-serif text-base font-bold ${isActive ? 'text-white' : 'text-[#F7F2E7]'}`}>
-                      {layer.name}
-                    </div>
-                    <div className="text-[12px] text-[#E2E8F0] mt-0.5 font-sans">
-                      {layer.role}
-                    </div>
-                  </button>
+                  <div key={sIdx} className="flex flex-col items-center cursor-pointer group px-2" onClick={() => setSelectedStep(sIdx)}>
+                    <button
+                      className={`w-12 h-12 rounded-full flex items-center justify-center font-bold text-base transition-all duration-200 outline-none focus-visible:ring-2 focus-visible:ring-[#E2B857] ${
+                        isSelected 
+                          ? 'bg-[#E2B857] text-[#0A1226] shadow-[0_0_20px_rgba(226,184,87,0.5)] scale-110' 
+                          : 'bg-[#17254A] border border-[#E2B857]/40 text-[#F4F1E8] hover:border-[#E2B857]'
+                      }`}
+                      aria-label={`Step ${st.number}: ${st.title}`}
+                    >
+                      {st.number}
+                    </button>
+                    <span className={`text-xs mt-2 font-medium tracking-wide whitespace-nowrap ${isSelected ? 'text-[#E2B857] font-bold' : 'text-[#D5DBEE]'}`}>
+                      {st.title}
+                    </span>
+                  </div>
                 );
               })}
             </div>
-          </div>
 
-          {/* Active Layer Details Card */}
-          <div className="bg-[#111827] rounded-3xl p-7 sm:p-10 border border-[#D4AF37]/35 shadow-luxury">
-            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-6 pb-4 border-b border-gray-800">
-              <div>
-                <span className="text-xs font-mono text-[#D4AF37] uppercase tracking-wider block mb-1">
-                  {layersData[activeLayer].type}
-                </span>
-                <h3 className="font-serif text-2xl font-bold text-white">
-                  {layersData[activeLayer].headline}
-                </h3>
-              </div>
-              <span className="text-xs px-3 py-1 rounded-full bg-gray-800 text-gray-300 font-mono self-start">
-                {activeLayer < 3 ? 'Automated Analysis Tier' : 'Authorised Human Gate'}
+            {/* Selected Step Card (Raised Navy Card) */}
+            <div className="bg-[#17254A] rounded-3xl border border-[#E2B857]/40 p-8 sm:p-10 shadow-2xl max-w-3xl mx-auto text-center">
+              <span className="text-xs font-bold uppercase tracking-widest text-[#E2B857] font-sans">
+                Stage 0{steps[selectedStep].number} of 05
               </span>
-            </div>
+              <h3 className="font-serif text-2xl sm:text-3xl font-bold text-[#F4F1E8] mt-2 mb-4">
+                {steps[selectedStep].title}
+              </h3>
+              <p className="text-lg text-[#D5DBEE] leading-relaxed max-w-xl mx-auto mb-8 font-sans">
+                {steps[selectedStep].description}
+              </p>
 
-            <p className="text-[17px] text-[#F7F2E7]/90 font-sans leading-relaxed mb-8 max-w-[68ch]">
-              {layersData[activeLayer].summary}
-            </p>
-
-            {/* Input / Output Example Panel */}
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-5 mb-6">
-              <div className="p-4 rounded-2xl bg-[#05070F] border border-gray-800">
-                <span className="text-xs font-mono text-gray-400 uppercase block mb-1">
-                  Example Input (Draft Text)
-                </span>
-                <p className="text-sm font-sans text-gray-200 leading-relaxed italic">
-                  {layersData[activeLayer].input}
-                </p>
+              {/* Step Navigation Controls */}
+              <div className="flex items-center justify-center gap-4">
+                <button
+                  type="button"
+                  onClick={() => setSelectedStep(prev => Math.max(0, prev - 1))}
+                  disabled={selectedStep === 0}
+                  className="px-5 py-2.5 rounded-xl border border-[#E2B857]/50 text-[#F4F1E8] text-sm font-semibold hover:bg-white/5 disabled:opacity-30 disabled:cursor-not-allowed flex items-center gap-2 transition-colors"
+                >
+                  <ArrowLeft className="w-4 h-4" />
+                  <span>Previous</span>
+                </button>
+                <button
+                  type="button"
+                  onClick={() => setSelectedStep(prev => Math.min(steps.length - 1, prev + 1))}
+                  disabled={selectedStep === steps.length - 1}
+                  className="px-5 py-2.5 rounded-xl bg-[#E2B857] text-[#0A1226] text-sm font-bold hover:brightness-105 disabled:opacity-30 disabled:cursor-not-allowed flex items-center gap-2 transition-all shadow-md"
+                >
+                  <span>Next Step</span>
+                  <ArrowRight className="w-4 h-4 text-[#0A1226]" />
+                </button>
               </div>
-
-              <div className="p-4 rounded-2xl bg-[#05070F] border border-[#D4AF37]/30">
-                <span className="text-xs font-mono text-[#F3D98B] uppercase block mb-1">
-                  Layer Output / Action
-                </span>
-                <p className="text-sm font-sans text-white leading-relaxed font-medium">
-                  {layersData[activeLayer].output}
-                </p>
-              </div>
             </div>
-
-            {/* Technical Expander */}
-            <TechnicalDetailsExpander title={`Technical specifications for Layer ${activeLayer + 1}`}>
-              {layersData[activeLayer].technical.map((item, i) => (
-                <div key={i}>• {item}</div>
-              ))}
-            </TechnicalDetailsExpander>
-
           </div>
+        </section>
+      )}
 
-        </div>
-      </section>
+      {/* =========================================================================
+          TAB 3: FINDING LABELS (Soft Champagne Band #F3EAD3)
+          ========================================================================= */}
+      {activeTab === 'labels' && (
+        <section 
+          className="py-16 px-4 sm:px-6 lg:px-8 text-[#14203D]"
+          style={{ backgroundColor: '#F3EAD3' }}
+        >
+          <div className="max-w-6xl mx-auto">
+            <div className="text-center mb-12">
+              <span className="text-xs font-semibold uppercase tracking-wider text-[#8A6A24]">
+                Transparent Findings Taxonomy
+              </span>
+              <h2 className="font-serif text-3xl sm:text-4xl font-bold text-[#14203D] mt-1 mb-3">
+                Clear Labels, Zero Ambiguity
+              </h2>
+              <p className="text-base text-[#4A5675] max-w-xl mx-auto font-sans">
+                Every flagged passage is classified into one of three unambiguous categories with verifiable evidence citations.
+              </p>
+            </div>
 
-      {/* ==================================================
-          SECTION 3: 5-STEP WORKFLOW TIMELINE (IVORY #F7F2E7)
-          High-contrast white cards, dark text, role chips, gold progress line.
-          ================================================== */}
+            {/* 3 White Paper Cards on Champagne */}
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-12">
+              {/* Card 1: Confirmed Rule Violation */}
+              <div className="bg-[#FFFFFF] rounded-2xl border border-[#E6DDC8] p-7 shadow-sm flex flex-col justify-between">
+                <div>
+                  <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-[#D64550]/15 text-[#D64550] border border-[#D64550]/30 text-xs font-bold mb-4">
+                    <AlertTriangle className="w-3.5 h-3.5" />
+                    <span>Confirmed Rule Violation</span>
+                  </div>
+                  <h3 className="font-serif text-xl font-bold text-[#14203D] mb-2">
+                    Deterministic Breach
+                  </h3>
+                  <p className="text-sm text-[#4A5675] leading-relaxed mb-4">
+                    The copy violates an explicit, registered brand rule such as banned terminology, missing disclaimer, or competitor disparagement.
+                  </p>
+                </div>
+                <div className="p-4 rounded-xl bg-[#FAF8F2] border border-[#E6DDC8] text-xs">
+                  <span className="font-bold text-[#D64550] block mb-1">Example Flag:</span>
+                  <p className="italic text-[#14203D]">“We guarantee 100% placement within 30 days.”</p>
+                  <span className="text-[11px] text-[#4A5675] mt-1 block">Rule R2: Absolute Guarantees</span>
+                </div>
+              </div>
+
+              {/* Card 2: Evidence-Backed Concern */}
+              <div className="bg-[#FFFFFF] rounded-2xl border border-[#E6DDC8] p-7 shadow-sm flex flex-col justify-between">
+                <div>
+                  <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-[#D99A2B]/15 text-[#8A6A24] border border-[#D99A2B]/30 text-xs font-bold mb-4">
+                    <Search className="w-3.5 h-3.5" />
+                    <span>Evidence-Backed Concern</span>
+                  </div>
+                  <h3 className="font-serif text-xl font-bold text-[#14203D] mb-2">
+                    Missing Corporate Fact
+                  </h3>
+                  <p className="text-sm text-[#4A5675] leading-relaxed mb-4">
+                    An empirical metric or factual claim lacks grounding in your approved fact sheets, requiring verification before release.
+                  </p>
+                </div>
+                <div className="p-4 rounded-xl bg-[#FAF8F2] border border-[#E6DDC8] text-xs">
+                  <span className="font-bold text-[#8A6A24] block mb-1">Example Flag:</span>
+                  <p className="italic text-[#14203D]">“Over 500,000 active students enrolled.”</p>
+                  <span className="text-[11px] text-[#4A5675] mt-1 block">No verified fact matching “500,000 active”</span>
+                </div>
+              </div>
+
+              {/* Card 3: Needs Human Review */}
+              <div className="bg-[#FFFFFF] rounded-2xl border border-[#E6DDC8] p-7 shadow-sm flex flex-col justify-between">
+                <div>
+                  <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-[#1E9E78]/15 text-[#1E9E78] border border-[#1E9E78]/30 text-xs font-bold mb-4">
+                    <UserCheck className="w-3.5 h-3.5" />
+                    <span>Needs Human Review</span>
+                  </div>
+                  <h3 className="font-serif text-xl font-bold text-[#14203D] mb-2">
+                    Tone & Context Nuance
+                  </h3>
+                  <p className="text-sm text-[#4A5675] leading-relaxed mb-4">
+                    Nuanced phrasing that may sound overly casual, aggressive, or ambiguous. Human editorial judgment is requested.
+                  </p>
+                </div>
+                <div className="p-4 rounded-xl bg-[#FAF8F2] border border-[#E6DDC8] text-xs">
+                  <span className="font-bold text-[#1E9E78] block mb-1">Example Flag:</span>
+                  <p className="italic text-[#14203D]">“Don’t miss out on this crazy opportunity!”</p>
+                  <span className="text-[11px] text-[#4A5675] mt-1 block">Tone guideline: authoritative and calm</span>
+                </div>
+              </div>
+            </div>
+
+            {/* Severity Legend with High Contrast Icons */}
+            <div className="bg-[#FFFFFF] rounded-2xl border border-[#E6DDC8] p-6 max-w-3xl mx-auto flex flex-col sm:flex-row items-center justify-around gap-4 text-xs font-sans">
+              <div className="flex items-center gap-2">
+                <span className="text-[#D64550] font-black text-sm">▲</span>
+                <span className="font-bold text-[#14203D]">High Severity:</span>
+                <span className="text-[#4A5675]">Blocks approval directly</span>
+              </div>
+              <div className="flex items-center gap-2">
+                <span className="text-[#8A6A24] font-black text-sm">◆</span>
+                <span className="font-bold text-[#14203D]">Medium Severity:</span>
+                <span className="text-[#4A5675]">Requires author review</span>
+              </div>
+              <div className="flex items-center gap-2">
+                <span className="text-[#1E9E78] font-black text-sm">●</span>
+                <span className="font-bold text-[#14203D]">Low Severity:</span>
+                <span className="text-[#4A5675]">Advisory editorial note</span>
+              </div>
+            </div>
+          </div>
+        </section>
+      )}
+
+      {/* =========================================================================
+          TAB 4: TRY IT YOURSELF (Midnight Band #0A1226)
+          ========================================================================= */}
+      {activeTab === 'try' && (
+        <section 
+          className="py-16 px-4 sm:px-6 lg:px-8 text-[#F4F1E8]"
+          style={{ backgroundColor: '#0A1226' }}
+        >
+          <div className="max-w-4xl mx-auto">
+            <div className="text-center mb-10">
+              <span className="text-xs font-semibold uppercase tracking-wider text-[#E2B857]">
+                Live Interactive Demonstration
+              </span>
+              <h2 className="font-serif text-3xl sm:text-4xl font-bold text-[#F4F1E8] mt-1 mb-3">
+                Experience Real-Time Governance
+              </h2>
+              <p className="text-base text-[#D5DBEE] max-w-xl mx-auto font-sans">
+                Test how Verity analyzes marketing copy, extracts citations, and surfaces intent-preserving fixes.
+              </p>
+            </div>
+
+            {/* Interactive Preview Container */}
+            <div className="bg-[#101B35] rounded-3xl border border-[#E2B857]/40 p-6 sm:p-8 shadow-2xl">
+              <div className="flex items-center justify-between mb-3 text-xs text-[#D5DBEE]">
+                <span className="font-semibold text-[#E2B857]">Input Draft Copy:</span>
+                <span className="italic">Sample Ad Copy (Social Campaign)</span>
+              </div>
+
+              {/* Text Area */}
+              <textarea
+                value={sampleText}
+                onChange={(e) => {
+                  setSampleText(e.target.value);
+                  setChecked(false);
+                }}
+                rows={3}
+                className="w-full p-4 rounded-xl bg-[#0A1226] border border-[#E2B857]/40 text-[#F4F1E8] text-base focus:ring-2 focus:ring-[#E2B857] focus:outline-none mb-4 font-sans leading-relaxed"
+                placeholder="Paste marketing copy here..."
+              />
+
+              <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 mb-6">
+                <span className="text-xs text-[#D5DBEE]">
+                  Click to run deterministic Layer 01 & Layer 02 verification:
+                </span>
+                <button
+                  type="button"
+                  onClick={() => setChecked(true)}
+                  className="px-6 py-2.5 min-h-[44px] rounded-xl bg-[#E2B857] text-[#0A1226] font-bold text-sm hover:brightness-105 active:scale-[0.98] transition-all flex items-center justify-center gap-2 shadow-md"
+                >
+                  <RefreshCw className="w-4 h-4 text-[#0A1226]" />
+                  <span>Check This Text</span>
+                </button>
+              </div>
+
+              {/* Findings Results Preview */}
+              {checked && (
+                <div className="space-y-3 pt-4 border-t border-white/10">
+                  <div className="flex items-center justify-between text-xs text-[#D5DBEE] mb-1">
+                    <span className="font-bold text-[#E2B857] uppercase tracking-wider">
+                      Analysis Results: 2 High-Severity Findings Detected
+                    </span>
+                    <span className="text-[#1E9E78] font-semibold">Latency: 12ms</span>
+                  </div>
+
+                  {/* Finding 1 */}
+                  <div className="p-4 rounded-xl bg-[#17254A] border border-[#D64550]/40 flex items-start gap-3 text-xs">
+                    <AlertTriangle className="w-5 h-5 text-[#D64550] flex-shrink-0 mt-0.5" />
+                    <div className="flex-grow">
+                      <div className="flex items-center justify-between">
+                        <span className="font-bold text-[#F4F1E8]">Rule R2: Absolute Guarantees</span>
+                        <span className="px-2 py-0.5 rounded bg-[#D64550]/20 text-[#D64550] font-bold text-[10px]">▲ HIGH</span>
+                      </div>
+                      <p className="text-[#D5DBEE] mt-1">
+                        Flagged text: <span className="text-[#E2B857] underline">“guarantees 100% results”</span>. Brand guidelines prohibit absolute success claims.
+                      </p>
+                      <span className="block text-[#1E9E78] font-semibold mt-1.5">
+                        Suggested replacement: “supports verified learning outcomes”
+                      </span>
+                    </div>
+                  </div>
+
+                  {/* Finding 2 */}
+                  <div className="p-4 rounded-xl bg-[#17254A] border border-[#D64550]/40 flex items-start gap-3 text-xs">
+                    <AlertTriangle className="w-5 h-5 text-[#D64550] flex-shrink-0 mt-0.5" />
+                    <div className="flex-grow">
+                      <div className="flex items-center justify-between">
+                        <span className="font-bold text-[#F4F1E8]">Rule R3: Unsupported Superlative</span>
+                        <span className="px-2 py-0.5 rounded bg-[#D64550]/20 text-[#D64550] font-bold text-[10px]">▲ HIGH</span>
+                      </div>
+                      <p className="text-[#D5DBEE] mt-1">
+                        Flagged text: <span className="text-[#E2B857] underline">“best learning platform in India”</span>. No verified third-party accreditation on record.
+                      </p>
+                      <span className="block text-[#1E9E78] font-semibold mt-1.5">
+                        Suggested replacement: “leading online learning platform in India”
+                      </span>
+                    </div>
+                  </div>
+                </div>
+              )}
+
+              {/* Call to Action Link to Full Workspace */}
+              <div className="mt-8 pt-6 border-t border-white/10 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+                <span className="text-xs text-[#D5DBEE]">
+                  Ready to test with your own brand rules and guidelines?
+                </span>
+                <button
+                  type="button"
+                  onClick={() => {
+                    window.scrollTo({ top: 0, behavior: 'smooth' });
+                    setActivePage('dashboard');
+                  }}
+                  className="px-5 py-2.5 min-h-[44px] rounded-xl border border-[#E2B857] text-[#E2B857] hover:bg-[#E2B857]/15 hover:text-[#F3EAD3] font-bold text-sm transition-all flex items-center justify-center gap-2"
+                >
+                  <span>Open Full Demo Workspace</span>
+                  <ArrowRight className="w-4 h-4" />
+                </button>
+              </div>
+            </div>
+          </div>
+        </section>
+      )}
+
+      {/* =========================================================================
+          BOTTOM CALL TO ACTION (Navy to Midnight Blend)
+          ========================================================================= */}
       <section 
-        id="timeline"
-        className="py-24 relative"
-        style={{ backgroundColor: '#F7F2E7', color: '#121826' }}
-      >
-        <div className="max-w-[1200px] mx-auto px-4 sm:px-6 lg:px-8">
-          
-          <div className="text-center max-w-2xl mx-auto mb-16">
-            <span className="text-xs font-mono font-bold tracking-widest text-[#8A5A12] uppercase block mb-2">
-              LIFECYCLE STEPS
-            </span>
-            <h2 className="text-2xl sm:text-4xl font-serif font-bold text-[#050A1F] mb-3">
-              The 5-step workflow from intake to sign-off
-            </h2>
-            <div className="title-gold-underline mx-auto mb-3" />
-            <p className="text-[17px] text-[#3B4252] font-sans leading-relaxed max-w-[65ch] mx-auto">
-              Every content asset follows a structured sequence with clear ownership boundaries.
-            </p>
-          </div>
-
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-5">
-            
-            {/* Step 01: Set up */}
-            <div className="bg-white rounded-2xl p-6 border border-[#D4AF37]/35 shadow-[0_8px_20px_rgba(18,24,38,0.06)] flex flex-col justify-between">
-              <div>
-                <div className="flex items-center justify-between mb-3">
-                  <span className="font-serif text-3xl font-extrabold text-[#8A5A12]">01</span>
-                  <span className="px-2 py-0.5 rounded text-[11px] font-mono font-bold bg-[#EFE6D2] text-[#8A5A12]">
-                    Admin
-                  </span>
-                </div>
-                <h3 className="font-serif text-lg font-bold text-[#050A1F] mb-2">Set up</h3>
-                <p className="text-[15px] text-[#3B4252] font-sans leading-relaxed">
-                  Administrator registers brand source documents, approved facts, and terminology pairs.
-                </p>
-              </div>
-            </div>
-
-            {/* Step 02: Submit */}
-            <div className="bg-white rounded-2xl p-6 border border-[#D4AF37]/35 shadow-[0_8px_20px_rgba(18,24,38,0.06)] flex flex-col justify-between">
-              <div>
-                <div className="flex items-center justify-between mb-3">
-                  <span className="font-serif text-3xl font-extrabold text-[#8A5A12]">02</span>
-                  <span className="px-2 py-0.5 rounded text-[11px] font-mono font-bold bg-[#EFE6D2] text-[#8A5A12]">
-                    Creator
-                  </span>
-                </div>
-                <h3 className="font-serif text-lg font-bold text-[#050A1F] mb-2">Submit</h3>
-                <p className="text-[15px] text-[#3B4252] font-sans leading-relaxed">
-                  Content creator pastes draft copy or uploads a PDF or Word DOCX document.
-                </p>
-              </div>
-            </div>
-
-            {/* Step 03: Analyse */}
-            <div className="bg-white rounded-2xl p-6 border border-[#D4AF37]/35 shadow-[0_8px_20px_rgba(18,24,38,0.06)] flex flex-col justify-between">
-              <div>
-                <div className="flex items-center justify-between mb-3">
-                  <span className="font-serif text-3xl font-extrabold text-[#8A5A12]">03</span>
-                  <span className="px-2 py-0.5 rounded text-[11px] font-mono font-bold bg-gray-100 text-gray-800">
-                    Engine
-                  </span>
-                </div>
-                <h3 className="font-serif text-lg font-bold text-[#050A1F] mb-2">Analyse</h3>
-                <p className="text-[15px] text-[#3B4252] font-sans leading-relaxed">
-                  Rules, retrieval grounding, and advisory AI evaluate the draft against active policy.
-                </p>
-              </div>
-            </div>
-
-            {/* Step 04: Resolve */}
-            <div className="bg-white rounded-2xl p-6 border border-[#D4AF37]/35 shadow-[0_8px_20px_rgba(18,24,38,0.06)] flex flex-col justify-between">
-              <div>
-                <div className="flex items-center justify-between mb-3">
-                  <span className="font-serif text-3xl font-extrabold text-[#8A5A12]">04</span>
-                  <span className="px-2 py-0.5 rounded text-[11px] font-mono font-bold bg-[#EFE6D2] text-[#8A5A12]">
-                    Creator
-                  </span>
-                </div>
-                <h3 className="font-serif text-lg font-bold text-[#050A1F] mb-2">Resolve</h3>
-                <p className="text-[15px] text-[#3B4252] font-sans leading-relaxed">
-                  Creator edits fixes side by side with the original draft, preserving original voice.
-                </p>
-              </div>
-            </div>
-
-            {/* Step 05: Approve */}
-            <div className="bg-white rounded-2xl p-6 border border-[#D4AF37]/35 shadow-[0_8px_20px_rgba(18,24,38,0.06)] flex flex-col justify-between">
-              <div>
-                <div className="flex items-center justify-between mb-3">
-                  <span className="font-serif text-3xl font-extrabold text-[#065F46]">05</span>
-                  <span className="px-2 py-0.5 rounded text-[11px] font-mono font-bold bg-[#D1FAE5] text-[#065F46] border border-[#065F46]/20">
-                    Reviewer
-                  </span>
-                </div>
-                <h3 className="font-serif text-lg font-bold text-[#050A1F] mb-2">Approve</h3>
-                <p className="text-[15px] text-[#3B4252] font-sans leading-relaxed">
-                  Reviewer applies cryptographic sign-off with mandatory reason and version seal.
-                </p>
-              </div>
-            </div>
-
-          </div>
-
-        </div>
-      </section>
-
-      {/* ==================================================
-          SECTION 4: EVERY FINDING IS LABELLED (NAVY #0A1230 - The ONE navy section!)
-          Three cards: Verified violation (crimson), Source-backed concern (amber), Needs review (violet).
-          Severity legend: High, Medium, Low (icon plus text).
-          ================================================== */}
-      <section 
-        id="verdict-labels"
-        className="py-24 relative overflow-hidden"
-        style={{ backgroundColor: '#0A1230' }}
-      >
-        <div className="max-w-[1200px] mx-auto px-4 sm:px-6 lg:px-8">
-          
-          <div className="text-center max-w-2xl mx-auto mb-16">
-            <span className="text-xs font-mono font-bold tracking-widest text-[#F3D98B] uppercase block mb-2">
-              TRANSPARENT TAXONOMY
-            </span>
-            <h2 className="text-2xl sm:text-4xl font-serif font-bold text-white mb-3">
-              Every finding is clearly labelled
-            </h2>
-            <div className="title-gold-underline mx-auto mb-3" />
-            <p className="text-[17px] text-[#F7F2E7]/85 font-sans leading-relaxed">
-              Verity categorizes issues into three unambiguous verdicts so reviewers understand the evidential backing immediately.
-            </p>
-          </div>
-
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-7 mb-14">
-            
-            {/* Card 1: Verified rule violation */}
-            <div className="bg-[#111827] rounded-2xl p-7 border border-[#E5484D]/40 shadow-luxury">
-              <div className="flex items-center gap-2 mb-3">
-                <AlertTriangle className="w-5 h-5 text-[#E5484D]" />
-                <span className="text-xs font-mono font-bold uppercase text-[#E5484D] tracking-wider">
-                  Deterministic Match
-                </span>
-              </div>
-              <h3 className="font-serif text-xl font-bold text-white mb-2">
-                Verified rule violation
-              </h3>
-              <p className="text-[15px] text-[#F7F2E7]/85 font-sans leading-relaxed mb-4">
-                Triggered by an exact rule pattern match, such as prohibited absolute claims or misspelled brand name casing.
-              </p>
-              <div className="p-3 bg-[#05070F] rounded-xl border border-gray-800 text-xs font-mono text-gray-300">
-                Evidence: Direct link to guideline section and rule ID (e.g. Rule R1 or R2).
-              </div>
-            </div>
-
-            {/* Card 2: Source-backed concern */}
-            <div className="bg-[#111827] rounded-2xl p-7 border border-[#F5A623]/40 shadow-luxury">
-              <div className="flex items-center gap-2 mb-3">
-                <ShieldCheck className="w-5 h-5 text-[#F5A623]" />
-                <span className="text-xs font-mono font-bold uppercase text-[#F5A623] tracking-wider">
-                  Retrieval Grounded
-                </span>
-              </div>
-              <h3 className="font-serif text-xl font-bold text-white mb-2">
-                Source-backed concern
-              </h3>
-              <p className="text-[15px] text-[#F7F2E7]/85 font-sans leading-relaxed mb-4">
-                Identified through contextual analysis and directly substantiated by a matched guideline passage or factual assertion.
-              </p>
-              <div className="p-3 bg-[#05070F] rounded-xl border border-gray-800 text-xs font-mono text-gray-300">
-                Evidence: Verbatim excerpt from approved policy document with citation.
-              </div>
-            </div>
-
-            {/* Card 3: Needs human review */}
-            <div className="bg-[#111827] rounded-2xl p-7 border border-[#A78BFA]/40 shadow-luxury">
-              <div className="flex items-center gap-2 mb-3">
-                <HelpCircle className="w-5 h-5 text-[#A78BFA]" />
-                <span className="text-xs font-mono font-bold uppercase text-[#A78BFA] tracking-wider">
-                  Evidence Gap
-                </span>
-              </div>
-              <h3 className="font-serif text-xl font-bold text-white mb-2">
-                Needs human review
-              </h3>
-              <p className="text-[15px] text-[#F7F2E7]/85 font-sans leading-relaxed mb-4">
-                No supporting source passage was found in the brand knowledge base; a human reviewer must evaluate the statement.
-              </p>
-              <div className="p-3 bg-[#05070F] rounded-xl border border-gray-800 text-xs font-mono text-gray-300">
-                Evidence: Explicitly notes "No approved source found in brand knowledge base."
-              </div>
-            </div>
-
-          </div>
-
-          {/* Severity Legend (Icon + Text Always) */}
-          <div className="bg-[#05070F] rounded-2xl p-6 border border-[#D4AF37]/30 flex flex-col sm:flex-row items-center justify-between gap-4">
-            <span className="text-xs font-mono uppercase tracking-wider text-[#F3D98B] font-semibold">
-              Severity Legend (Always Icon + Text):
-            </span>
-            <div className="flex flex-wrap items-center gap-6 text-xs">
-              <div className="flex items-center gap-2 text-[#E5484D] font-bold">
-                <span className="text-sm">▲</span>
-                <span>High Severity (Blocks approval unless overridden)</span>
-              </div>
-              <div className="flex items-center gap-2 text-[#F5A623] font-bold">
-                <span className="text-sm">◆</span>
-                <span>Medium Severity (Warning)</span>
-              </div>
-              <div className="flex items-center gap-2 text-[#9AA6C7] font-bold">
-                <span className="text-sm">●</span>
-                <span>Low Severity (Advisory note)</span>
-              </div>
-            </div>
-          </div>
-
-        </div>
-      </section>
-
-      {/* ==================================================
-          SECTION 5: TRY IT YOURSELF (CREAM #EFE6D2)
-          Sample draft chips, then gold band call to action.
-          ================================================== */}
-      <section 
-        id="try-samples"
-        className="py-24 relative"
-        style={{ backgroundColor: '#EFE6D2', color: '#121826' }}
-      >
-        <div className="max-w-[1200px] mx-auto px-4 sm:px-6 lg:px-8">
-          
-          <div className="text-center max-w-2xl mx-auto mb-14">
-            <span className="text-xs font-mono font-bold tracking-widest text-[#8A5A12] uppercase block mb-2">
-              INTERACTIVE TEST SUITE
-            </span>
-            <h2 className="text-2xl sm:text-4xl font-serif font-bold text-[#050A1F] mb-3">
-              Try the three sample scenarios
-            </h2>
-            <div className="title-gold-underline mx-auto mb-3" />
-            <p className="text-[17px] text-[#3B4252] font-sans leading-relaxed max-w-[65ch] mx-auto">
-              Jump straight into pre-seeded evaluation drafts to test detection, evidence gaps, and false positives.
-            </p>
-          </div>
-
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-12">
-            
-            {/* Scenario 1: Social Post */}
-            <div 
-              onClick={() => handleNav('new-review')}
-              className="bg-white rounded-2xl p-6 border border-[#D4AF37]/35 shadow-[0_8px_20px_rgba(18,24,38,0.06)] cursor-pointer hover:shadow-lg transition-all group"
-            >
-              <div className="flex items-center justify-between mb-3">
-                <span className="px-2.5 py-0.5 rounded bg-[#EFE6D2] text-[#8A5A12] text-xs font-mono font-bold">
-                  Scenario 01
-                </span>
-                <span className="text-xs font-mono text-[#4B5563] font-medium">Social Post</span>
-              </div>
-              <h3 className="font-serif text-lg font-bold text-[#050A1F] mb-2 group-hover:text-[#8A5A12] transition-colors">
-                Social Media Launch Post
-              </h3>
-              <p className="text-[14px] text-[#3B4252] font-sans mb-4">
-                What to look for: Unsupported superlative ("best in India") and lowercase brand casing flagged with verifiable alternatives.
-              </p>
-              <div className="text-xs text-[#8A5A12] font-bold inline-flex items-center gap-1">
-                <span>Load in demo</span>
-                <ArrowRight className="w-3.5 h-3.5 group-hover:translate-x-1 transition-transform" />
-              </div>
-            </div>
-
-            {/* Scenario 2: Press Release */}
-            <div 
-              onClick={() => handleNav('new-review')}
-              className="bg-white rounded-2xl p-6 border border-[#D4AF37]/35 shadow-[0_8px_20px_rgba(18,24,38,0.06)] cursor-pointer hover:shadow-lg transition-all group"
-            >
-              <div className="flex items-center justify-between mb-3">
-                <span className="px-2.5 py-0.5 rounded bg-[#EFE6D2] text-[#8A5A12] text-xs font-mono font-bold">
-                  Scenario 02
-                </span>
-                <span className="text-xs font-mono text-[#4B5563] font-medium">Press Release (PDF)</span>
-              </div>
-              <h3 className="font-serif text-lg font-bold text-[#050A1F] mb-2 group-hover:text-[#8A5A12] transition-colors">
-                Pricing & Expansion Release
-              </h3>
-              <p className="text-[14px] text-[#3B4252] font-sans mb-4">
-                What to look for: Outdated dates (2024 vs current) and unapproved price points sent to reviewer with evidence gap shown.
-              </p>
-              <div className="text-xs text-[#8A5A12] font-bold inline-flex items-center gap-1">
-                <span>Load in demo</span>
-                <ArrowRight className="w-3.5 h-3.5 group-hover:translate-x-1 transition-transform" />
-              </div>
-            </div>
-
-            {/* Scenario 3: Website Copy */}
-            <div 
-              onClick={() => handleNav('new-review')}
-              className="bg-white rounded-2xl p-6 border border-[#D4AF37]/35 shadow-[0_8px_20px_rgba(18,24,38,0.06)] cursor-pointer hover:shadow-lg transition-all group"
-            >
-              <div className="flex items-center justify-between mb-3">
-                <span className="px-2.5 py-0.5 rounded bg-[#EFE6D2] text-[#8A5A12] text-xs font-mono font-bold">
-                  Scenario 03
-                </span>
-                <span className="text-xs font-mono text-[#4B5563] font-medium">Website Copy (DOCX)</span>
-              </div>
-              <h3 className="font-serif text-lg font-bold text-[#050A1F] mb-2 group-hover:text-[#8A5A12] transition-colors">
-                Platform Architecture Overview
-              </h3>
-              <p className="text-[14px] text-[#3B4252] font-sans mb-4">
-                What to look for: Tone and terminology ("revolutionary", "world-class") checked against voice guide with side-by-side fixes.
-              </p>
-              <div className="text-xs text-[#8A5A12] font-bold inline-flex items-center gap-1">
-                <span>Load in demo</span>
-                <ArrowRight className="w-3.5 h-3.5 group-hover:translate-x-1 transition-transform" />
-              </div>
-            </div>
-
-          </div>
-
-        </div>
-      </section>
-
-      {/* Gold Band Call to Action */}
-      <section 
-        className="py-20 text-center relative overflow-hidden"
+        className="py-16 px-4 sm:px-6 lg:px-8 text-center text-[#F4F1E8] relative overflow-hidden"
         style={{
-          background: 'linear-gradient(135deg, #F3D98B 0%, #D4AF37 50%, #A67C00 100%)',
+          background: 'linear-gradient(180deg, #101B35 0%, #0A1226 100%)',
         }}
       >
-        <div className="max-w-[1200px] mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
-          <h2 className="text-2xl sm:text-4xl font-serif font-bold text-[#050A1F] mb-3">
-            See one draft go from check to approval.
+        <div className="max-w-3xl mx-auto relative z-10">
+          <h2 className="font-serif text-3xl sm:text-4xl font-bold text-[#F4F1E8] mb-4">
+            Start Governing Brand Integrity Today
           </h2>
-          <p className="text-[17px] text-[#050A1F]/85 max-w-xl mx-auto mb-8 font-sans leading-relaxed">
-            Experience deterministic rules, evidence-linked findings, and human reviewer authority in action.
+          <p className="text-base text-[#D5DBEE] mb-8 font-sans">
+            Explore our pre-seeded demonstration workspace or review the full API and architecture documentation.
           </p>
           <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
             <button
               type="button"
-              onClick={() => handleNav('dashboard')}
-              className="px-8 py-3.5 rounded-xl font-bold text-sm tracking-wide text-[#F3D98B] bg-[#050A1F] hover:text-white shadow-xl transition-all active:scale-95 cursor-pointer"
+              onClick={() => {
+                window.scrollTo({ top: 0, behavior: 'smooth' });
+                setActivePage('dashboard');
+              }}
+              className="w-full sm:w-auto px-8 py-3.5 min-h-[44px] rounded-xl bg-[#E2B857] text-[#0A1226] font-bold text-base hover:brightness-105 active:scale-[0.98] transition-all shadow-xl flex items-center justify-center gap-2"
             >
-              Explore Demo Workspace
+              <span>Explore Demo Workspace</span>
+              <ArrowRight className="w-4 h-4 text-[#0A1226]" />
             </button>
             <button
               type="button"
-              onClick={() => handleNav('brand-hub')}
-              className="px-6 py-3.5 rounded-xl font-semibold text-sm text-[#050A1F] border border-[#050A1F]/40 hover:bg-[#050A1F]/10 transition-all cursor-pointer"
+              onClick={() => {
+                window.scrollTo({ top: 0, behavior: 'smooth' });
+                setActivePage('resources');
+              }}
+              className="w-full sm:w-auto px-7 py-3.5 min-h-[44px] rounded-xl border border-[#E2B857]/70 text-[#F4F1E8] hover:bg-white/5 font-semibold text-base transition-colors"
             >
-              Inspect Brand Hub
+              Read Architecture & Specs
             </button>
           </div>
         </div>
