@@ -139,7 +139,7 @@ export function TrustPage({ setActivePage }) {
                 <li className="flex items-start gap-3">
                   <span className="text-[#065F46] font-bold text-lg mt-0.5">✓</span>
                   <div>
-                    <strong className="text-[#050A1F] block">Cryptographic audit seals:</strong>
+                    <strong className="text-[#050A1F] block">Tamper-evident audit seals:</strong>
                     Approvals generate an immutable SHA-256 hash binding author, reviewer, timestamp, and version text.
                   </div>
                 </li>
@@ -484,7 +484,7 @@ export function TrustPage({ setActivePage }) {
             <div className="p-6 rounded-2xl bg-[#05070F] border border-gray-800">
               <h4 className="font-serif text-lg font-bold text-white mb-2">Preserved Version History</h4>
               <p className="text-[14px] text-gray-400 font-sans leading-relaxed">
-                Prior draft snapshots, token diffs, and review comments remain permanently auditable with cryptographic hashes.
+                Prior draft snapshots, token diffs, and review comments remain permanently auditable with tamper-evident SHA-256 version hashes.
               </p>
             </div>
           </div>
@@ -625,7 +625,7 @@ export function TrustPage({ setActivePage }) {
                 </li>
                 <li className="flex items-start gap-2">
                   <span className="text-[#2ECC9A] font-bold">✓</span>
-                  <span>Cryptographic version-bound approvals with server-verified SHA-256</span>
+                  <span>Tamper-evident version-bound approvals with server-verified SHA-256</span>
                 </li>
                 <li className="flex items-start gap-2">
                   <span className="text-[#2ECC9A] font-bold">✓</span>
@@ -649,7 +649,7 @@ export function TrustPage({ setActivePage }) {
               <ul className="space-y-3 text-[14px] text-[#9AA6C7] font-sans">
                 <li className="flex items-start gap-2">
                   <span className="text-[#D4AF37] font-bold">○</span>
-                  <span>Deep neural logo distortion and vector layout geometry analysis</span>
+                  <span>Advanced visual logo distortion and layout geometry analysis</span>
                 </li>
                 <li className="flex items-start gap-2">
                   <span className="text-[#D4AF37] font-bold">○</span>
@@ -678,8 +678,8 @@ export function TrustPage({ setActivePage }) {
             </h3>
             <div className="grid grid-cols-1 sm:grid-cols-3 gap-6 text-xs text-[#9AA6C7] font-sans leading-relaxed">
               <div className="p-4 bg-[#05070F] rounded-2xl border border-gray-800">
-                <strong className="text-white block text-sm mb-1">1. Vector Search Fallback</strong>
-                When external pgvector or embeddings endpoints are offline, the engine automatically falls back to full-text token search without failing.
+                <strong className="text-white block text-sm mb-1">1. Deterministic Local Retrieval</strong>
+                Keyword-indexed fact verification and BM25 token matching run locally without external search dependencies.
               </div>
               <div className="p-4 bg-[#05070F] rounded-2xl border border-gray-800">
                 <strong className="text-white block text-sm mb-1">2. AI Context Optionality</strong>
