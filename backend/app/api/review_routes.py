@@ -34,17 +34,32 @@ def submit_review_decision(
     if not sub:
         raise HTTPException(status_code=404, detail="Submission not found")
 
+    latest_version = sub.versions[-1] if sub.versions else None
+    if not latest_version:
+        raise HTTPException(status_code=404, detail="No versions found for this submission.")
+
     target_version_id = payload.version_id
     if target_version_id:
         version = db.query(SubmissionVersion).filter(
             SubmissionVersion.id == target_version_id,
             SubmissionVersion.submission_id == sub.id
         ).first()
-    else:
-        version = sub.versions[-1] if sub.versions else None
+        if not version:
+            raise HTTPException(status_code=404, detail=f"Target submission version '{target_version_id}' not found.")
 
-    if not version:
-        raise HTTPException(status_code=404, detail="Target submission version not found.")
+        # Stale version guard: Reject if submitted version is not the latest version
+        if version.id != latest_version.id or version.version_number < latest_version.version_number:
+            raise HTTPException(
+                status_code=409,
+                detail=(
+                    f"Stale version review rejected: Attempted to review version {version.version_number} "
+                    f"('{version.id}'), but a newer version exists (version {latest_version.version_number}, '{latest_version.id}'). "
+                    f"Review approvals apply strictly to the exact current version."
+                )
+            )
+    else:
+        # Default to latest version for API convenience
+        version = latest_version
 
     decision_type = payload.decision.lower() # approve | reject | request_changes
 
@@ -115,13 +130,17 @@ def submit_review_decision(
     sub.status = target_status
     sub.updated_at = datetime.now(timezone.utc)
 
-    # Audit event
+    # Audit event echoing exact version_id and content_hash
     db.add(AuditEvent(
         workspace_id=sub.workspace_id,
         submission_id=sub.id,
         event_type=f"review_{decision_type}",
         details_json={
+            "version_id": version.id,
+            "submission_version_id": version.id,
+            "version_number": version.version_number,
             "version": version.version_number,
+            "content_hash": version.content_hash,
             "hash": version.content_hash,
             "reviewer": payload.reviewer_name,
             "override_used": payload.override_used
@@ -136,6 +155,9 @@ def submit_review_decision(
     return {
         "status": "decision_recorded",
         "decision_id": dec.id,
+        "submission_id": sub.id,
+        "version_id": version.id,
+        "submission_version_id": version.id,
         "submission_status": sub.status,
         "new_submission_status": sub.status,
         "version_number": version.version_number,

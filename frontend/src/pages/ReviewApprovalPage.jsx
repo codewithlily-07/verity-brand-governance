@@ -103,7 +103,11 @@ export function ReviewApprovalPage({ submissionId, setActivePage, role, onRoleCh
   const isReviewerOrAdmin = role === 'reviewer' || role === 'admin' || role === 'owner';
 
   const handleDecision = async (decision) => {
-    if (!selectedVersionId || !currentSubId) return;
+    const explicitVersionId = selectedVersionId || activeVersion?.id;
+    if (!explicitVersionId || !currentSubId) {
+      alert("Error: Explicit version_id is required. Please select the specific version on screen to review.");
+      return;
+    }
     if (!decisionReason.trim()) {
       alert("A decision note is required for all review actions. Please provide an audit reason.");
       return;
@@ -115,7 +119,7 @@ export function ReviewApprovalPage({ submissionId, setActivePage, role, onRoleCh
     setActionLoading(true);
     try {
       await submitReviewDecision(currentSubId, {
-        version_id: selectedVersionId,
+        version_id: explicitVersionId,
         decision,
         reviewer_name: role === 'reviewer' ? 'Elena Vance (Authorised Reviewer)' : `${role.toUpperCase()} User`,
         reviewer_role: role,
