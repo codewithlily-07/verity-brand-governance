@@ -620,36 +620,40 @@ def run_guided_demo(request: Request, db: Session = Depends(get_db)):
         db.flush()
 
         # Run REAL engine analysis
-        engine_res = engine.run_full_analysis(
+        engine_res = engine.run_analysis(
             content=spec["content"],
             content_type=spec["content_type"]
         )
 
         run = AnalysisRun(
             submission_version_id=version.id,
-            summary=engine_res.get("summary", ""),
-            l1_deterministic_passed=engine_res.get("l1_rules_passed", False),
-            l2_vector_passed=engine_res.get("l2_vector_passed", False),
-            l3_llm_passed=engine_res.get("l3_llm_passed", True),
-            metadata_json=engine_res.get("metadata", {})
+            stage="completed",
+            mode_flags_json=engine_res.get("layers", {}),
+            duration_ms=18
         )
         db.add(run)
         db.flush()
 
+        import uuid
         for f in engine_res.get("findings", []):
             finding_obj = Finding(
+                id=str(uuid.uuid4()),
                 analysis_run_id=run.id,
-                layer=f.get("layer", "L1"),
+                layer=f.get("layer", "rules"),
                 category=f.get("category", "General"),
                 severity=f.get("severity", "medium"),
+                title=f.get("title", ""),
                 quote=f.get("quote", ""),
-                start_offset=f.get("start_offset", 0),
-                end_offset=f.get("end_offset", 0),
-                rule_code=f.get("rule_code"),
+                start_offset=f.get("start_offset"),
+                end_offset=f.get("end_offset"),
+                rule_id=f.get("rule_id"),
+                rule_text=f.get("rule_text"),
+                evidence_json=f.get("evidence", {}),
                 explanation=f.get("explanation", ""),
-                suggested_fix=f.get("suggested_fix"),
-                evidence_quote=f.get("evidence_quote"),
-                evidence_source=f.get("evidence_source"),
+                suggested_replacement=f.get("suggested_replacement"),
+                rationale=f.get("rationale"),
+                verdict=f.get("verdict", "flagged"),
+                confidence=f.get("confidence", 1.0),
                 status="open"
             )
             db.add(finding_obj)
