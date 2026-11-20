@@ -364,63 +364,68 @@ export function HowItWorksPage({ setActivePage }) {
               </p>
             </div>
 
-            {/* Stepper with 5 Numbered Gold Circles */}
-            <div className="flex items-center justify-between max-w-3xl mx-auto mb-12 px-2 overflow-x-auto pb-4">
-              {steps.map((st, sIdx) => {
-                const isSelected = selectedStep === sIdx;
-                return (
-                  <div key={sIdx} className="flex flex-col items-center cursor-pointer group px-2" onClick={() => setSelectedStep(sIdx)}>
-                    <button
-                      className={`w-12 h-12 rounded-full flex items-center justify-center font-bold text-base transition-all duration-200 outline-none focus-visible:ring-2 focus-visible:ring-[#E2B857] ${
-                        isSelected 
-                          ? 'bg-[#E2B857] text-[#0A1226] shadow-[0_0_20px_rgba(226,184,87,0.5)] scale-110' 
-                          : 'bg-[#17254A] border border-[#E2B857]/40 text-[#F4F1E8] hover:border-[#E2B857]'
-                      }`}
-                      aria-label={`Step ${st.number}: ${st.title}`}
-                    >
-                      {st.number}
-                    </button>
-                    <span className={`text-xs mt-2 font-medium tracking-wide whitespace-nowrap ${isSelected ? 'text-[#E2B857] font-bold' : 'text-[#D5DBEE]'}`}>
-                      {st.title}
-                    </span>
-                  </div>
-                );
-              })}
-            </div>
-
-            {/* Selected Step Card (Raised Navy Card) */}
-            <div className="bg-[#17254A] rounded-3xl border border-[#E2B857]/40 p-8 sm:p-10 shadow-2xl max-w-3xl mx-auto text-center">
-              <span className="text-xs font-bold uppercase tracking-widest text-[#E2B857] font-sans">
-                Stage 0{steps[selectedStep].number} of 05
-              </span>
-              <h3 className="font-serif text-2xl sm:text-3xl font-bold text-[#F4F1E8] mt-2 mb-4">
-                {steps[selectedStep].title}
-              </h3>
-              <p className="text-lg text-[#D5DBEE] leading-relaxed max-w-xl mx-auto mb-8 font-sans">
-                {steps[selectedStep].description}
-              </p>
-
-              {/* Step Navigation Controls */}
-              <div className="flex items-center justify-center gap-4">
-                <button
-                  type="button"
-                  onClick={() => setSelectedStep(prev => Math.max(0, prev - 1))}
-                  disabled={selectedStep === 0}
-                  className="px-5 py-2.5 rounded-xl border border-[#E2B857]/50 text-[#F4F1E8] text-sm font-semibold hover:bg-white/5 disabled:opacity-30 disabled:cursor-not-allowed flex items-center gap-2 transition-colors"
-                >
-                  <ArrowLeft className="w-4 h-4" />
-                  <span>Previous</span>
-                </button>
-                <button
-                  type="button"
-                  onClick={() => setSelectedStep(prev => Math.min(steps.length - 1, prev + 1))}
-                  disabled={selectedStep === steps.length - 1}
-                  className="px-5 py-2.5 rounded-xl bg-[#E2B857] text-[#0A1226] text-sm font-bold hover:brightness-105 disabled:opacity-30 disabled:cursor-not-allowed flex items-center gap-2 transition-all shadow-md"
-                >
-                  <span>Next Step</span>
-                  <ArrowRight className="w-4 h-4 text-[#0A1226]" />
-                </button>
+            {/* 5-Step Lifecycle White Container Box */}
+            <div className="bg-white rounded-3xl border border-[#E6DDC8] p-6 sm:p-10 shadow-2xl max-w-4xl mx-auto text-[#0A1230]">
+              
+              {/* Stepper with 5 Numbered Gold Circles */}
+              <div className="flex items-center justify-between max-w-3xl mx-auto mb-10 px-2 overflow-x-auto pb-3">
+                {steps.map((st, sIdx) => {
+                  const isSelected = selectedStep === sIdx;
+                  return (
+                    <div key={sIdx} className="flex flex-col items-center cursor-pointer group px-2" onClick={() => setSelectedStep(sIdx)}>
+                      <button
+                        className={`w-12 h-12 rounded-full flex items-center justify-center font-bold text-base transition-all duration-200 outline-none focus-visible:ring-2 focus-visible:ring-[#8A5A12] cursor-pointer ${
+                          isSelected 
+                            ? 'bg-[#E2B857] text-[#0A1226] shadow-[0_0_15px_rgba(226,184,87,0.5)] scale-110' 
+                            : 'bg-[#F6F1E7] border border-[#E6DDC8] text-[#0A1230] hover:border-[#8A5A12]'
+                        }`}
+                        aria-label={`Step ${st.number}: ${st.title}`}
+                      >
+                        {st.number}
+                      </button>
+                      <span className={`text-xs mt-2 font-medium tracking-wide whitespace-nowrap ${isSelected ? 'text-[#8A5A12] font-bold' : 'text-[#4A5675]'}`}>
+                        {st.title}
+                      </span>
+                    </div>
+                  );
+                })}
               </div>
+
+              {/* Selected Step Card (Light Warm Ivory Surface inside White Box) */}
+              <div className="bg-[#FAF8F2] rounded-2xl border border-[#E6DDC8] p-7 sm:p-9 shadow-sm max-w-2xl mx-auto text-center">
+                <span className="text-xs font-bold uppercase tracking-widest text-[#8A5A12] font-sans">
+                  Stage 0{steps[selectedStep].number} of 05
+                </span>
+                <h3 className="font-serif text-2xl sm:text-3xl font-bold text-[#0A1230] mt-2 mb-4">
+                  {steps[selectedStep].title}
+                </h3>
+                <p className="text-base sm:text-lg text-[#374151] leading-relaxed max-w-xl mx-auto mb-8 font-sans">
+                  {steps[selectedStep].description}
+                </p>
+
+                {/* Step Navigation Controls */}
+                <div className="flex items-center justify-center gap-4">
+                  <button
+                    type="button"
+                    onClick={() => setSelectedStep(prev => Math.max(0, prev - 1))}
+                    disabled={selectedStep === 0}
+                    className="px-5 py-2.5 rounded-xl border border-[#E6DDC8] bg-white text-[#0A1230] text-sm font-semibold hover:bg-[#F6F1E7] disabled:opacity-30 disabled:cursor-not-allowed flex items-center gap-2 transition-colors cursor-pointer shadow-sm"
+                  >
+                    <ArrowLeft className="w-4 h-4 text-[#0A1230]" />
+                    <span>Previous</span>
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => setSelectedStep(prev => Math.min(steps.length - 1, prev + 1))}
+                    disabled={selectedStep === steps.length - 1}
+                    className="px-5 py-2.5 rounded-xl bg-[#E2B857] text-[#0A1226] text-sm font-bold hover:brightness-105 disabled:opacity-30 disabled:cursor-not-allowed flex items-center gap-2 transition-all shadow-md cursor-pointer"
+                  >
+                    <span>Next Step</span>
+                    <ArrowRight className="w-4 h-4 text-[#0A1226]" />
+                  </button>
+                </div>
+              </div>
+
             </div>
           </div>
         </section>
@@ -556,10 +561,10 @@ export function HowItWorksPage({ setActivePage }) {
               </p>
             </div>
 
-            {/* Interactive Preview Container */}
-            <div className="bg-[#101B35] rounded-3xl border border-[#E2B857]/40 p-6 sm:p-8 shadow-2xl">
-              <div className="flex items-center justify-between mb-3 text-xs text-[#D5DBEE]">
-                <span className="font-semibold text-[#E2B857]">Input Draft Copy:</span>
+            {/* Interactive Preview Container (White Box) */}
+            <div className="bg-white rounded-3xl border border-[#E6DDC8] p-6 sm:p-8 shadow-2xl text-[#0A1230]">
+              <div className="flex items-center justify-between mb-3 text-xs text-[#5B6478]">
+                <span className="font-semibold text-[#8A5A12]">Input Draft Copy:</span>
                 <span className="italic">Sample Ad Copy (Social Campaign)</span>
               </div>
 
@@ -571,18 +576,18 @@ export function HowItWorksPage({ setActivePage }) {
                   setChecked(false);
                 }}
                 rows={3}
-                className="w-full p-4 rounded-xl bg-[#0A1226] border border-[#E2B857]/40 text-[#F4F1E8] text-base focus:ring-2 focus:ring-[#E2B857] focus:outline-none mb-4 font-sans leading-relaxed"
+                className="w-full p-4 rounded-xl bg-[#FAF8F2] border border-[#E6DDC8] text-[#0A1230] text-base focus:ring-2 focus:ring-[#8A5A12] focus:bg-white focus:outline-none mb-4 font-sans leading-relaxed"
                 placeholder="Paste marketing copy here..."
               />
 
               <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 mb-6">
-                <span className="text-xs text-[#D5DBEE]">
+                <span className="text-xs text-[#5B6478]">
                   Click to run deterministic Layer 01 & Layer 02 verification:
                 </span>
                 <button
                   type="button"
                   onClick={() => setChecked(true)}
-                  className="px-6 py-2.5 min-h-[44px] rounded-xl bg-[#E2B857] text-[#0A1226] font-bold text-sm hover:brightness-105 active:scale-[0.98] transition-all flex items-center justify-center gap-2 shadow-md"
+                  className="px-6 py-2.5 min-h-[44px] rounded-xl bg-[#E2B857] text-[#0A1226] font-bold text-sm hover:brightness-105 active:scale-[0.98] transition-all flex items-center justify-center gap-2 shadow-md cursor-pointer"
                 >
                   <RefreshCw className="w-4 h-4 text-[#0A1226]" />
                   <span>Check This Text</span>
@@ -591,43 +596,43 @@ export function HowItWorksPage({ setActivePage }) {
 
               {/* Findings Results Preview */}
               {checked && (
-                <div className="space-y-3 pt-4 border-t border-white/10">
-                  <div className="flex items-center justify-between text-xs text-[#D5DBEE] mb-1">
-                    <span className="font-bold text-[#E2B857] uppercase tracking-wider">
+                <div className="space-y-3 pt-4 border-t border-[#E6DDC8]">
+                  <div className="flex items-center justify-between text-xs text-[#5B6478] mb-1">
+                    <span className="font-bold text-[#8A5A12] uppercase tracking-wider">
                       Analysis Results: 2 High-Severity Findings Detected
                     </span>
-                    <span className="text-[#1E9E78] font-semibold">Latency: 12ms</span>
+                    <span className="text-[#085C42] font-semibold">Latency: 12ms</span>
                   </div>
 
                   {/* Finding 1 */}
-                  <div className="p-4 rounded-xl bg-[#17254A] border border-[#D64550]/40 flex items-start gap-3 text-xs">
+                  <div className="p-4 rounded-xl bg-[#FAF8F2] border border-[#D64550]/40 flex items-start gap-3 text-xs">
                     <AlertTriangle className="w-5 h-5 text-[#D64550] flex-shrink-0 mt-0.5" />
                     <div className="flex-grow">
                       <div className="flex items-center justify-between">
-                        <span className="font-bold text-[#F4F1E8]">Rule R2: Absolute Guarantees</span>
-                        <span className="px-2 py-0.5 rounded bg-[#D64550]/20 text-[#D64550] font-bold text-[10px]">▲ HIGH</span>
+                        <span className="font-bold text-[#0A1230]">Rule R2: Absolute Guarantees</span>
+                        <span className="px-2 py-0.5 rounded bg-[#D64550]/15 text-[#D64550] font-bold text-[10px]">▲ HIGH</span>
                       </div>
-                      <p className="text-[#D5DBEE] mt-1">
-                        Flagged text: <span className="text-[#E2B857] underline">“guarantees 100% results”</span>. Brand guidelines prohibit absolute success claims.
+                      <p className="text-[#374151] mt-1">
+                        Flagged text: <span className="text-[#8A5A12] font-semibold underline">“guarantees 100% results”</span>. Brand guidelines prohibit absolute success claims.
                       </p>
-                      <span className="block text-[#1E9E78] font-semibold mt-1.5">
+                      <span className="block text-[#085C42] font-semibold mt-1.5">
                         Suggested replacement: “supports verified learning outcomes”
                       </span>
                     </div>
                   </div>
 
                   {/* Finding 2 */}
-                  <div className="p-4 rounded-xl bg-[#17254A] border border-[#D64550]/40 flex items-start gap-3 text-xs">
+                  <div className="p-4 rounded-xl bg-[#FAF8F2] border border-[#D64550]/40 flex items-start gap-3 text-xs">
                     <AlertTriangle className="w-5 h-5 text-[#D64550] flex-shrink-0 mt-0.5" />
                     <div className="flex-grow">
                       <div className="flex items-center justify-between">
-                        <span className="font-bold text-[#F4F1E8]">Rule R3: Unsupported Superlative</span>
-                        <span className="px-2 py-0.5 rounded bg-[#D64550]/20 text-[#D64550] font-bold text-[10px]">▲ HIGH</span>
+                        <span className="font-bold text-[#0A1230]">Rule R3: Unsupported Superlative</span>
+                        <span className="px-2 py-0.5 rounded bg-[#D64550]/15 text-[#D64550] font-bold text-[10px]">▲ HIGH</span>
                       </div>
-                      <p className="text-[#D5DBEE] mt-1">
-                        Flagged text: <span className="text-[#E2B857] underline">“best learning platform in India”</span>. No verified third-party accreditation on record.
+                      <p className="text-[#374151] mt-1">
+                        Flagged text: <span className="text-[#8A5A12] font-semibold underline">“best learning platform in India”</span>. No verified third-party accreditation on record.
                       </p>
-                      <span className="block text-[#1E9E78] font-semibold mt-1.5">
+                      <span className="block text-[#085C42] font-semibold mt-1.5">
                         Suggested replacement: “leading online learning platform in India”
                       </span>
                     </div>
@@ -636,8 +641,8 @@ export function HowItWorksPage({ setActivePage }) {
               )}
 
               {/* Call to Action Link to Full Workspace */}
-              <div className="mt-8 pt-6 border-t border-white/10 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
-                <span className="text-xs text-[#D5DBEE]">
+              <div className="mt-8 pt-6 border-t border-[#E6DDC8] flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+                <span className="text-xs text-[#5B6478]">
                   Ready to test with your own brand rules and guidelines?
                 </span>
                 <button
@@ -646,10 +651,10 @@ export function HowItWorksPage({ setActivePage }) {
                     window.scrollTo({ top: 0, behavior: 'smooth' });
                     setActivePage('dashboard');
                   }}
-                  className="px-5 py-2.5 min-h-[44px] rounded-xl border border-[#E2B857] text-[#E2B857] hover:bg-[#E2B857]/15 hover:text-[#F3EAD3] font-bold text-sm transition-all flex items-center justify-center gap-2"
+                  className="px-5 py-2.5 min-h-[44px] rounded-xl bg-[#0A1230] text-[#F4F1E8] hover:bg-[#14203D] font-bold text-sm transition-all flex items-center justify-center gap-2 cursor-pointer shadow-sm"
                 >
                   <span>Open Full Demo Workspace</span>
-                  <ArrowRight className="w-4 h-4" />
+                  <ArrowRight className="w-4 h-4 text-[#F4F1E8]" />
                 </button>
               </div>
             </div>
