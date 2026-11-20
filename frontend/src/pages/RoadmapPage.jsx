@@ -33,7 +33,7 @@ export function RoadmapPage({ setActivePage }) {
                 <li>• Multi-layer deterministic rule engine (casing, phrases, regex)</li>
                 <li>• Approved facts retrieval and grounding citations</li>
                 <li>• Side-by-side intent-preserving diff correction workspace</li>
-                <li>• Cryptographic version-bound approvals with SHA-256 hashes</li>
+                <li>• Tamper-evident version-bound approvals with SHA-256 hashes</li>
                 <li>• PDF and DOCX document text parsing (PyMuPDF & docx)</li>
                 <li>• WCAG AA contrast ratio and palette CIE ΔE color distance</li>
                 <li>• Adaptive insights surfacing unclear guidelines</li>
@@ -45,7 +45,7 @@ export function RoadmapPage({ setActivePage }) {
                 <Clock className="w-4 h-4 text-gold" /> Future Enterprise Scope
               </span>
               <ul className="space-y-1.5 text-xs text-gray-600">
-                <li>• Deep neural logo and raster vector-distortion verification</li>
+                <li>• Advanced visual logo and layout distortion verification</li>
                 <li>• Automated webhooks for direct publishing into CMS / Socials</li>
                 <li>• SAML / SCIM enterprise Single Sign-On (Okta, Azure AD)</li>
                 <li>• Multi-tenant cross-brand guideline inheritance hierarchies</li>
@@ -66,8 +66,8 @@ export function RoadmapPage({ setActivePage }) {
             </div>
 
             <div className="p-3 bg-mist/60 rounded-xl">
-              <strong className="text-ink block mb-0.5">2. Vector Search Fallback:</strong>
-              When PostgreSQL pgvector is not configured locally, the system automatically falls back to full-text token search without loss of functionality.
+              <strong className="text-ink block mb-0.5">2. Deterministic Local Retrieval:</strong>
+              Keyword-indexed fact verification and BM25 token matching run locally without external search dependencies.
             </div>
 
             <div className="p-3 bg-mist/60 rounded-xl">
