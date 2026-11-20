@@ -135,13 +135,13 @@ python -m uvicorn backend.app.main:app --host 127.0.0.1 --port 8000
 ## 6. Testing & Evaluation
 
 ```bash
-# Run unit and integration tests (19 tests)
+# Run unit and integration tests (21 tests)
 pytest
 
-# Run automated link check across all 34 routes
+# Run automated link check
 python scripts/check_links.py
 
-# Run WCAG contrast audit across all pages
+# Run axe-core color contrast audit on tested routes
 python scripts/check_contrast.py
 
 # Run labelled evaluation harness
@@ -153,6 +153,7 @@ python -c "from backend.app.api.evaluation_routes import run_evaluation_logic; f
 - **Recall:** 100.0% (11 of 11 planted issues detected)
 - **Evidence-Grounding Accuracy:** 100.0% (11 of 11 citations match approved sources)
 - **False Positives on Clean Draft:** 0
+- **Accessibility:** No automated axe-core violations on the tested pages. *(Automated axe-core checks verify color contrast and structural elements across tested viewports; human verification of keyboard navigation and readability remains part of ongoing review).*
 
 ---
 

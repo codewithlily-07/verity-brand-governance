@@ -578,7 +578,7 @@ def run_guided_demo(request: Request, db: Session = Depends(get_db)):
             "author_name": "Samira Patel (Manager)",
             "author_role": "manager",
             "initial_status": "Approved",
-            "approve_note": "100% compliant with approved facts F-01 and F-02. Approved for immediate release."
+            "approve_note": "Fully aligned with approved facts F-01 and F-02. Approved for immediate release."
         },
         {
             "key": "D",
