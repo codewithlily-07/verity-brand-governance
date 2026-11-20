@@ -1,8 +1,8 @@
 import React, { useState } from 'react';
 import { motion, useReducedMotion } from 'framer-motion';
-import { 
-  BookOpen, UploadCloud, Layers, ShieldCheck, Sliders, 
-  CheckCircle2, TrendingUp, ArrowRight, Sparkles, FileText, 
+import {
+  BookOpen, UploadCloud, Layers, ShieldCheck, Sliders,
+  CheckCircle2, TrendingUp, ArrowRight, Sparkles, FileText,
   UserCheck, Users, Briefcase, KeyRound, AlertTriangle, HelpCircle
 } from 'lucide-react';
 import { PageSubNav } from '../components/PageSubNav';
@@ -26,12 +26,12 @@ export function ProductPage({ setActivePage }) {
 
   return (
     <div className="min-h-screen text-[#F7F2E7] select-none">
-      
+
       {/* ==================================================
           SECTION 1: HERO (NAVY #0A1230, Max 45vh)
           Short hero: gold eyebrow, H1, one-sentence subtitle, one gold button.
           ================================================== */}
-      <section 
+      <section
         className="relative pt-24 pb-14 px-4 sm:px-6 lg:px-8 text-center border-b border-[#D4AF37]/20 flex flex-col items-center justify-center min-h-[38vh] max-h-[45vh]"
         style={{ backgroundColor: '#0A1230' }}
       >
@@ -39,11 +39,11 @@ export function ProductPage({ setActivePage }) {
           <Sparkles className="w-3.5 h-3.5 text-[#D4AF37]" />
           <span>ONE WORKSPACE FROM DRAFT TO APPROVAL</span>
         </div>
-        
+
         <h1 className="text-3xl sm:text-5xl font-serif font-bold text-white mb-3 tracking-tight">
           Intelligent Pre-Publication <span className="text-gold-shimmer">Brand Governance</span>
         </h1>
-        
+
         <p className="text-[17px] text-[#F7F2E7]/85 max-w-[65ch] mx-auto font-sans leading-relaxed mb-6">
           Unify marketing, communications, and editorial standards before content reaches public channels.
         </p>
@@ -70,13 +70,13 @@ export function ProductPage({ setActivePage }) {
           SECTION 2: SEVEN CAPABILITIES (IVORY #F7F2E7)
           White cards, 1px gold border, soft shadow, dark text, tiny animated mini-UIs.
           ================================================== */}
-      <section 
+      <section
         id="capabilities"
         className="py-24 relative"
         style={{ backgroundColor: '#F7F2E7', color: '#121826' }}
       >
         <div className="max-w-[1200px] mx-auto px-4 sm:px-6 lg:px-8">
-          
+
           <div className="text-center max-w-2xl mx-auto mb-16">
             <span className="text-xs font-mono font-bold tracking-widest text-[#8A5A12] uppercase block mb-2">
               CORE CAPABILITIES
@@ -91,7 +91,7 @@ export function ProductPage({ setActivePage }) {
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-7">
-            
+
             {/* Capability 1: Brand Knowledge Hub */}
             <div className="bg-white rounded-2xl p-7 border border-[#D4AF37]/35 shadow-[0_8px_25px_rgba(18,24,38,0.06)] flex flex-col justify-between hover:shadow-lg transition-all">
               <div>
@@ -117,7 +117,7 @@ export function ProductPage({ setActivePage }) {
 
               <TechnicalDetailsExpander isLight={true}>
                 <span>• SQLite relational storage with SQLite / Postgres support</span>
-                <span>• Vector passage embeddings (cosine similarity index)</span>
+                <span>• BM25 keyword matching & approved fact catalog with local retrieval</span>
                 <span>• Strict versioning of guidelines (Current vs Superseded)</span>
               </TechnicalDetailsExpander>
             </div>
@@ -236,7 +236,7 @@ export function ProductPage({ setActivePage }) {
               <TechnicalDetailsExpander isLight={true}>
                 <span>• Word-level LCS token diff generator</span>
                 <span>• Author's original text is never overwritten</span>
-                <span>• Revision saves as a new version with cryptographic hash</span>
+                <span>• Revision saves as a new version with SHA-256 tamper-evident hash</span>
               </TechnicalDetailsExpander>
             </div>
 
@@ -307,13 +307,13 @@ export function ProductPage({ setActivePage }) {
           SECTION 3: WHAT ONE FINDING LOOKS LIKE (CHARCOAL #0B0E14)
           Animated finding card using exact example.
           ================================================== */}
-      <section 
+      <section
         id="example-finding"
         className="py-24 relative overflow-hidden"
         style={{ backgroundColor: '#0B0E14', borderTop: '1px solid rgba(212, 175, 55, 0.15)' }}
       >
         <div className="max-w-[1100px] mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
-          
+
           <div className="text-center max-w-2xl mx-auto mb-16">
             <span className="text-xs font-mono font-bold tracking-widest text-[#D4AF37] uppercase block mb-2">
               REAL-WORLD WORKFLOW EXAMPLE
@@ -329,7 +329,7 @@ export function ProductPage({ setActivePage }) {
 
           {/* Finding Interactive Card */}
           <div className="bg-[#111827] rounded-3xl p-6 sm:p-10 border border-[#D4AF37]/40 shadow-luxury max-w-3xl mx-auto">
-            
+
             {/* Step 1: Draft Text In */}
             <div className="mb-6 p-4 rounded-2xl bg-[#05070F] border border-gray-800">
               <span className="text-xs font-mono text-[#D4AF37] uppercase tracking-wider block mb-1">
@@ -423,13 +423,13 @@ export function ProductPage({ setActivePage }) {
           SECTION 4: WHO IT SERVES (CREAM #EFE6D2)
           Four role cards on cream, white cards, dark text.
           ================================================== */}
-      <section 
+      <section
         id="personas"
         className="py-24 relative"
         style={{ backgroundColor: '#EFE6D2', color: '#121826' }}
       >
         <div className="max-w-[1200px] mx-auto px-4 sm:px-6 lg:px-8">
-          
+
           <div className="text-center max-w-2xl mx-auto mb-16">
             <span className="text-xs font-mono font-bold tracking-widest text-[#8A5A12] uppercase block mb-2">
               TARGET PERSONAS
@@ -444,7 +444,7 @@ export function ProductPage({ setActivePage }) {
           </div>
 
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
-            
+
             {/* Role 1: Content Creator */}
             <div className="bg-white rounded-2xl p-7 border border-[#D4AF37]/35 shadow-[0_8px_20px_rgba(18,24,38,0.05)] flex flex-col justify-between">
               <div>
@@ -513,7 +513,7 @@ export function ProductPage({ setActivePage }) {
                   Authorised Reviewers
                 </h3>
                 <p className="text-[15px] text-[#3B4252] font-sans leading-relaxed">
-                  Inspect evidence citations, request edits with comments, and apply cryptographic sign-offs with full auditability.
+                  Inspect evidence citations, request edits with comments, and record authoritative audit sign-offs with full tamper-evident traceability.
                 </p>
               </div>
               <div className="mt-6 pt-4 border-t border-gray-100 text-xs text-gray-500 font-mono">
@@ -529,7 +529,7 @@ export function ProductPage({ setActivePage }) {
       {/* ==================================================
           SECTION 5: CALL TO ACTION (FULL-WIDTH GOLD GRADIENT BAND)
           ================================================== */}
-      <section 
+      <section
         id="cta"
         className="py-20 text-center relative overflow-hidden"
         style={{
