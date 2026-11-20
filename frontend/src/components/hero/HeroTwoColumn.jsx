@@ -51,6 +51,14 @@ export function HeroTwoColumn({ setActivePage }) {
     if (setActivePage) setActivePage(page);
   };
 
+  const handleExplore = () => {
+    if (typeof window !== 'undefined') {
+      window.dispatchEvent(new CustomEvent('verity:open-role-picker'));
+    } else {
+      handleNav('dashboard');
+    }
+  };
+
   return (
     <section 
       className="relative w-full flex items-center justify-center overflow-hidden py-4 sm:py-6 lg:py-0 select-none"
@@ -185,7 +193,7 @@ export function HeroTwoColumn({ setActivePage }) {
               {/* Explore Demo Workspace: Navy #0A1230 at full opacity 1 on gold gradient */}
               <button
                 type="button"
-                onClick={() => handleNav('dashboard')}
+                onClick={handleExplore}
                 className="btn-gold-sweep group relative px-7 py-3 rounded-xl font-semibold text-[15px] shadow-gold-glow flex items-center justify-center gap-2 transition-all hover:brightness-105 active:scale-[0.98] cursor-pointer"
                 style={{
                   background: 'linear-gradient(135deg, #F3D98B, #D4AF37 50%, #A67C00)',

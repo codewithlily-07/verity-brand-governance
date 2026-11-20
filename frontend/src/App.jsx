@@ -24,6 +24,8 @@ import { LoginPage } from './pages/LoginPage';
 import { RegisterPage } from './pages/RegisterPage';
 import { ForgotPasswordPage } from './pages/ForgotPasswordPage';
 import { ProfilePage } from './pages/ProfilePage';
+import { SealOfVerityIntro } from './components/animation/SealOfVerityIntro';
+import { RolePickerModal } from './components/RolePickerModal';
 import { initSession, resetDemo, getMe, logoutUser } from './lib/api';
 
 export default function App() {
@@ -33,6 +35,7 @@ export default function App() {
   const [isInitializing, setIsInitializing] = useState(true);
   const [isCommandPaletteOpen, setIsCommandPaletteOpen] = useState(false);
   const [isOnboardingOpen, setIsOnboardingOpen] = useState(false);
+  const [isRolePickerOpen, setIsRolePickerOpen] = useState(false);
   const [currentUser, setCurrentUser] = useState(null);
   const [isWakingServer, setIsWakingServer] = useState(false);
 
@@ -62,6 +65,17 @@ export default function App() {
     window.addEventListener('popstate', onPop);
     return () => window.removeEventListener('popstate', onPop);
   }, []);
+
+  useEffect(() => {
+    const handleOpenRolePicker = () => setIsRolePickerOpen(true);
+    window.addEventListener('verity:open-role-picker', handleOpenRolePicker);
+    return () => window.removeEventListener('verity:open-role-picker', handleOpenRolePicker);
+  }, []);
+
+  const handleSelectPersona = (chosenRole, targetPage) => {
+    setRole(chosenRole);
+    navigateTo(targetPage);
+  };
 
   const navigateTo = (page) => {
     setActivePage(page);
@@ -152,7 +166,11 @@ export default function App() {
       
       {/* Navigation Header */}
       {isPublicPage ? (
-        <PublicNavbar activePage={activePage} setActivePage={navigateTo} />
+        <PublicNavbar 
+          activePage={activePage} 
+          setActivePage={navigateTo} 
+          onOpenRolePicker={() => setIsRolePickerOpen(true)}
+        />
       ) : (
         <Navbar
           activePage={activePage}
@@ -250,6 +268,14 @@ export default function App() {
       </main>
 
       {/* Global Interactive Overlays */}
+      {activePage === 'landing' && <SealOfVerityIntro />}
+
+      <RolePickerModal
+        isOpen={isRolePickerOpen}
+        onClose={() => setIsRolePickerOpen(false)}
+        onSelectPersona={handleSelectPersona}
+      />
+
       <CommandPalette
         isOpen={isCommandPaletteOpen}
         setIsOpen={setIsCommandPaletteOpen}
