@@ -3,7 +3,7 @@ import { motion, AnimatePresence, useReducedMotion } from 'framer-motion';
 import { 
   ShieldCheck, CheckCircle2, AlertTriangle, Cpu, Layers, 
   Search, ArrowRight, ArrowLeft, UserCheck, FileCheck, Sparkles,
-  ChevronDown, ChevronUp, RefreshCw, Lock, Hash
+  ChevronDown, ChevronUp, RefreshCw, Lock, Hash, Check
 } from 'lucide-react';
 
 export function HowItWorksPage({ setActivePage }) {
