@@ -114,7 +114,7 @@ export function PublicNavbar({ activePage = 'landing', setActivePage, onOpenRole
               <span className="font-serif text-xl sm:text-2xl font-bold tracking-[0.16em] text-transparent bg-clip-text bg-gradient-to-r from-[#F4E2AA] via-[#E2B857] to-[#F4E2AA] leading-none">
                 VERITY
               </span>
-              <span className="text-[8px] sm:text-[9px] font-sans font-semibold tracking-[0.38em] text-[#E2B857]/80 uppercase mt-0.5 leading-none">
+              <span className="text-[8px] sm:text-[9px] font-sans font-semibold tracking-[0.38em] text-[#EBD9A0] uppercase mt-0.5 leading-none">
                 BRAND GOVERNANCE
               </span>
             </div>
