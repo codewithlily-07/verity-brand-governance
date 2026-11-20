@@ -226,3 +226,49 @@ def test_upload_file_magic_bytes_and_size_validation():
     )
     assert res_valid.status_code == 200
     assert res_valid.json()["status"] == "success"
+
+def test_score_ledger_and_pdf_report_endpoints():
+    """
+    Verifies endpoints requested by UI:
+    - GET /api/submissions/{id}/score
+    - GET /api/submissions/{id}/ledger
+    - GET /api/submissions/{id}/report.pdf
+    """
+    sample_text = "Our platform guarantees 100% results and is the best learning platform in India!"
+    res_sub = client.post("/api/submissions", json={
+        "title": "Comprehensive Scoring & PDF Audit",
+        "content_type": "social",
+        "content": sample_text,
+        "author_name": "Maya Lin",
+        "author_role": "creator"
+    })
+    assert res_sub.status_code == 200
+    sub_id = res_sub.json()["submission_id"]
+
+    # 1. Test Compliance Score
+    res_score = client.get(f"/api/submissions/{sub_id}/score")
+    assert res_score.status_code == 200
+    score_data = res_score.json()
+    assert "overall_score" in score_data
+    assert "grade" in score_data
+    assert "formula" in score_data
+    assert "components" in score_data
+    assert "claims" in score_data["components"]
+
+    # 2. Test Claim Evidence Ledger
+    res_ledger = client.get(f"/api/submissions/{sub_id}/ledger")
+    assert res_ledger.status_code == 200
+    ledger_data = res_ledger.json()
+    assert isinstance(ledger_data, list)
+    assert len(ledger_data) >= 1
+    assert "claim" in ledger_data[0]
+    assert "verdict" in ledger_data[0]
+    assert "source_text" in ledger_data[0]
+    assert "source_doc" in ledger_data[0]
+
+    # 3. Test PDF Report Generation & Download
+    res_pdf = client.get(f"/api/submissions/{sub_id}/report.pdf")
+    assert res_pdf.status_code == 200
+    assert res_pdf.headers["content-type"] == "application/pdf"
+    assert res_pdf.content.startswith(b"%PDF-")
+    assert len(res_pdf.content) > 1000

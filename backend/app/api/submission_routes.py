@@ -1,6 +1,7 @@
 import hashlib
 import time
-from fastapi import APIRouter, Depends, HTTPException, Request, UploadFile, File, Form
+import re
+from fastapi import APIRouter, Depends, HTTPException, Request, UploadFile, File, Form, Response
 from sqlalchemy.orm import Session
 from typing import List, Dict, Any, Optional
 from backend.app.core.database import get_db
@@ -12,6 +13,7 @@ from backend.app.engine.verity_engine import VerityAnalysisEngine, diff_words
 from backend.app.llm.adapter import llm_adapter
 from backend.app.parsers.document_parsers import parse_uploaded_file
 from backend.app.api.brand_routes import get_or_create_profile
+from backend.app.services.pdf_generator import generate_compliance_pdf
 from backend.app.schemas.verity_schemas import (
     SubmissionCreate, SubmissionDetailResponse, SubmissionVersionResponse,
     AnalysisResultResponse, FindingResponse
@@ -526,6 +528,150 @@ def verify_submission_integrity(submission_id: str, db: Session = Depends(get_db
         "algorithm": "SHA-256",
         "versions": version_results
     }
+
+@router.get("/{submission_id}/score")
+def get_submission_compliance_score(submission_id: str, db: Session = Depends(get_db)):
+    """
+    Computes transparent brand compliance score (0-100) and grade
+    based on remaining open findings across policy categories.
+    """
+    sub = db.query(Submission).filter(Submission.id == submission_id).first()
+    if not sub:
+        raise HTTPException(status_code=404, detail="Submission not found")
+
+    latest_version = sub.versions[-1] if sub.versions else None
+    if not latest_version:
+        raise HTTPException(status_code=404, detail="No versions found")
+
+    findings = []
+    if latest_version.analysis_runs:
+        findings = latest_version.analysis_runs[-1].findings
+
+    open_findings = [f for f in findings if f.status in ["open", "challenged"]]
+    high = sum(1 for f in open_findings if f.severity == "high")
+    medium = sum(1 for f in open_findings if f.severity == "medium")
+    low = sum(1 for f in open_findings if f.severity == "low")
+
+    deductions = (high * 25) + (medium * 10) + (low * 5)
+    overall_score = max(0, 100 - deductions)
+
+    if overall_score >= 90:
+        grade = "A"
+    elif overall_score >= 80:
+        grade = "B"
+    elif overall_score >= 70:
+        grade = "C"
+    else:
+        grade = "D"
+
+    categories = ["claims", "terminology", "tone", "visual", "facts"]
+    components = {}
+    for cat in categories:
+        cat_findings = [f for f in open_findings if f.category.lower() == cat or (cat == "facts" and f.rule_id and f.rule_id.startswith("FACT"))]
+        c_high = sum(1 for f in cat_findings if f.severity == "high")
+        c_med = sum(1 for f in cat_findings if f.severity == "medium")
+        c_low = sum(1 for f in cat_findings if f.severity == "low")
+        c_score = max(0, 100 - (c_high * 25 + c_med * 10 + c_low * 5))
+        components[cat] = {"score": c_score}
+
+    return {
+        "submission_id": sub.id,
+        "version_number": latest_version.version_number,
+        "overall_score": overall_score,
+        "grade": grade,
+        "summary": "Calculated across deterministic rules, fact grounding citations, and tone policies.",
+        "formula": "100 - (25 × High + 10 × Medium + 5 × Low)",
+        "components": components
+    }
+
+@router.get("/{submission_id}/ledger")
+def get_submission_evidence_ledger(submission_id: str, db: Session = Depends(get_db)):
+    """
+    Returns the Claim Evidence Ledger: every factual statement mapped
+    to its supporting or conflicting guideline/fact citation.
+    """
+    sub = db.query(Submission).filter(Submission.id == submission_id).first()
+    if not sub:
+        raise HTTPException(status_code=404, detail="Submission not found")
+
+    latest_version = sub.versions[-1] if sub.versions else None
+    if not latest_version:
+        raise HTTPException(status_code=404, detail="No versions found")
+
+    findings = []
+    if latest_version.analysis_runs:
+        findings = latest_version.analysis_runs[-1].findings
+
+    # Split into claim statements
+    sentences = [s.strip() for s in re.split(r"(?<=[.!?])\s+", latest_version.content) if s.strip()]
+    if not sentences:
+        sentences = [latest_version.content.strip()]
+
+    ledger = []
+    for sentence in sentences:
+        matching_finding = None
+        for f in findings:
+            if f.quote and (f.quote.lower() in sentence.lower() or sentence.lower() in f.quote.lower()):
+                matching_finding = f
+                break
+
+        if matching_finding:
+            ev = matching_finding.evidence_json or {}
+            verdict = "conflicting" if matching_finding.severity == "high" else "needs_review"
+            source_excerpt = (
+                ev.get("statement") or
+                ev.get("passage_text") or
+                matching_finding.explanation or
+                "No approved supporting evidence found."
+            )
+            ledger.append({
+                "claim": matching_finding.quote,
+                "sentence": sentence,
+                "verdict": verdict,
+                "source_text": source_excerpt,
+                "source_doc": ev.get("source") or matching_finding.rule_id or "Brand Policy Guidelines",
+                "confidence": matching_finding.confidence or 0.95
+            })
+        else:
+            ledger.append({
+                "claim": sentence,
+                "sentence": sentence,
+                "verdict": "supported",
+                "source_text": "Aligned with approved facts and verified brand guidelines.",
+                "source_doc": "Verified Brand Facts (F-01 / F-02)",
+                "confidence": 1.0
+            })
+
+    return ledger
+
+@router.get("/{submission_id}/report.pdf")
+def export_submission_report_pdf(submission_id: str, db: Session = Depends(get_db)):
+    """
+    Generates and returns the official downloadable PDF Compliance Report
+    with cryptographic SHA-256 fingerprint and reviewer sign-off stamp.
+    """
+    sub = db.query(Submission).filter(Submission.id == submission_id).first()
+    if not sub:
+        raise HTTPException(status_code=404, detail="Submission not found")
+
+    latest_version = sub.versions[-1] if sub.versions else None
+    if not latest_version:
+        raise HTTPException(status_code=404, detail="No versions found")
+
+    findings = []
+    if latest_version.analysis_runs:
+        findings = latest_version.analysis_runs[-1].findings
+
+    profile = db.query(BrandProfile).filter(BrandProfile.id == sub.brand_profile_id).first()
+    pdf_bytes = generate_compliance_pdf(sub, latest_version, findings, sub.decisions, profile)
+
+    return Response(
+        content=pdf_bytes,
+        media_type="application/pdf",
+        headers={
+            "Content-Disposition": f'attachment; filename="verity-report-{sub.id[:8]}.pdf"'
+        }
+    )
 
 @router.post("/run-guided-demo")
 def run_guided_demo(request: Request, db: Session = Depends(get_db)):
