@@ -10,32 +10,41 @@
 @tailwind utilities;
 
 :root {
-  --font-display: 'Playfair Display', Georgia, serif;
-  --font-body: 'Inter', system-ui, -apple-system, sans-serif;
+  --font-display: 'Playfair Display', 'Fraunces', Georgia, serif;
+  --font-body: 'Inter', 'Manrope', system-ui, -apple-system, sans-serif;
 
-  --navy-950: #050A1F;
-  --navy-800: #0A1230;
-  --ink: #05070F;
-  --charcoal: #0B0E14;
-  --gold: #D4AF37;
+  --midnight: #0A1226;
+  --navy: #101B35;
+  --navy-soft: #17254A;
+  --ivory: #FAF8F2;
+  --champagne: #F3EAD3;
+  --paper: #FFFFFF;
+  --ink: #14203D;
+  --ink-soft: #4A5675;
+  --text-on-navy: #F4F1E8;
+  --text-soft-on-navy: #D5DBEE;
+  --gold: #E2B857;
+  --gold-deep: #8A6A24;
   --gold-light: #F3D98B;
-  --gold-deep: #A67C00;
-  --gold-gradient: linear-gradient(135deg, #F3D98B, #D4AF37 50%, #A67C00);
-  --ivory: #F7F2E7;
-  --cream: #EFE6D2;
-  --text-dark: #121826;
-  --emerald: #2ECC9A;
-  --amber: #F5A623;
-  --crimson: #C8414B;
+  --gold-gradient: linear-gradient(135deg, #F3D98B, #E2B857 50%, #8A6A24);
+  --verified-teal: #1E9E78;
+  --high-coral: #D64550;
+  --medium-amber: #D99A2B;
+
+  --navy-950: #0A1226;
+  --navy-800: #101B35;
+  --charcoal: #0B0E14;
+  --cream: #F3EAD3;
+  --text-dark: #14203D;
 
   /* Default theme scope is dark */
-  --text-strong: #F7F2E7;
-  --text: rgba(247, 242, 231, 0.88);
-  --text-muted: rgba(247, 242, 231, 0.68);
-  --border: rgba(212, 175, 55, 0.35);
-  --surface: #0A1230;
-  --surface-elevated: #111827;
-  --link: #F3D98B;
+  --text-strong: #F4F1E8;
+  --text: #F4F1E8;
+  --text-muted: #D5DBEE;
+  --border: rgba(226, 184, 87, 0.35);
+  --surface: #101B35;
+  --surface-elevated: #17254A;
+  --link: #E2B857;
 }
 
 .theme-dark {
