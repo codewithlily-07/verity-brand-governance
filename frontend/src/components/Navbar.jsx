@@ -2,7 +2,7 @@ import React, { useState, useEffect, useRef } from 'react';
 import { 
   Shield, Sparkles, User, RefreshCw, Bell, Command, 
   HelpCircle, CheckCircle2, ExternalLink, LogIn, LogOut, Check,
-  ArrowLeft, ChevronDown
+  ArrowLeft, ChevronDown, X
 } from 'lucide-react';
 import { markNotificationRead, clearAllNotifications, switchRole } from '../lib/api';
 
@@ -279,15 +279,27 @@ export function Navbar({
                       </span>
                     )}
                   </div>
-                  {unreadCount > 0 && (
-                    <button 
-                      onClick={handleMarkAllRead} 
-                      className="text-[11px] text-[#8A5A12] hover:text-[#0A1230] font-semibold flex items-center gap-1 transition-colors cursor-pointer"
+                  <div className="flex items-center gap-2">
+                    {unreadCount > 0 && (
+                      <button 
+                        type="button"
+                        onClick={handleMarkAllRead} 
+                        className="text-[11px] text-[#8A5A12] hover:text-[#0A1230] font-semibold flex items-center gap-1 transition-colors cursor-pointer"
+                      >
+                        <Check className="w-3 h-3" />
+                        Mark all read
+                      </button>
+                    )}
+                    <button
+                      type="button"
+                      onClick={() => setShowNotes(false)}
+                      className="p-1 rounded-lg text-[#5B6478] hover:text-[#0A1230] hover:bg-[#E6DDC8]/60 transition-colors cursor-pointer flex items-center justify-center"
+                      title="Close notifications"
+                      aria-label="Close notifications panel"
                     >
-                      <Check className="w-3 h-3" />
-                      Mark all read
+                      <X className="w-4 h-4" />
                     </button>
-                  )}
+                  </div>
                 </div>
 
                 <div className="max-h-80 overflow-y-auto divide-y divide-gray-100">

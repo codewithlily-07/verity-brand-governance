@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { X } from 'lucide-react';
 import { Navbar } from './components/Navbar';
 import { PublicNavbar } from './components/PublicNavbar';
 import { Footer } from './components/Footer';
@@ -156,11 +157,22 @@ export default function App() {
     >
       {/* Friendly Cold Start Waking Banner */}
       {isWakingServer && (
-        <div className="fixed top-0 left-0 right-0 z-50 bg-[#0A1230] border-b border-[#D4AF37]/50 text-[#F7F2E7] px-4 py-2.5 shadow-2xl flex items-center justify-center gap-3 text-sm">
-          <span className="w-2.5 h-2.5 rounded-full bg-[#D4AF37] animate-ping" />
-          <span>
-            <strong className="text-[#D4AF37]">Waking the server...</strong> Cloud free instances spin down after inactivity (approx 25–45s). Connecting your isolated demo session...
-          </span>
+        <div className="fixed top-0 left-0 right-0 z-50 bg-[#0A1230] border-b border-[#D4AF37]/50 text-[#F7F2E7] px-4 py-2.5 shadow-2xl flex items-center justify-between gap-3 text-sm">
+          <div className="flex items-center justify-center gap-3 mx-auto">
+            <span className="w-2.5 h-2.5 rounded-full bg-[#D4AF37] animate-ping" />
+            <span>
+              <strong className="text-[#D4AF37]">Waking the server...</strong> Cloud free instances spin down after inactivity (approx 25–45s). Connecting your isolated demo session...
+            </span>
+          </div>
+          <button
+            type="button"
+            onClick={() => setIsWakingServer(false)}
+            className="text-gray-400 hover:text-white p-1 rounded-lg transition-colors cursor-pointer shrink-0"
+            title="Dismiss notification"
+            aria-label="Close notification"
+          >
+            <X className="w-4 h-4" />
+          </button>
         </div>
       )}
       
