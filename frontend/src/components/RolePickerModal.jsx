@@ -42,7 +42,7 @@ export function RolePickerModal({ isOpen, onClose, onSelectPersona }) {
       role: 'reviewer',
       icon: CheckCircle,
       accent: '#1E9E78',
-      description: 'Evaluate side-by-side diffs, ungrounded claim blockers, and apply cryptographic SHA-256 approval seals.',
+      description: 'Evaluate side-by-side diffs, ungrounded claim blockers, and apply tamper-evident SHA-256 approval seals.',
       actionLabel: 'Enter as Reviewer'
     },
     {
