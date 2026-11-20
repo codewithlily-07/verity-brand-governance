@@ -74,7 +74,7 @@ export function LandingPage({ setActivePage }) {
             </h2>
             <div className="title-gold-underline mx-auto mb-4" />
             <p className="text-[17px] text-[#4A5568] font-sans leading-relaxed">
-              Deterministic rule execution, vector knowledge verification, and cryptographic human authority.
+              Deterministic rule execution, approved fact verification, and tamper-evident human authority.
             </p>
           </div>
 
@@ -205,7 +205,7 @@ export function LandingPage({ setActivePage }) {
             </h2>
             <div className="title-gold-underline mx-auto mb-4" />
             <p className="text-[17px] text-[#9AA6C7] font-sans leading-relaxed">
-              Every release is checked, matched, aligned, and cryptographically authorized.
+              Every release is checked, matched, aligned, and authoritatively sealed.
             </p>
           </div>
 
