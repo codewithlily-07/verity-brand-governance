@@ -182,6 +182,12 @@ async def upload_guideline_source(
     db: Session = Depends(get_db)
 ):
     profile = get_or_create_profile(db, request)
+    fn = (file.filename or "").lower()
+    if not (fn.endswith(".pdf") or fn.endswith(".docx") or fn.endswith(".txt")):
+        raise HTTPException(
+            status_code=400,
+            detail="Unsupported document format. Only PDF (.pdf), Microsoft Word (.docx), and plain text (.txt) files are supported."
+        )
     contents = await file.read()
     
     # 10MB limit check
