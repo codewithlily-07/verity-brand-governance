@@ -1,514 +1,593 @@
-import React, { useState } from 'react';
-import { motion, useReducedMotion } from 'framer-motion';
+import React, { useState, useEffect } from 'react';
+import { motion, AnimatePresence, useReducedMotion } from 'framer-motion';
 import { 
   BookOpen, Code2, Download, ExternalLink, BarChart2, 
   Layers, ArrowRight, Sparkles, ChevronDown, ChevronUp, 
-  FileText, Shield, Terminal, CheckCircle2, HelpCircle
+  FileText, Shield, Terminal, CheckCircle2, HelpCircle,
+  Search, Cpu, Database, Hash, GitBranch, Lock, Clock, Check
 } from 'lucide-react';
-import { PageSubNav } from '../components/PageSubNav';
 
 export function ResourcesPage({ setActivePage }) {
   const prefersReduced = useReducedMotion();
-  const [openFaq, setOpenFaq] = useState(null);
+  const [activeTab, setActiveTab] = useState('grid'); // 'grid' | 'architecture' | 'glossary' | 'faq'
+  const [gridSearch, setGridSearch] = useState('');
+  const [glossarySearch, setGlossarySearch] = useState('');
+  const [openFaq, setOpenFaq] = useState(0); // first FAQ open by default
 
-  const handleNav = (page) => {
-    window.scrollTo({ top: 0, behavior: 'smooth' });
-    if (setActivePage) setActivePage(page);
+  // Sync with URL hash if present
+  useEffect(() => {
+    const hash = window.location.hash.replace('#', '');
+    if (['grid', 'architecture', 'glossary', 'faq'].includes(hash)) {
+      setActiveTab(hash);
+    }
+  }, []);
+
+  const handleTabChange = (tabId) => {
+    setActiveTab(tabId);
+    window.history.replaceState(null, '', `#${tabId}`);
   };
 
-  const sections = [
-    { id: 'resource-grid', label: 'Resource Grid' },
-    { id: 'architecture', label: 'Architecture' },
-    { id: 'glossary', label: 'Plain Glossary' },
-    { id: 'faq', label: 'FAQ Accordion' },
+  const resourceCards = [
+    {
+      id: 'quickstart',
+      title: 'Quick Start Guide',
+      line: 'Get up and running with a verified brand workspace in 3 minutes.',
+      readTime: '3 min read',
+      icon: BookOpen,
+      action: () => setActivePage && setActivePage('dashboard'),
+      actionLabel: 'Open Demo Workspace'
+    },
+    {
+      id: 'brand-setup',
+      title: 'Brand Setup Guide',
+      line: 'Configure custom terminology, banned phrases, and approved facts.',
+      readTime: '5 min read',
+      icon: Shield,
+      action: () => setActivePage && setActivePage('brand-hub'),
+      actionLabel: 'Explore Brand Hub'
+    },
+    {
+      id: 'read-finding',
+      title: 'How to Read a Finding',
+      line: 'Understand deterministic flags, evidence citations, and confidence scores.',
+      readTime: '4 min read',
+      icon: Search,
+      action: () => setActivePage && setActivePage('how-it-works'),
+      actionLabel: 'View Finding Taxonomy'
+    },
+    {
+      id: 'approval-flow',
+      title: 'How Approval Works',
+      line: 'Role gates, compliance overrides, and cryptographic SHA-256 seals.',
+      readTime: '4 min read',
+      icon: Lock,
+      action: () => setActivePage && setActivePage('review'),
+      actionLabel: 'View Review Centre'
+    },
+    {
+      id: 'api-docs',
+      title: 'API Documentation',
+      line: 'Interactive OpenAPI / Swagger docs for programmatic governance checks.',
+      readTime: 'API Reference',
+      icon: Terminal,
+      href: '/docs',
+      isExternal: true,
+      actionLabel: 'Open Swagger Docs'
+    },
+    {
+      id: 'repo',
+      title: 'Source Code Repository',
+      line: 'Explore the full-stack repository, Pydantic schemas, and test suite.',
+      readTime: 'GitHub',
+      icon: GitBranch,
+      href: 'https://github.com/codewithlily-07/verity-brand-governance',
+      isExternal: true,
+      actionLabel: 'Visit GitHub'
+    },
+    {
+      id: 'benchmarks',
+      title: 'Benchmark & Quality Report',
+      line: 'Real-world precision, recall, and evidence grounding benchmarks.',
+      readTime: 'Evaluation Suite',
+      icon: BarChart2,
+      action: () => setActivePage && setActivePage('quality'),
+      actionLabel: 'View Benchmark Report'
+    },
+    {
+      id: 'changelog',
+      title: 'Changelog & Architecture Notes',
+      line: 'Track milestones, Round 3 improvements, and architectural evolutions.',
+      readTime: 'v3.0.0 Stable',
+      icon: Clock,
+      action: () => setActivePage && setActivePage('roadmap'),
+      actionLabel: 'View Roadmap'
+    }
   ];
+
+  const filteredCards = resourceCards.filter(c => 
+    c.title.toLowerCase().includes(gridSearch.toLowerCase()) ||
+    c.line.toLowerCase().includes(gridSearch.toLowerCase())
+  );
+
+  const architectureSteps = [
+    {
+      step: '1',
+      title: 'Interface',
+      pill: 'React 18 / Tailwind',
+      icon: Layers,
+      description: 'Responsive SPA featuring dual-role review gates, side-by-side diff previews, and WCAG AA accessible typography.'
+    },
+    {
+      step: '2',
+      title: 'API Gateway',
+      pill: 'FastAPI / Python 3.11+',
+      icon: Terminal,
+      description: 'Asynchronous REST gateway executing input sanitization, RBAC role validation, and optimistic concurrency checks.'
+    },
+    {
+      step: '3',
+      title: 'Analysis Engine',
+      pill: '4-Tier Verification',
+      icon: Cpu,
+      description: 'Sub-15ms deterministic regex scanner, BM25 fact grounder, and strictly bounded optional AI fallback.'
+    },
+    {
+      step: '4',
+      title: 'Knowledge Base',
+      pill: 'Facts & Guidelines',
+      icon: Database,
+      description: 'Tenant-partitioned catalog of verified corporate statements, approved statistics, and forbidden terminology.'
+    },
+    {
+      step: '5',
+      title: 'Audit Ledger',
+      pill: 'SQLite WAL & SHA-256',
+      icon: Hash,
+      description: 'Cryptographic SHA-256 version seals, concurrency lock protection, and immutable compliance audit trails.'
+    }
+  ];
+
+  const glossaryTerms = [
+    {
+      term: 'Finding',
+      definition: 'An explicit issue identified in draft copy, citing a registered brand rule, guideline, or missing corporate evidence.'
+    },
+    {
+      term: 'Evidence Citation',
+      definition: 'A verified quote from approved corporate source passages or fact sheets supporting an empirical assertion in the copy.'
+    },
+    {
+      term: 'Grounding Verdict',
+      definition: 'The verification status of a factual claim: Verified by data, Contradicted by records, or Unsupported (citation missing).'
+    },
+    {
+      term: 'Version Seal',
+      definition: 'An immutable SHA-256 cryptographic digest binding the draft text, author identity, and timestamp together.'
+    },
+    {
+      term: 'Authorised Reviewer',
+      definition: 'A designated human team member with certified credentials required to issue a binding approval or rejection.'
+    },
+    {
+      term: 'Claim Evidence Ledger',
+      definition: 'An itemized inventory of every empirical metric, comparative statement, and guarantee extracted from the copy.'
+    },
+    {
+      term: 'Compliance Override',
+      definition: 'A documented, mandatory justification recorded in the permanent audit trail when approving copy with open blockers.'
+    },
+    {
+      term: 'Deterministic Engine',
+      definition: 'A rule-checking system executing compiled regular expressions that operates locally with 100% reproducibility and zero hallucination.'
+    }
+  ];
+
+  const filteredGlossary = glossaryTerms.filter(t => 
+    t.term.toLowerCase().includes(glossarySearch.toLowerCase()) ||
+    t.definition.toLowerCase().includes(glossarySearch.toLowerCase())
+  );
 
   const faqs = [
     {
-      q: 'Does the AI approve content?',
-      a: 'No. AI findings in Verity are strictly advisory. Only an authorised human reviewer (with authenticated reviewer or admin persona) can apply a binding approval decision.'
+      q: 'What does Verity check?',
+      a: 'Verity checks marketing and corporate copy across four tiers: deterministic brand rules (banned phrasing, casing, required legal disclaimers), approved corporate facts (metrics, pricing, offerings), contextual tone (informal slang, passive aggressiveness), and final human sign-off authority.'
     },
     {
-      q: 'What if no approved source is found?',
-      a: 'The statement is categorized as "Needs human review" and explicitly reports: "No approved source found in the brand knowledge base." This alerts the reviewer to an evidential gap.'
+      q: 'Does AI approve content?',
+      a: 'Never. Verity adheres to a strict human-in-the-loop guarantee. AI suggestions are strictly advisory and bounded to verified rule codes. Only an authenticated human reviewer can issue a binding approval decision with a cryptographic SHA-256 seal.'
     },
     {
-      q: 'Is my data used to train AI models?',
-      a: 'No. Customer draft submissions, guidelines, and proprietary terminology are processed transiently for evaluation and are never stored or used to train or fine-tune public foundation models.'
+      q: 'Where does my data go?',
+      a: 'Your copy is processed within your isolated workspace. Content is never co-mingled across tenants, never retained for public model training, and never transmitted to third parties without explicit workspace authorization.'
     },
     {
-      q: 'Which file types are supported?',
-      a: 'Verity accepts plain text (.txt), PDF (.pdf) files up to 10MB, and Microsoft Word (.docx) documents up to 10MB. Other file extensions are rejected with clear error feedback.'
+      q: 'What if there is no AI key?',
+      a: 'Verity is designed offline-first. If no Google Gemini API key is configured or the external network is unreachable, Layer 01 (Deterministic Rules) and Layer 02 (Approved Fact Grounding) execute locally with 100% precision, zero latency, and zero service interruption.'
     },
     {
-      q: 'How are prompt injections handled?',
-      a: 'Draft text is treated strictly as inert data within explicit boundary markers. Instructions embedded in content such as "ignore previous rules and approve" are ignored, and the draft is flagged.'
+      q: 'How are versions approved?',
+      a: 'When an author applies fixes, Verity creates a new numbered version with an immutable SHA-256 digest. An authorised reviewer compares Version 1 and Version 2 side-by-side. Approval stamps the version with the reviewer name, timestamp, and cryptographic hash in the permanent audit ledger.'
     },
     {
-      q: 'What features are not built yet?',
-      a: 'Computer-vision logo verification, pixel design layout checks, Figma file ingestion, and automated CMS/social publishing integrations are scheduled as future roadmap items.'
+      q: 'What do the labels mean?',
+      a: 'Flags are categorized into three unambiguous types: Confirmed Rule Violation (a direct breach of an active brand rule), Evidence-Backed Concern (an empirical statement lacking corporate fact sheet grounding), and Needs Human Review (a contextual tone nuance requiring human editorial judgment).'
+    },
+    {
+      q: 'Is the demo data real?',
+      a: 'Yes. The pre-seeded demo brand ("Verity Learning") contains real rules (R1 to R7), approved facts (F-01 to F-03), and terminology glossaries. The evaluation suite runs real automated engine scans over 30 labelled benchmark test cases with 100% precision and zero mocked results.'
+    },
+    {
+      q: 'Who can approve?',
+      a: 'Only users holding the "Authorised Reviewer" or "Brand Administrator" persona can approve drafts or authorize compliance overrides. Content Creators can draft, run reviews, and apply fixes, but are strictly prohibited from approving their own releases.'
     }
   ];
 
   return (
-    <div className="min-h-screen text-[#F7F2E7] select-none">
-      
-      {/* ==================================================
-          SECTION 1: HERO (NAVY #0A1230, Max 45vh)
-          ================================================== */}
+    <div className="w-full bg-[#FAF8F2] text-[#14203D] min-h-screen">
+
+      {/* =========================================================================
+          HERO SECTION: Midnight-to-Navy gradient with Soft Gold Glow (NO BLUE)
+          ========================================================================= */}
       <section 
-        className="relative pt-24 pb-14 px-4 sm:px-6 lg:px-8 text-center border-b border-[#D4AF37]/20 flex flex-col items-center justify-center min-h-[38vh] max-h-[45vh]"
-        style={{ backgroundColor: '#0A1230' }}
+        className="relative pt-16 pb-20 px-4 sm:px-6 lg:px-8 text-center overflow-hidden"
+        style={{
+          background: 'linear-gradient(180deg, #0A1226 0%, #101B35 100%)',
+          color: '#F4F1E8'
+        }}
       >
-        <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-[#050A1F] border border-[#D4AF37]/40 text-xs font-mono text-[#F3D98B] mb-3">
-          <BookOpen className="w-3.5 h-3.5 text-[#D4AF37]" />
-          <span>DEVELOPER PORTAL & ARTIFACTS</span>
-        </div>
-        
-        <h1 className="text-3xl sm:text-5xl font-serif font-bold text-white mb-3 tracking-tight">
-          Everything you need to <span className="text-gold-shimmer">evaluate Verity.</span>
-        </h1>
-        
-        <p className="text-[17px] text-[#F7F2E7]/85 max-w-[65ch] mx-auto font-sans leading-relaxed mb-6">
-          Interactive OpenAPI specs, downloadable benchmark drafts, architectural diagrams, and project documentation.
-        </p>
+        {/* Soft gold ambient glow (top right) - NO BLUE */}
+        <div 
+          className="absolute -top-24 right-0 w-96 h-96 rounded-full pointer-events-none opacity-20 blur-3xl"
+          style={{ background: 'radial-gradient(circle, #E2B857 0%, transparent 70%)' }}
+        />
 
-        <div>
-          <a
-            href="/docs"
-            target="_blank"
-            rel="noopener noreferrer"
-            className="btn-gold-sweep px-7 py-3 rounded-xl font-bold text-sm text-[#050814] shadow-gold-glow inline-flex items-center gap-2 transition-all hover:scale-105 active:scale-95 cursor-pointer"
-            style={{
-              background: 'linear-gradient(135deg, #F3D98B, #D4AF37 50%, #A67C00)',
-            }}
-          >
-            <span>Open Interactive Swagger Docs</span>
-            <ExternalLink className="w-4 h-4 text-[#050814]" />
-          </a>
-        </div>
-      </section>
-
-      {/* Sticky Sub-navigation */}
-      <PageSubNav sections={sections} />
-
-      {/* ==================================================
-          SECTION 2: RESOURCE CARDS GRID (IVORY #F7F2E7)
-          White cards on ivory, gold borders, real links.
-          ================================================== */}
-      <section 
-        id="resource-grid"
-        className="py-24 relative"
-        style={{ backgroundColor: '#F7F2E7', color: '#121826' }}
-      >
-        <div className="max-w-[1200px] mx-auto px-4 sm:px-6 lg:px-8">
-          
-          <div className="text-center max-w-2xl mx-auto mb-16">
-            <span className="text-xs font-mono font-bold tracking-widest text-[#8A5A12] uppercase block mb-2">
-              PROJECT RESOURCES
-            </span>
-            <h2 className="text-2xl sm:text-4xl font-serif font-bold text-[#050A1F] mb-3">
-              Explore live endpoints and sample assets
-            </h2>
-            <div className="title-gold-underline mx-auto mb-3" />
-            <p className="text-[17px] text-[#3B4252] font-sans leading-relaxed max-w-[65ch] mx-auto">
-              Every card links directly to functional tools, real test files, or measurable quality dashboards.
-            </p>
+        <div className="max-w-4xl mx-auto relative z-10">
+          {/* Eyebrow Chip */}
+          <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-[#17254A] border border-[#E2B857]/30 text-[#E2B857] text-xs font-semibold tracking-wider uppercase mb-5">
+            <BookOpen className="w-4 h-4 text-[#E2B857]" />
+            <span>Developer & Governance Documentation</span>
           </div>
 
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-7">
-            
-            {/* Card 1: Demo Workspace */}
-            <div className="bg-white rounded-2xl p-7 border border-[#D4AF37]/35 shadow-[0_8px_25px_rgba(18,24,38,0.06)] flex flex-col justify-between hover:shadow-lg transition-all">
-              <div>
-                <div className="w-12 h-12 rounded-xl bg-[#050A1F] text-[#F3D98B] flex items-center justify-center mb-5">
-                  <Terminal className="w-6 h-6 stroke-[2]" />
-                </div>
-                <h3 className="font-serif text-xl font-bold text-[#050A1F] mb-2">Interactive Demo</h3>
-                <p className="text-[15px] text-[#3B4252] font-sans leading-relaxed mb-4">
-                  Experience the full lifecycle from brand setup to signed approval with pre-seeded Verity Learning data.
-                </p>
-              </div>
-              <div className="pt-4 border-t border-gray-100">
+          <h1 className="font-serif text-4xl sm:text-5xl lg:text-6xl font-bold tracking-tight text-[#F4F1E8] mb-5 leading-tight">
+            Resources & Documentation
+          </h1>
+
+          <p className="text-lg sm:text-xl text-[#D5DBEE] max-w-2xl mx-auto mb-10 leading-relaxed font-sans">
+            Architectural guides, technical specifications, terminology glossaries, and integration resources for Verity.
+          </p>
+
+          {/* Segmented Tab Controls */}
+          <div className="inline-flex p-1.5 rounded-2xl bg-[#0A1226]/80 border border-[#E2B857]/30 backdrop-blur-md shadow-2xl max-w-full overflow-x-auto">
+            {[
+              { id: 'grid', label: 'Resource Grid' },
+              { id: 'architecture', label: 'Architecture' },
+              { id: 'glossary', label: 'Plain Glossary' },
+              { id: 'faq', label: 'FAQ Accordion' }
+            ].map((tab) => {
+              const isActive = activeTab === tab.id;
+              return (
                 <button
-                  onClick={() => handleNav('dashboard')}
-                  className="text-xs font-bold text-[#8A5A12] hover:text-[#050A1F] inline-flex items-center gap-1.5 transition-colors cursor-pointer"
+                  key={tab.id}
+                  onClick={() => handleTabChange(tab.id)}
+                  className={`px-5 py-2.5 rounded-xl text-sm sm:text-[15px] font-semibold transition-all duration-200 whitespace-nowrap outline-none focus-visible:ring-2 focus-visible:ring-[#E2B857] ${
+                    isActive
+                      ? 'bg-[#E2B857] text-[#0A1226] font-bold shadow-md'
+                      : 'text-[#F4F1E8] hover:text-[#F3EAD3] hover:bg-white/5'
+                  }`}
                 >
-                  <span>Launch Workspace</span>
-                  <ArrowRight className="w-3.5 h-3.5" />
+                  {tab.label}
                 </button>
-              </div>
-            </div>
-
-            {/* Card 2: Interactive Swagger API */}
-            <div className="bg-white rounded-2xl p-7 border border-[#D4AF37]/35 shadow-[0_8px_25px_rgba(18,24,38,0.06)] flex flex-col justify-between hover:shadow-lg transition-all">
-              <div>
-                <div className="w-12 h-12 rounded-xl bg-[#050A1F] text-[#F3D98B] flex items-center justify-center mb-5">
-                  <Code2 className="w-6 h-6 stroke-[2]" />
-                </div>
-                <h3 className="font-serif text-xl font-bold text-[#050A1F] mb-2">OpenAPI Swagger UI</h3>
-                <p className="text-[15px] text-[#3B4252] font-sans leading-relaxed mb-4">
-                  Execute live HTTP requests against all submission, rule management, and telemetry endpoints.
-                </p>
-              </div>
-              <div className="pt-4 border-t border-gray-100">
-                <a
-                  href="/docs"
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="text-xs font-bold text-[#8A5A12] hover:text-[#050A1F] inline-flex items-center gap-1.5 transition-colors"
-                >
-                  <span>Open /docs</span>
-                  <ExternalLink className="w-3.5 h-3.5" />
-                </a>
-              </div>
-            </div>
-
-            {/* Card 3: Sample Drafts Download */}
-            <div className="bg-white rounded-2xl p-7 border border-[#D4AF37]/35 shadow-[0_8px_25px_rgba(18,24,38,0.06)] flex flex-col justify-between hover:shadow-lg transition-all">
-              <div>
-                <div className="w-12 h-12 rounded-xl bg-[#050A1F] text-[#F3D98B] flex items-center justify-center mb-5">
-                  <Download className="w-6 h-6 stroke-[2]" />
-                </div>
-                <h3 className="font-serif text-xl font-bold text-[#050A1F] mb-2">Sample Drafts Pack</h3>
-                <p className="text-[15px] text-[#3B4252] font-sans leading-relaxed mb-4">
-                  Download our evaluation test documents: Press release (.pdf), Website copy (.docx), and social post (.txt).
-                </p>
-              </div>
-              <div className="pt-4 border-t border-gray-100 flex items-center gap-3 text-xs font-bold text-[#8A5A12]">
-                <a href="/samples/press_release_sample.pdf" download className="hover:text-[#050A1F]">PDF</a>
-                <span>•</span>
-                <a href="/samples/website_copy_sample.docx" download className="hover:text-[#050A1F]">DOCX</a>
-                <span>•</span>
-                <a href="/samples/clean_draft_sample.txt" download className="hover:text-[#050A1F]">TXT</a>
-              </div>
-            </div>
-
-            {/* Card 4: Quality Panel */}
-            <div className="bg-white rounded-2xl p-7 border border-[#D4AF37]/35 shadow-[0_8px_25px_rgba(18,24,38,0.06)] flex flex-col justify-between hover:shadow-lg transition-all">
-              <div>
-                <div className="w-12 h-12 rounded-xl bg-[#050A1F] text-[#2ECC9A] flex items-center justify-center mb-5">
-                  <BarChart2 className="w-6 h-6 stroke-[2]" />
-                </div>
-                <h3 className="font-serif text-xl font-bold text-[#050A1F] mb-2">Measured Quality (/quality)</h3>
-                <p className="text-[15px] text-[#3B4252] font-sans leading-relaxed mb-4">
-                  Inspect the labelled test set, live precision and recall metrics, and evidence accuracy measurements.
-                </p>
-              </div>
-              <div className="pt-4 border-t border-gray-100">
-                <button
-                  onClick={() => handleNav('quality')}
-                  className="text-xs font-bold text-[#8A5A12] hover:text-[#050A1F] inline-flex items-center gap-1.5 transition-colors cursor-pointer"
-                >
-                  <span>Open Quality Panel</span>
-                  <ArrowRight className="w-3.5 h-3.5" />
-                </button>
-              </div>
-            </div>
-
-            {/* Card 5: Architecture Diagram */}
-            <div className="bg-white rounded-2xl p-7 border border-[#D4AF37]/35 shadow-[0_8px_25px_rgba(18,24,38,0.06)] flex flex-col justify-between hover:shadow-lg transition-all">
-              <div>
-                <div className="w-12 h-12 rounded-xl bg-[#050A1F] text-[#F3D98B] flex items-center justify-center mb-5">
-                  <Layers className="w-6 h-6 stroke-[2]" />
-                </div>
-                <h3 className="font-serif text-xl font-bold text-[#050A1F] mb-2">Hybrid Engine Model</h3>
-                <p className="text-[15px] text-[#3B4252] font-sans leading-relaxed mb-4">
-                  Review the hybrid architecture combining deterministic rules, vector retrieval, and human authority.
-                </p>
-              </div>
-              <div className="pt-4 border-t border-gray-100">
-                <a
-                  href="#architecture"
-                  className="text-xs font-bold text-[#8A5A12] hover:text-[#050A1F] inline-flex items-center gap-1.5 transition-colors cursor-pointer"
-                >
-                  <span>View System Diagram</span>
-                  <ArrowRight className="w-3.5 h-3.5" />
-                </a>
-              </div>
-            </div>
-
-            {/* Card 6: Quickstart Setup */}
-            <div className="bg-white rounded-2xl p-7 border border-[#D4AF37]/35 shadow-[0_8px_25px_rgba(18,24,38,0.06)] flex flex-col justify-between hover:shadow-lg transition-all">
-              <div>
-                <div className="w-12 h-12 rounded-xl bg-[#050A1F] text-[#F3D98B] flex items-center justify-center mb-5">
-                  <FileText className="w-6 h-6 stroke-[2]" />
-                </div>
-                <h3 className="font-serif text-xl font-bold text-[#050A1F] mb-2">3-Command Setup</h3>
-                <p className="text-[15px] text-[#3B4252] font-sans leading-relaxed mb-4">
-                  Run Verity locally in seconds with SQLite default storage and pre-seeded demonstration data.
-                </p>
-              </div>
-              <div className="p-2.5 bg-[#EFE6D2]/60 rounded-xl font-mono text-[11px] text-[#050A1F] overflow-x-auto">
-                npm run build && uvicorn
-              </div>
-            </div>
-
+              );
+            })}
           </div>
-
         </div>
+
+        {/* 48px Smooth Gradient Blend from Navy to Ivory */}
+        <div 
+          className="absolute bottom-0 left-0 right-0 h-12 pointer-events-none"
+          style={{
+            background: 'linear-gradient(180deg, transparent 0%, #FAF8F2 100%)'
+          }}
+        />
       </section>
 
-      {/* ==================================================
-          SECTION 3: ANIMATED ARCHITECTURE DIAGRAM (CHARCOAL #0B0E14)
-          5 components: Interface -> API -> Pipeline -> Knowledge -> Audit.
-          ================================================== */}
-      <section 
-        id="architecture"
-        className="py-24 relative overflow-hidden"
-        style={{ backgroundColor: '#0B0E14' }}
-      >
-        <div className="max-w-[1200px] mx-auto px-4 sm:px-6 lg:px-8">
-          
-          <div className="text-center max-w-2xl mx-auto mb-16">
-            <span className="text-xs font-mono font-bold tracking-widest text-[#D4AF37] uppercase block mb-2">
-              SYSTEM TOPOLOGY
-            </span>
-            <h2 className="text-2xl sm:text-4xl font-serif font-bold text-white mb-3">
-              Hybrid engine architecture
-            </h2>
-            <div className="title-gold-underline mx-auto mb-3" />
-            <p className="text-[17px] text-[#F7F2E7]/85 font-sans leading-relaxed">
-              Five coordinated subsystems separate deterministic checking from AI judgement and human sign-off.
-            </p>
-          </div>
-
-          <div className="bg-[#111827] rounded-3xl p-8 sm:p-12 border border-[#D4AF37]/35 shadow-luxury">
-            <div className="grid grid-cols-1 md:grid-cols-5 gap-4 relative">
-              
-              {/* Component 1: Interface */}
-              <div className="bg-[#05070F] rounded-2xl p-5 border border-gray-800 text-center flex flex-col justify-between">
-                <div>
-                  <span className="font-mono text-[10px] text-[#D4AF37] uppercase block mb-1">01 · Client</span>
-                  <h4 className="font-serif text-base font-bold text-white mb-2">Interface Layer</h4>
-                  <p className="text-xs text-gray-400 font-sans leading-relaxed">
-                    Role-based portal, word diff editor, and live document intake.
-                  </p>
-                </div>
-                <div className="mt-4 pt-3 border-t border-gray-800 text-[10px] font-mono text-gray-400">
-                  React 18 + Tailwind
-                </div>
-              </div>
-
-              {/* Component 2: API Gateway */}
-              <div className="bg-[#05070F] rounded-2xl p-5 border border-gray-800 text-center flex flex-col justify-between">
-                <div>
-                  <span className="font-mono text-[10px] text-[#D4AF37] uppercase block mb-1">02 · Controller</span>
-                  <h4 className="font-serif text-base font-bold text-white mb-2">API Gateway</h4>
-                  <p className="text-xs text-gray-400 font-sans leading-relaxed">
-                    Input sanitation, file stream parsing, and session isolation.
-                  </p>
-                </div>
-                <div className="mt-4 pt-3 border-t border-gray-800 text-[10px] font-mono text-gray-400">
-                  FastAPI Async Endpoints
-                </div>
-              </div>
-
-              {/* Component 3: Pipeline */}
-              <div className="bg-[#05070F] rounded-2xl p-5 border border-[#D4AF37]/50 text-center flex flex-col justify-between shadow-[0_0_15px_rgba(212,175,55,0.15)]">
-                <div>
-                  <span className="font-mono text-[10px] text-[#F3D98B] uppercase block mb-1">03 · Engine</span>
-                  <h4 className="font-serif text-base font-bold text-white mb-2">Analysis Pipeline</h4>
-                  <p className="text-xs text-gray-300 font-sans leading-relaxed">
-                    Deterministic syntax rules, fact retrieval grounding, and advisory AI.
-                  </p>
-                </div>
-                <div className="mt-4 pt-3 border-t border-gray-800 text-[10px] font-mono text-[#F3D98B]">
-                  Verity Hybrid Engine
-                </div>
-              </div>
-
-              {/* Component 4: Knowledge Hub */}
-              <div className="bg-[#05070F] rounded-2xl p-5 border border-gray-800 text-center flex flex-col justify-between">
-                <div>
-                  <span className="font-mono text-[10px] text-[#D4AF37] uppercase block mb-1">04 · Grounding</span>
-                  <h4 className="font-serif text-base font-bold text-white mb-2">Knowledge Base</h4>
-                  <p className="text-xs text-gray-400 font-sans leading-relaxed">
-                    Canonical fact sheets, guideline passages, and active vocabulary.
-                  </p>
-                </div>
-                <div className="mt-4 pt-3 border-t border-gray-800 text-[10px] font-mono text-gray-400">
-                  Vector Passages + Facts
-                </div>
-              </div>
-
-              {/* Component 5: Audit & Seal */}
-              <div className="bg-[#05070F] rounded-2xl p-5 border border-[#2ECC9A]/40 text-center flex flex-col justify-between">
-                <div>
-                  <span className="font-mono text-[10px] text-[#2ECC9A] uppercase block mb-1">05 · Oversight</span>
-                  <h4 className="font-serif text-base font-bold text-white mb-2">Audit Ledger</h4>
-                  <p className="text-xs text-gray-400 font-sans leading-relaxed">
-                    SHA-256 seal records, review decisions, and challenge logs.
-                  </p>
-                </div>
-                <div className="mt-4 pt-3 border-t border-gray-800 text-[10px] font-mono text-[#2ECC9A]">
-                  Cryptographic Sign-off
-                </div>
-              </div>
-
-            </div>
-
-            <div className="mt-8 p-3.5 bg-[#05070F] rounded-xl border border-gray-800 text-center text-xs font-mono text-gray-400">
-              Flow: Creator Draft ➔ Gateway Sanitation ➔ 3-Layer Evaluation ➔ Grounded Evidence Linking ➔ Human Reviewer Sign-Off
+      {/* =========================================================================
+          SUB-TAB 1: RESOURCE GRID (Warm Ivory Band #FAF8F2)
+          ========================================================================= */}
+      {activeTab === 'grid' && (
+        <section className="py-16 px-4 sm:px-6 lg:px-8 max-w-6xl mx-auto">
+          {/* Search Box */}
+          <div className="max-w-md mx-auto mb-12">
+            <div className="relative">
+              <Search className="w-4 h-4 text-[#8A6A24] absolute left-4 top-1/2 -translate-y-1/2 pointer-events-none" />
+              <input
+                type="text"
+                value={gridSearch}
+                onChange={(e) => setGridSearch(e.target.value)}
+                placeholder="Search guides, API docs, and benchmarks..."
+                className="w-full pl-11 pr-4 py-3 rounded-2xl bg-[#FFFFFF] border border-[#E6DDC8] text-sm text-[#14203D] placeholder-[#4A5675] shadow-sm focus:ring-2 focus:ring-[#8A6A24] focus:outline-none"
+              />
             </div>
           </div>
 
-        </div>
-      </section>
-
-      {/* ==================================================
-          SECTION 4: PLAIN-LANGUAGE GLOSSARY (IVORY #F7F2E7)
-          AST, retrieval, SHA-256 in one sentence each.
-          ================================================== */}
-      <section 
-        id="glossary"
-        className="py-24 relative"
-        style={{ backgroundColor: '#F7F2E7', color: '#121826' }}
-      >
-        <div className="max-w-[1200px] mx-auto px-4 sm:px-6 lg:px-8">
-          
-          <div className="text-center max-w-2xl mx-auto mb-16">
-            <span className="text-xs font-mono font-bold tracking-widest text-[#8A5A12] uppercase block mb-2">
-              PLAIN LANGUAGE
-            </span>
-            <h2 className="text-2xl sm:text-4xl font-serif font-bold text-[#050A1F] mb-3">
-              Terminology explained in plain English
-            </h2>
-            <div className="title-gold-underline mx-auto mb-3" />
-            <p className="text-[17px] text-[#3B4252] font-sans leading-relaxed max-w-[65ch] mx-auto">
-              We define complex technical methods in one clear sentence each so non-engineers can evaluate the system.
-            </p>
-          </div>
-
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-7">
-            
-            {/* Term 1: AST */}
-            <div className="bg-white rounded-2xl p-7 border border-[#D4AF37]/35 shadow-[0_8px_20px_rgba(18,24,38,0.06)]">
-              <span className="text-xs font-mono font-bold text-[#8A5A12] uppercase block mb-1">Concept 01</span>
-              <h3 className="font-serif text-xl font-bold text-[#050A1F] mb-3">AST (Abstract Syntax Tree)</h3>
-              <p className="text-[15px] text-[#3B4252] font-sans leading-relaxed mb-4">
-                A structured representation of sentence grammar used to detect prohibited patterns with deterministic accuracy and zero variance.
-              </p>
-              <div className="p-3 bg-[#EFE6D2]/60 rounded-xl text-xs text-gray-700 font-mono">
-                Used for: Exact brand name casing and prohibited guarantee phrases.
-              </div>
-            </div>
-
-            {/* Term 2: Vector Retrieval */}
-            <div className="bg-white rounded-2xl p-7 border border-[#D4AF37]/35 shadow-[0_8px_20px_rgba(18,24,38,0.06)]">
-              <span className="text-xs font-mono font-bold text-[#8A5A12] uppercase block mb-1">Concept 02</span>
-              <h3 className="font-serif text-xl font-bold text-[#050A1F] mb-3">Vector Retrieval (Grounding)</h3>
-              <p className="text-[15px] text-[#3B4252] font-sans leading-relaxed mb-4">
-                Converting text into mathematical coordinates to locate relevant source guideline passages that substantiate or refute draft claims.
-              </p>
-              <div className="p-3 bg-[#EFE6D2]/60 rounded-xl text-xs text-gray-700 font-mono">
-                Used for: Comparing product claims against approved fact sheets.
-              </div>
-            </div>
-
-            {/* Term 3: SHA-256 Seal */}
-            <div className="bg-white rounded-2xl p-7 border border-[#D4AF37]/35 shadow-[0_8px_20px_rgba(18,24,38,0.06)]">
-              <span className="text-xs font-mono font-bold text-[#8A5A12] uppercase block mb-1">Concept 03</span>
-              <h3 className="font-serif text-xl font-bold text-[#050A1F] mb-3">SHA-256 Version Seal</h3>
-              <p className="text-[15px] text-[#3B4252] font-sans leading-relaxed mb-4">
-                A cryptographic digital fingerprint proving that reviewed content was not modified in any way after a human signed off.
-              </p>
-              <div className="p-3 bg-[#EFE6D2]/60 rounded-xl text-xs text-gray-700 font-mono">
-                Used for: Immutable approval binding and compliance audit trails.
-              </div>
-            </div>
-
-          </div>
-
-        </div>
-      </section>
-
-      {/* ==================================================
-          SECTION 5: FAQ ACCORDION (CREAM #EFE6D2)
-          6 answers matching code.
-          ================================================== */}
-      <section 
-        id="faq"
-        className="py-24 relative"
-        style={{ backgroundColor: '#EFE6D2', color: '#121826' }}
-      >
-        <div className="max-w-[1000px] mx-auto px-4 sm:px-6 lg:px-8">
-          
-          <div className="text-center max-w-2xl mx-auto mb-16">
-            <span className="text-xs font-mono font-bold tracking-widest text-[#8A5A12] uppercase block mb-2">
-              FREQUENTLY ASKED QUESTIONS
-            </span>
-            <h2 className="text-2xl sm:text-4xl font-serif font-bold text-[#050A1F] mb-3">
-              Answers grounded in the codebase
-            </h2>
-            <div className="title-gold-underline mx-auto mb-3" />
-            <p className="text-[17px] text-[#3B4252] font-sans leading-relaxed">
-              Straightforward explanations of our governance architecture, privacy rules, and operational boundaries.
-            </p>
-          </div>
-
-          <div className="space-y-4">
-            {faqs.map((faq, index) => {
-              const isOpen = openFaq === index;
+          {/* Grid of 8 White Paper Cards */}
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+            {filteredCards.map((card) => {
+              const IconComp = card.icon;
               return (
                 <div 
-                  key={index}
-                  className="bg-white rounded-2xl border border-[#D4AF37]/35 shadow-sm overflow-hidden transition-all"
+                  key={card.id}
+                  className="bg-[#FFFFFF] rounded-2xl border border-[#E6DDC8] p-6 shadow-sm hover:shadow-md transition-all duration-200 flex flex-col justify-between group"
                 >
-                  <button
-                    type="button"
-                    onClick={() => setOpenFaq(isOpen ? null : index)}
-                    className="w-full p-6 text-left flex items-center justify-between gap-4 cursor-pointer hover:bg-gray-50/60 transition-colors"
-                  >
-                    <span className="font-serif text-lg font-bold text-[#050A1F]">
-                      {faq.q}
-                    </span>
-                    <span className="w-8 h-8 rounded-full bg-[#050A1F] text-[#F3D98B] flex items-center justify-center shrink-0">
-                      {isOpen ? <ChevronUp className="w-4 h-4" /> : <ChevronDown className="w-4 h-4" />}
-                    </span>
-                  </button>
-
-                  {isOpen && (
-                    <div className="px-6 pb-6 pt-1 text-[15px] text-[#3B4252] font-sans leading-relaxed border-t border-gray-100">
-                      {faq.a}
+                  <div>
+                    <div className="w-10 h-10 rounded-xl bg-[#FAF8F2] border border-[#E6DDC8] flex items-center justify-center text-[#8A6A24] mb-4 group-hover:bg-[#F3EAD3]/60 transition-colors">
+                      <IconComp className="w-5 h-5 text-[#8A6A24]" />
                     </div>
+                    <span className="text-[11px] font-bold uppercase tracking-wider text-[#8A6A24] font-sans block mb-1">
+                      {card.readTime}
+                    </span>
+                    <h2 className="font-serif text-lg font-bold text-[#14203D] mb-2">
+                      {card.title}
+                    </h2>
+                    <p className="text-xs text-[#4A5675] leading-relaxed mb-6 font-sans">
+                      {card.line}
+                    </p>
+                  </div>
+
+                  {card.href ? (
+                    <a
+                      href={card.href}
+                      target={card.isExternal ? '_blank' : '_self'}
+                      rel={card.isExternal ? 'noopener noreferrer' : undefined}
+                      className="inline-flex items-center gap-1.5 text-xs font-bold text-[#8A6A24] hover:text-[#14203D] transition-colors pt-3 border-t border-[#E6DDC8]/60"
+                    >
+                      <span>{card.actionLabel}</span>
+                      <ExternalLink className="w-3.5 h-3.5" />
+                    </a>
+                  ) : (
+                    <button
+                      type="button"
+                      onClick={card.action}
+                      className="inline-flex items-center gap-1.5 text-xs font-bold text-[#8A6A24] hover:text-[#14203D] transition-colors pt-3 border-t border-[#E6DDC8]/60 text-left outline-none"
+                    >
+                      <span>{card.actionLabel}</span>
+                      <ArrowRight className="w-3.5 h-3.5 group-hover:translate-x-0.5 transition-transform" />
+                    </button>
                   )}
                 </div>
               );
             })}
           </div>
 
-        </div>
-      </section>
+          {filteredCards.length === 0 && (
+            <div className="text-center py-12 text-[#4A5675]">
+              <p>No resources found matching "{gridSearch}".</p>
+            </div>
+          )}
+        </section>
+      )}
 
-      {/* Gold Band Call to Action */}
+      {/* =========================================================================
+          SUB-TAB 2: ARCHITECTURE (Soft Champagne Band #F3EAD3)
+          ========================================================================= */}
+      {activeTab === 'architecture' && (
+        <section 
+          className="py-16 px-4 sm:px-6 lg:px-8 text-[#14203D]"
+          style={{ backgroundColor: '#F3EAD3' }}
+        >
+          <div className="max-w-6xl mx-auto">
+            <div className="text-center mb-12">
+              <span className="text-xs font-semibold uppercase tracking-wider text-[#8A6A24]">
+                Component Topology
+              </span>
+              <h2 className="font-serif text-3xl sm:text-4xl font-bold text-[#14203D] mt-1 mb-3">
+                Full-Stack Architecture & Dataflow
+              </h2>
+              <p className="text-base text-[#4A5675] max-w-xl mx-auto font-sans">
+                Five tightly integrated layers operating synchronously with deterministic-first precedence.
+              </p>
+            </div>
+
+            {/* Five White Cards in a Row Connected by Thin Gold Arrow Line */}
+            <div className="relative">
+              <div className="grid grid-cols-1 md:grid-cols-5 gap-4 relative z-10">
+                {architectureSteps.map((item, idx) => {
+                  const IconComp = item.icon;
+                  return (
+                    <div 
+                      key={idx}
+                      className="bg-[#FFFFFF] rounded-2xl border border-[#E6DDC8] p-6 shadow-sm hover:shadow-md transition-all flex flex-col justify-between"
+                    >
+                      <div>
+                        <div className="flex items-center justify-between mb-3">
+                          <span className="w-7 h-7 rounded-full bg-[#FAF8F2] border border-[#E6DDC8] flex items-center justify-center font-bold text-xs text-[#8A6A24]">
+                            {item.step}
+                          </span>
+                          <IconComp className="w-4 h-4 text-[#8A6A24]" />
+                        </div>
+                        <h3 className="font-serif text-base font-bold text-[#14203D] mb-1">
+                          {item.title}
+                        </h3>
+                        <div className="inline-block px-2 py-0.5 rounded-full bg-[#FAF8F2] border border-[#E6DDC8] text-[10px] font-semibold text-[#8A6A24] mb-3">
+                          {item.pill}
+                        </div>
+                        <p className="text-xs text-[#4A5675] leading-relaxed font-sans">
+                          {item.description}
+                        </p>
+                      </div>
+                    </div>
+                  );
+                })}
+              </div>
+            </div>
+
+            {/* Architectural Guarantees Box */}
+            <div className="mt-12 bg-[#FFFFFF] rounded-2xl border border-[#E6DDC8] p-6 sm:p-8 shadow-sm max-w-3xl mx-auto">
+              <h4 className="font-serif text-lg font-bold text-[#14203D] mb-3 text-center">
+                Honest Architectural Guarantees
+              </h4>
+              <div className="space-y-2.5 text-xs text-[#4A5675] font-sans">
+                <div className="flex items-start gap-2">
+                  <Check className="w-4 h-4 text-[#1E9E78] mt-0.5 flex-shrink-0" />
+                  <span><strong>Deterministic-first precedence:</strong> Layer 01 and Layer 02 evaluate rules and facts synchronously before any AI inference is triggered.</span>
+                </div>
+                <div className="flex items-start gap-2">
+                  <Check className="w-4 h-4 text-[#1E9E78] mt-0.5 flex-shrink-0" />
+                  <span><strong>Offline operational fallback:</strong> When operating without an external LLM API key, Verity operates with 100% precision using local regex and BM25 search.</span>
+                </div>
+                <div className="flex items-start gap-2">
+                  <Check className="w-4 h-4 text-[#1E9E78] mt-0.5 flex-shrink-0" />
+                  <span><strong>Cryptographic immutability:</strong> Approved drafts are sealed with an irreversible SHA-256 fingerprint; any post-approval modification invalidates the seal.</span>
+                </div>
+              </div>
+            </div>
+          </div>
+        </section>
+      )}
+
+      {/* =========================================================================
+          SUB-TAB 3: PLAIN GLOSSARY (Warm Ivory Band #FAF8F2)
+          ========================================================================= */}
+      {activeTab === 'glossary' && (
+        <section className="py-16 px-4 sm:px-6 lg:px-8 max-w-5xl mx-auto">
+          {/* Glossary Search */}
+          <div className="max-w-md mx-auto mb-12">
+            <div className="relative">
+              <Search className="w-4 h-4 text-[#8A6A24] absolute left-4 top-1/2 -translate-y-1/2 pointer-events-none" />
+              <input
+                type="text"
+                value={glossarySearch}
+                onChange={(e) => setGlossarySearch(e.target.value)}
+                placeholder="Search definitions and governance concepts..."
+                className="w-full pl-11 pr-4 py-3 rounded-2xl bg-[#FFFFFF] border border-[#E6DDC8] text-sm text-[#14203D] placeholder-[#4A5675] shadow-sm focus:ring-2 focus:ring-[#8A6A24] focus:outline-none"
+              />
+            </div>
+          </div>
+
+          {/* Two-Column Grid of Plain Terms */}
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+            {filteredGlossary.map((item, idx) => (
+              <div 
+                key={idx}
+                className="bg-[#FFFFFF] rounded-2xl border border-[#E6DDC8] p-6 shadow-sm hover:shadow-md transition-all"
+              >
+                <div className="flex items-center gap-2 mb-2">
+                  <span className="w-2 h-2 rounded-full bg-[#E2B857]" />
+                  <h3 className="font-serif text-lg font-bold text-[#14203D]">
+                    {item.term}
+                  </h3>
+                </div>
+                <p className="text-sm text-[#4A5675] leading-relaxed font-sans pl-4">
+                  {item.definition}
+                </p>
+              </div>
+            ))}
+          </div>
+
+          {filteredGlossary.length === 0 && (
+            <div className="text-center py-12 text-[#4A5675]">
+              <p>No glossary terms found matching "{glossarySearch}".</p>
+            </div>
+          )}
+        </section>
+      )}
+
+      {/* =========================================================================
+          SUB-TAB 4: FAQ ACCORDION (Soft Champagne Band #F3EAD3)
+          ========================================================================= */}
+      {activeTab === 'faq' && (
+        <section 
+          className="py-16 px-4 sm:px-6 lg:px-8 text-[#14203D]"
+          style={{ backgroundColor: '#F3EAD3' }}
+        >
+          <div className="max-w-4xl mx-auto">
+            <div className="text-center mb-12">
+              <span className="text-xs font-semibold uppercase tracking-wider text-[#8A6A24]">
+                Frequently Asked Questions
+              </span>
+              <h2 className="font-serif text-3xl sm:text-4xl font-bold text-[#14203D] mt-1 mb-3">
+                Plain-Language Answers
+              </h2>
+              <p className="text-base text-[#4A5675] max-w-xl mx-auto font-sans">
+                Everything you need to know about verification logic, security, and human approval authority.
+              </p>
+            </div>
+
+            {/* Accordion List (One open at a time, keyboard accessible) */}
+            <div className="space-y-4">
+              {faqs.map((faq, idx) => {
+                const isOpen = openFaq === idx;
+                return (
+                  <div 
+                    key={idx}
+                    className="bg-[#FFFFFF] rounded-2xl border border-[#E6DDC8] overflow-hidden shadow-sm transition-all"
+                  >
+                    <button
+                      type="button"
+                      onClick={() => setOpenFaq(isOpen ? null : idx)}
+                      className="w-full px-6 py-5 text-left flex items-center justify-between gap-4 outline-none focus-visible:ring-2 focus-visible:ring-[#8A6A24]"
+                      aria-expanded={isOpen}
+                    >
+                      <span className="font-serif text-base sm:text-lg font-bold text-[#14203D]">
+                        {faq.q}
+                      </span>
+                      {isOpen ? (
+                        <ChevronUp className="w-5 h-5 text-[#8A6A24] flex-shrink-0" />
+                      ) : (
+                        <ChevronDown className="w-5 h-5 text-[#8A6A24] flex-shrink-0" />
+                      )}
+                    </button>
+
+                    {isOpen && (
+                      <div className="px-6 pb-6 pt-1 text-sm text-[#4A5675] leading-relaxed border-t border-[#E6DDC8]/60 font-sans">
+                        {faq.a}
+                      </div>
+                    )}
+                  </div>
+                );
+              })}
+            </div>
+          </div>
+        </section>
+      )}
+
+      {/* =========================================================================
+          BOTTOM CALL TO ACTION (Navy to Midnight Blend)
+          ========================================================================= */}
       <section 
-        className="py-20 text-center relative overflow-hidden"
+        className="py-16 px-4 sm:px-6 lg:px-8 text-center text-[#F4F1E8] relative overflow-hidden"
         style={{
-          background: 'linear-gradient(135deg, #F3D98B 0%, #D4AF37 50%, #A67C00 100%)',
+          background: 'linear-gradient(180deg, #101B35 0%, #0A1226 100%)',
         }}
       >
-        <div className="max-w-[1200px] mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
-          <h2 className="text-2xl sm:text-4xl font-serif font-bold text-[#050A1F] mb-3">
-            See one draft go from check to approval.
+        <div className="max-w-3xl mx-auto relative z-10">
+          <h2 className="font-serif text-3xl sm:text-4xl font-bold text-[#F4F1E8] mb-4">
+            Ready to Explore the Platform?
           </h2>
-          <p className="text-[17px] text-[#050A1F]/85 max-w-xl mx-auto mb-8 font-sans leading-relaxed">
-            Verify our measurement plan, check live OpenAPI docs, and explore the interactive workspace.
+          <p className="text-base text-[#D5DBEE] mb-8 font-sans">
+            Jump into our interactive demo workspace or test your own campaign copy in real time.
           </p>
           <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
             <button
               type="button"
-              onClick={() => handleNav('dashboard')}
-              className="px-8 py-3.5 rounded-xl font-bold text-sm tracking-wide text-[#F3D98B] bg-[#050A1F] hover:text-white shadow-xl transition-all active:scale-95 cursor-pointer"
+              onClick={() => {
+                window.scrollTo({ top: 0, behavior: 'smooth' });
+                setActivePage('dashboard');
+              }}
+              className="w-full sm:w-auto px-8 py-3.5 min-h-[44px] rounded-xl bg-[#E2B857] text-[#0A1226] font-bold text-base hover:brightness-105 active:scale-[0.98] transition-all shadow-xl flex items-center justify-center gap-2"
             >
-              Explore Demo Workspace
+              <span>Explore Demo Workspace</span>
+              <ArrowRight className="w-4 h-4 text-[#0A1226]" />
             </button>
             <button
               type="button"
-              onClick={() => handleNav('quality')}
-              className="px-6 py-3.5 rounded-xl font-semibold text-sm text-[#050A1F] border border-[#050A1F]/40 hover:bg-[#050A1F]/10 transition-all cursor-pointer"
+              onClick={() => {
+                window.scrollTo({ top: 0, behavior: 'smooth' });
+                setActivePage('how-it-works');
+              }}
+              className="w-full sm:w-auto px-7 py-3.5 min-h-[44px] rounded-xl border border-[#E2B857]/70 text-[#F4F1E8] hover:bg-white/5 font-semibold text-base transition-colors"
             >
-              Open Quality Panel
+              How It Works
             </button>
           </div>
         </div>
