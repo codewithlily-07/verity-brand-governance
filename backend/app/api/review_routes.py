@@ -113,6 +113,17 @@ def submit_review_decision(
                     detail="Reviewer override reason is mandatory when approving with unresolved high-severity findings."
                 )
 
+        # Claim Evidence Ledger Guard: Check open conflicting or unsupported claims
+        open_conflicting_claims = [
+            c for c in (version.claims or [])
+            if c.verdict in ["conflicting", "unsupported"] and c.status == "open"
+        ]
+        if open_conflicting_claims and not payload.override_used:
+            raise HTTPException(
+                status_code=400,
+                detail=f"Approval blocked: {len(open_conflicting_claims)} conflicting or unsupported claim(s) in Evidence Ledger remain unresolved. Reviewer override with recorded reason is required to proceed."
+            )
+
     # Create ReviewDecision bound to version and content_hash
     dec = ReviewDecision(
         submission_id=sub.id,

@@ -15,6 +15,7 @@ from backend.app.api.insights_routes import router as insights_router
 from backend.app.api.notification_feedback_routes import router as extra_router
 from backend.app.api.auth_routes import router as auth_router
 from backend.app.api.evaluation_routes import router as evaluation_router
+from backend.app.api.claim_routes import router as claim_router
 
 from sqlalchemy import inspect, text
 
@@ -39,10 +40,16 @@ def ensure_schema_compatibility(eng):
                 if "data_url" not in cols:
                     conn.execute(text("ALTER TABLE visual_assets ADD COLUMN data_url TEXT"))
                     conn.commit()
+            if inspector.has_table("claims"):
+                cols = {c["name"] for c in inspector.get_columns("claims")}
+                if "text" not in cols:
+                    conn.execute(text("DROP TABLE claims"))
+                    conn.commit()
     except Exception as e:
         print(f"[Schema Compat Warning] {e}")
 
 ensure_schema_compatibility(engine)
+Base.metadata.create_all(bind=engine)
 
 app = FastAPI(
     title=settings.PROJECT_NAME,
@@ -71,6 +78,7 @@ app.include_router(insights_router, prefix="/api")
 app.include_router(extra_router, prefix="/api")
 app.include_router(auth_router, prefix="/api")
 app.include_router(evaluation_router, prefix="/api")
+app.include_router(claim_router, prefix="/api")
 
 # Serve Frontend static assets if built
 frontend_dist = os.path.abspath(os.path.join(os.path.dirname(__file__), "../../frontend/dist"))

@@ -223,6 +223,7 @@ class SubmissionVersion(Base):
     submission = relationship("Submission", back_populates="versions")
     analysis_runs = relationship("AnalysisRun", back_populates="submission_version", cascade="all, delete-orphan")
     decisions = relationship("ReviewDecision", back_populates="submission_version")
+    claims = relationship("Claim", back_populates="submission_version", cascade="all, delete-orphan")
 
 class AnalysisRun(Base):
     __tablename__ = "analysis_runs"
@@ -278,6 +279,29 @@ class Comment(Base):
     created_at = Column(DateTime(timezone=True), default=utcnow)
 
     submission = relationship("Submission", back_populates="comments")
+
+class Claim(Base):
+    __tablename__ = "claims"
+
+    id = Column(String(36), primary_key=True, default=gen_uuid)
+    submission_version_id = Column(String(36), ForeignKey("submission_versions.id"), nullable=False)
+    text = Column(Text, nullable=False)
+    start = Column(Integer, nullable=True)
+    end = Column(Integer, nullable=True)
+    claim_type = Column(String(50), default="numerical") # numerical | superlative | absolute | capability | temporal | pricing
+    verdict = Column(String(30), nullable=False) # supported | conflicting | unsupported | needs_review
+    evidence_id = Column(String(36), nullable=True)
+    evidence_excerpt = Column(Text, nullable=True)
+    confidence = Column(Float, default=1.0)
+    rationale = Column(Text, nullable=True)
+    status = Column(String(30), default="open") # open | accepted | edited | dismissed | challenged
+    user_edited_replacement = Column(Text, nullable=True)
+    dismiss_reason = Column(Text, nullable=True)
+    challenge_reason = Column(Text, nullable=True)
+    created_at = Column(DateTime(timezone=True), default=utcnow)
+    updated_at = Column(DateTime(timezone=True), default=utcnow, onupdate=utcnow)
+
+    submission_version = relationship("SubmissionVersion", back_populates="claims")
 
 class ReviewDecision(Base):
     __tablename__ = "review_decisions"
