@@ -162,7 +162,7 @@ class AnalysisResultResponse(BaseModel):
     stats: Dict[str, Any]
 
 class ReviewDecisionRequest(BaseModel):
-    version_id: str
+    version_id: Optional[str] = None
     decision: str # approve | reject | request_changes
     reviewer_name: str = "Senior Reviewer"
     reviewer_role: str = "reviewer"

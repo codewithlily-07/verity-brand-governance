@@ -34,10 +34,15 @@ def submit_review_decision(
     if not sub:
         raise HTTPException(status_code=404, detail="Submission not found")
 
-    version = db.query(SubmissionVersion).filter(
-        SubmissionVersion.id == payload.version_id,
-        SubmissionVersion.submission_id == sub.id
-    ).first()
+    target_version_id = payload.version_id
+    if target_version_id:
+        version = db.query(SubmissionVersion).filter(
+            SubmissionVersion.id == target_version_id,
+            SubmissionVersion.submission_id == sub.id
+        ).first()
+    else:
+        version = sub.versions[-1] if sub.versions else None
+
     if not version:
         raise HTTPException(status_code=404, detail="Target submission version not found.")
 

@@ -12,6 +12,7 @@ from backend.app.core.config import settings
 router = APIRouter(tags=["Governance Insights & Audit"])
 
 @router.get("/insights")
+@router.get("/insights/overview")
 def get_governance_insights(request: Request, db: Session = Depends(get_db)):
     profile = get_or_create_profile(db, request)
     workspace_id = profile.workspace_id
@@ -143,6 +144,16 @@ def get_governance_insights(request: Request, db: Session = Depends(get_db)):
         "content_types": content_types,
         "risk_categories": risk_categories,
         "risk_heatmap": heatmap
+    }
+
+@router.get("/insights/rules")
+def get_insights_rules(request: Request, db: Session = Depends(get_db)):
+    data = get_governance_insights(request, db)
+    return {
+        "most_violated_rules": data.get("most_violated_rules", []),
+        "rules_possibly_unclear": data.get("rules_possibly_unclear", []),
+        "resolution_rate": data.get("resolution_rate", 100),
+        "pre_review_fix_rate": data.get("pre_review_fix_rate", 100)
     }
 
 @router.get("/audit")

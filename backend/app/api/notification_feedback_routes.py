@@ -115,11 +115,15 @@ def clear_all_notifications(request: Request, db: Session = Depends(get_db)):
 @router.post("/feedback")
 def submit_feedback(payload: Dict[str, Any], request: Request, db: Session = Depends(get_db)):
     profile = get_or_create_profile(db, request)
+    comment = (payload.get("comment") or "").strip()
+    if not comment:
+        raise HTTPException(status_code=400, detail="Feedback comment must not be empty.")
+    
     fb = Feedback(
         workspace_id=profile.workspace_id,
         user_name=payload.get("user_name", "Judge Reviewer"),
         rating=int(payload.get("rating", 5)),
-        comment=payload.get("comment", "").strip() or "Structured user testing feedback",
+        comment=comment,
         category=payload.get("category", "Usability")
     )
     db.add(fb)
