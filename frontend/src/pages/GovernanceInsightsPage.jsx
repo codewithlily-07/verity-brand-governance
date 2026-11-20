@@ -84,6 +84,15 @@ export function GovernanceInsightsPage({ setActivePage }) {
         </div>
 
         <div className="flex items-center gap-3">
+          <button
+            onClick={() => setActivePage('quality')}
+            className="px-4 py-2.5 rounded-xl bg-white border border-[#E6DDC8] hover:bg-[#FAF8F3] text-[#0A1230] text-xs font-semibold flex items-center gap-1.5 transition-all shadow-sm"
+            title="View automated quality benchmarks & engine test harness"
+          >
+            <ShieldCheck className="w-3.5 h-3.5 text-[#1E9E78]" />
+            <span>Engine Quality</span>
+          </button>
+
           <a
             href="/api/feedback/export.csv"
             download="verity_user_testing_feedback.csv"

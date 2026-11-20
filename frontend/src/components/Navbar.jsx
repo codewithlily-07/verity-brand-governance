@@ -138,40 +138,38 @@ export function Navbar({
     { id: 'new-review', label: 'New Review' },
     { id: 'brand-hub', label: 'Brand Hub' },
     { id: 'review', label: 'Review Centre' },
-    { id: 'insights', label: 'Insights' },
-    { id: 'quality', label: 'Quality' },
-    { id: 'trust', label: 'Trust & AI' }
+    { id: 'insights', label: 'Insights' }
   ];
 
   return (
     <header 
       className="sticky top-0 z-40 w-full select-none"
       style={{
-        backgroundColor: '#0A1230',
+        backgroundColor: '#0A1226',
         height: '64px',
-        borderBottom: '1px solid rgba(212, 175, 55, 0.35)',
-        boxShadow: '0 2px 20px rgba(5, 8, 20, 0.5)'
+        borderBottom: '1px solid rgba(226, 184, 87, 0.25)',
+        boxShadow: '0 2px 20px rgba(10, 18, 38, 0.6)'
       }}
     >
-      <div className="max-w-[1400px] mx-auto px-4 sm:px-6 lg:px-8 h-full flex items-center justify-between">
+      <div className="max-w-[1400px] mx-auto px-3 sm:px-6 lg:px-8 h-full flex items-center justify-between">
         
         {/* LEFT: Logo & Wordmark */}
         <div 
-          className="flex items-center gap-2.5 cursor-pointer shrink-0 mr-4" 
+          className="flex items-center gap-2.5 cursor-pointer shrink-0 mr-3 lg:mr-4" 
           onClick={() => setActivePage('landing')}
           title="Back to Landing Page"
         >
           <div className="w-8 h-7 flex items-center justify-center">
-            <svg viewBox="0 0 260 190" className="w-full h-full drop-shadow-[0_0_8px_rgba(212,175,55,0.7)]" fill="none">
+            <svg viewBox="0 0 260 190" className="w-full h-full drop-shadow-[0_0_8px_rgba(226,184,87,0.6)]" fill="none">
               <defs>
                 <linearGradient id="appNavV1" x1="0%" y1="0%" x2="100%" y2="100%">
                   <stop offset="0%" stopColor="#FFF2B2"/>
-                  <stop offset="40%" stopColor="#D4AF37"/>
-                  <stop offset="100%" stopColor="#8A5A12"/>
+                  <stop offset="40%" stopColor="#E2B857"/>
+                  <stop offset="100%" stopColor="#8A6A24"/>
                 </linearGradient>
                 <linearGradient id="appNavV2" x1="0%" y1="1" x2="1" y2="0">
-                  <stop offset="0%" stopColor="#F3D98B"/>
-                  <stop offset="100%" stopColor="#D4AF37"/>
+                  <stop offset="0%" stopColor="#F3EAD3"/>
+                  <stop offset="100%" stopColor="#E2B857"/>
                 </linearGradient>
               </defs>
               <path d="M10 46 C38 26 82 38 112 96 L126 160 C88 134 40 96 10 46 Z" fill="url(#appNavV1)"/>
@@ -179,10 +177,10 @@ export function Navbar({
             </svg>
           </div>
           <div>
-            <span className="font-serif text-lg font-bold tracking-[0.16em] text-transparent bg-clip-text bg-gradient-to-r from-[#F3D98B] via-[#D4AF37] to-[#F3D98B] leading-none block">
+            <span className="font-serif text-lg font-bold tracking-[0.16em] text-transparent bg-clip-text bg-gradient-to-r from-[#F4E2AA] via-[#E2B857] to-[#F4E2AA] leading-none block">
               VERITY
             </span>
-            <span className="text-[7.5px] font-mono tracking-[0.35em] text-[#D4AF37]/80 uppercase block mt-0.5 leading-none">
+            <span className="text-[7.5px] font-mono tracking-[0.35em] text-[#E2B857]/80 uppercase block mt-0.5 leading-none">
               WORKSPACE
             </span>
           </div>
@@ -196,10 +194,10 @@ export function Navbar({
               <button
                 key={item.id}
                 onClick={() => setActivePage(item.id)}
-                className={`px-3 py-1.5 rounded-full text-[15px] font-medium whitespace-nowrap transition-all duration-200 cursor-pointer ${
+                className={`px-3 py-1.5 rounded-full text-[14px] sm:text-[15px] font-medium whitespace-nowrap transition-all duration-200 cursor-pointer outline-none focus-visible:ring-2 focus-visible:ring-[#E2B857] ${
                   isActive 
-                    ? 'bg-[#D4AF37] text-[#0A1230] font-bold shadow-[0_2px_8px_rgba(212,175,55,0.4)]' 
-                    : 'text-[#F7F2E7] hover:text-[#F3D98B] hover:bg-white/5'
+                    ? 'bg-[#E2B857] text-[#0A1226] font-bold shadow-[0_2px_8px_rgba(226,184,87,0.35)]' 
+                    : 'text-[#F4F1E8] hover:text-[#F3EAD3] hover:bg-white/5'
                 }`}
               >
                 {item.label}
@@ -209,33 +207,33 @@ export function Navbar({
         </nav>
 
         {/* RIGHT CLUSTER: ⌘K search, help, notifications, role switcher, Back to website, Sign In */}
-        <div className="flex items-center gap-2 sm:gap-2.5 shrink-0 ml-4">
+        <div className="flex items-center gap-1.5 sm:gap-2.5 shrink-0 ml-2 sm:ml-4">
           
           {/* Back to website Link */}
           <button
             onClick={() => setActivePage('landing')}
-            className="hidden xl:inline-flex items-center gap-1.5 text-xs text-[#D4AF37] hover:text-[#F3D98B] font-medium transition-colors px-2 py-1 rounded hover:bg-white/5"
+            className="hidden lg:inline-flex items-center gap-1.5 text-xs text-[#E2B857] hover:text-[#F3EAD3] font-medium transition-colors px-2 py-1 rounded hover:bg-white/5"
             title="Return to public marketing website"
           >
             <ArrowLeft className="w-3.5 h-3.5" />
-            <span>Back to website</span>
+            <span>Public Site</span>
           </button>
 
           {/* ⌘K Command Palette Button */}
           <button
             onClick={onOpenCommandPalette}
-            className="flex items-center gap-1.5 px-2.5 py-1.5 rounded-lg bg-white/5 border border-white/10 hover:border-[#D4AF37]/50 text-gray-300 hover:text-white text-xs transition-all cursor-pointer"
+            className="flex items-center gap-1.5 px-2 py-1.5 sm:px-2.5 rounded-lg bg-white/5 border border-white/10 hover:border-[#E2B857]/50 text-gray-300 hover:text-white text-xs transition-all cursor-pointer"
             title="Open Command Palette (Ctrl+K or ⌘K)"
             aria-label="Open Command Palette"
           >
-            <Command className="w-3.5 h-3.5 text-[#D4AF37]" />
+            <Command className="w-3.5 h-3.5 text-[#E2B857]" />
             <span className="text-[11px] font-mono hidden sm:inline">⌘K</span>
           </button>
 
           {/* Help Button (Onboarding trigger) */}
           <button
             onClick={onOpenOnboarding}
-            className="p-1.5 text-gray-300 hover:text-[#D4AF37] rounded-lg transition-colors cursor-pointer"
+            className="p-1.5 text-gray-300 hover:text-[#E2B857] rounded-lg transition-colors cursor-pointer"
             title="Open Onboarding Guide"
             aria-label="Open Onboarding Guide"
           >
