@@ -265,8 +265,8 @@ export function HowItWorksPage({ setActivePage }) {
                   {currentLayer.title}
                 </h3>
               </div>
-              <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-[#F3EAD3] border border-[#E2B857]/40 text-[#8A6A24] text-xs font-semibold">
-                <CheckCircle2 className="w-4 h-4 text-[#1E9E78]" />
+              <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-[#F3EAD3] border border-[#E2B857]/40 text-[#523B08] text-xs font-semibold">
+                <CheckCircle2 className="w-4 h-4 text-[#085C42]" />
                 <span>Deterministic Integrity Active</span>
               </div>
             </div>
@@ -306,8 +306,8 @@ export function HowItWorksPage({ setActivePage }) {
                     <span className="text-[#8A6A24] font-bold">({currentLayer.whatYouSee.severity})</span>
                   </div>
                 </div>
-                <div className="pt-3 border-t border-[#E6DDC8]/60 text-xs text-[#1E9E78] font-medium flex items-center gap-1.5">
-                  <Check className="w-4 h-4 text-[#1E9E78] flex-shrink-0" />
+                <div className="pt-3 border-t border-[#E6DDC8]/60 text-xs text-[#085C42] font-semibold flex items-center gap-1.5">
+                  <Check className="w-4 h-4 text-[#085C42] flex-shrink-0" />
                   <span>Proposed fix: {currentLayer.whatYouSee.fix}</span>
                 </div>
               </div>
@@ -494,7 +494,7 @@ export function HowItWorksPage({ setActivePage }) {
               {/* Card 3: Needs Human Review */}
               <div className="bg-[#FFFFFF] rounded-2xl border border-[#E6DDC8] p-7 shadow-sm flex flex-col justify-between">
                 <div>
-                  <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-[#1E9E78]/15 text-[#1E9E78] border border-[#1E9E78]/30 text-xs font-bold mb-4">
+                  <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-[#085C42]/15 text-[#085C42] border border-[#085C42]/30 text-xs font-bold mb-4">
                     <UserCheck className="w-3.5 h-3.5" />
                     <span>Needs Human Review</span>
                   </div>
@@ -506,7 +506,7 @@ export function HowItWorksPage({ setActivePage }) {
                   </p>
                 </div>
                 <div className="p-4 rounded-xl bg-[#FAF8F2] border border-[#E6DDC8] text-xs">
-                  <span className="font-bold text-[#1E9E78] block mb-1">Example Flag:</span>
+                  <span className="font-bold text-[#085C42] block mb-1">Example Flag:</span>
                   <p className="italic text-[#14203D]">“Don’t miss out on this crazy opportunity!”</p>
                   <span className="text-[11px] text-[#4A5675] mt-1 block">Tone guideline: authoritative and calm</span>
                 </div>
@@ -526,7 +526,7 @@ export function HowItWorksPage({ setActivePage }) {
                 <span className="text-[#4A5675]">Requires author review</span>
               </div>
               <div className="flex items-center gap-2">
-                <span className="text-[#1E9E78] font-black text-sm">●</span>
+                <span className="text-[#085C42] font-black text-sm">●</span>
                 <span className="font-bold text-[#14203D]">Low Severity:</span>
                 <span className="text-[#4A5675]">Advisory editorial note</span>
               </div>
