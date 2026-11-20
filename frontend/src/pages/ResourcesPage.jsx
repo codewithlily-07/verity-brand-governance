@@ -58,7 +58,7 @@ export function ResourcesPage({ setActivePage }) {
     {
       id: 'approval-flow',
       title: 'How Approval Works',
-      line: 'Role gates, compliance overrides, and cryptographic SHA-256 seals.',
+      line: 'Role gates, compliance overrides, and tamper-evident SHA-256 seals.',
       readTime: '4 min read',
       icon: Lock,
       action: () => setActivePage && setActivePage('review'),
@@ -143,7 +143,7 @@ export function ResourcesPage({ setActivePage }) {
       title: 'Audit Ledger',
       pill: 'SQLite WAL & SHA-256',
       icon: Hash,
-      description: 'Cryptographic SHA-256 version seals, concurrency lock protection, and immutable compliance audit trails.'
+      description: 'Tamper-evident SHA-256 version seals, concurrency lock protection, and immutable compliance audit trails.'
     }
   ];
 
@@ -162,7 +162,7 @@ export function ResourcesPage({ setActivePage }) {
     },
     {
       term: 'Version Seal',
-      definition: 'An immutable SHA-256 cryptographic digest binding the draft text, author identity, and timestamp together.'
+      definition: 'An immutable SHA-256 digest binding the draft text, author identity, and timestamp together.'
     },
     {
       term: 'Authorised Reviewer',
@@ -437,7 +437,7 @@ export function ResourcesPage({ setActivePage }) {
                 </div>
                 <div className="flex items-start gap-2">
                   <Check className="w-4 h-4 text-[#1E9E78] mt-0.5 flex-shrink-0" />
-                  <span><strong>Cryptographic immutability:</strong> Approved drafts are sealed with an irreversible SHA-256 fingerprint; any post-approval modification invalidates the seal.</span>
+                  <span><strong>Tamper-evident immutability:</strong> Approved drafts are sealed with an irreversible SHA-256 fingerprint; any post-approval modification invalidates the seal.</span>
                 </div>
               </div>
             </div>
