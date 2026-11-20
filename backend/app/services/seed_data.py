@@ -32,7 +32,7 @@ def seed_demo_workspace(db: Session, workspace_id: str) -> BrandProfile:
 
     ws = db.query(Workspace).filter(Workspace.id == workspace_id).first()
     if not ws:
-        ws = Workspace(id=workspace_id, organisation_id=org.id, name="Test Brand Workspace", slug="test-brand")
+        ws = Workspace(id=workspace_id, organisation_id=org.id, name="Test Brand Workspace", is_demo=True)
         db.add(ws)
         db.flush()
     elif not ws.organisation_id:
@@ -44,7 +44,7 @@ def seed_demo_workspace(db: Session, workspace_id: str) -> BrandProfile:
         {"email": "creator@verity.internal", "name": "Alex Chen (Creator)", "role": "creator"},
         {"email": "manager@verity.internal", "name": "Samira Patel (Manager)", "role": "manager"},
         {"email": "admin@verity.internal", "name": "Jordan Taylor (Admin)", "role": "admin"},
-        {"email": "reviewer@verity.internal", "name": "Elena Vance (Reviewer)", "role": "reviewer"},
+        {"email": "reviewer@verity.internal", "name": "Morgan Vance (Reviewer)", "role": "reviewer"},
     ]
     default_pw = hash_password("Password123!")
 

@@ -195,7 +195,8 @@ async def upload_guideline_source(
         filename=file.filename,
         file_type=parsed["file_type"],
         raw_text=parsed["text"],
-        page_count=parsed.get("page_count", 1)
+        page_count=parsed.get("page_count", 1),
+        file_bytes=contents
     )
     db.add(source)
     db.flush()

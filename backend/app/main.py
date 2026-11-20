@@ -16,8 +16,33 @@ from backend.app.api.notification_feedback_routes import router as extra_router
 from backend.app.api.auth_routes import router as auth_router
 from backend.app.api.evaluation_routes import router as evaluation_router
 
+from sqlalchemy import inspect, text
+
 # Create DB tables
 Base.metadata.create_all(bind=engine)
+
+def ensure_schema_compatibility(eng):
+    """Ensure dynamic backward compatibility for added columns on SQLite / PostgreSQL."""
+    try:
+        inspector = inspect(eng)
+        with eng.connect() as conn:
+            if inspector.has_table("brand_sources"):
+                cols = {c["name"] for c in inspector.get_columns("brand_sources")}
+                if "file_bytes" not in cols:
+                    conn.execute(text("ALTER TABLE brand_sources ADD COLUMN file_bytes BLOB"))
+                    conn.commit()
+            if inspector.has_table("visual_assets"):
+                cols = {c["name"] for c in inspector.get_columns("visual_assets")}
+                if "data_blob" not in cols:
+                    conn.execute(text("ALTER TABLE visual_assets ADD COLUMN data_blob BLOB"))
+                    conn.commit()
+                if "data_url" not in cols:
+                    conn.execute(text("ALTER TABLE visual_assets ADD COLUMN data_url TEXT"))
+                    conn.commit()
+    except Exception as e:
+        print(f"[Schema Compat Warning] {e}")
+
+ensure_schema_compatibility(engine)
 
 app = FastAPI(
     title=settings.PROJECT_NAME,

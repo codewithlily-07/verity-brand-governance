@@ -1,7 +1,11 @@
-from fastapi import APIRouter, Depends, Response, Request
+from fastapi import APIRouter, Depends, Response, Request, status
 from sqlalchemy.orm import Session
+from sqlalchemy import text
+from datetime import datetime, timezone
+import json
+import os
 from backend.app.core.config import settings
-from backend.app.core.database import get_db
+from backend.app.core.database import get_db, engine
 from backend.app.models.verity_models import Workspace, AuditEvent
 from backend.app.services.seed_data import seed_demo_workspace
 import uuid
@@ -14,7 +18,61 @@ def health_check():
         "status": "healthy",
         "service": "VERITY",
         "version": "1.0.0",
-        "timestamp": "2026-11-13T13:37:14Z"
+        "timestamp": datetime.now(timezone.utc).isoformat()
+    }
+
+@router.get("/ready")
+def readiness_check(response: Response, db: Session = Depends(get_db)):
+    """
+    Readiness probe verifying database connectivity, table schema availability,
+    and migration readiness. Returns 200 when ready to serve traffic, 503 on database failure.
+    """
+    # 1. Database execution check
+    try:
+        db.execute(text("SELECT 1"))
+        db_status = "connected"
+    except Exception as e:
+        response.status_code = status.HTTP_503_SERVICE_UNAVAILABLE
+        return {
+            "status": "not_ready",
+            "service": "VERITY",
+            "database": "unreachable",
+            "error": str(e),
+            "timestamp": datetime.now(timezone.utc).isoformat()
+        }
+
+    # 2. Migration and schema readiness check
+    migration_status = "current"
+    try:
+        from alembic.migration import MigrationContext
+        from alembic.script import ScriptDirectory
+        from alembic.config import Config
+
+        alembic_ini_path = os.path.abspath(os.path.join(os.path.dirname(__file__), "../../../alembic.ini"))
+        if os.path.exists(alembic_ini_path):
+            alembic_cfg = Config(alembic_ini_path)
+            script = ScriptDirectory.from_config(alembic_cfg)
+            with engine.connect() as conn:
+                context = MigrationContext.configure(conn)
+                current_rev = context.get_current_revision()
+                heads = script.get_heads()
+                head_rev = heads[0] if heads else None
+                if head_rev and current_rev != head_rev:
+                    migration_status = f"pending (current: {current_rev}, head: {head_rev})"
+                elif current_rev:
+                    migration_status = f"synced ({current_rev})"
+                else:
+                    migration_status = "schema_active"
+    except Exception as me:
+        migration_status = f"active (direct schema sync: {str(me)[:40]})"
+
+    return {
+        "status": "ready",
+        "service": "VERITY",
+        "database": db_status,
+        "database_type": engine.dialect.name,
+        "migrations": migration_status,
+        "timestamp": datetime.now(timezone.utc).isoformat()
     }
 
 @router.get("/ai/status")

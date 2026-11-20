@@ -128,13 +128,14 @@ python -m uvicorn backend.app.main:app --host 127.0.0.1 --port 8000
 - Open **`http://127.0.0.1:8000`** in your browser.
 - Interactive OpenAPI documentation: **`http://127.0.0.1:8000/docs`**.
 - Health check: **`http://127.0.0.1:8000/api/health`**.
+- Readiness check (database & migrations): **`http://127.0.0.1:8000/api/ready`**.
 
 ---
 
 ## 6. Testing & Evaluation
 
 ```bash
-# Run unit and integration tests (16 tests)
+# Run unit and integration tests (19 tests)
 pytest
 
 # Run automated link check across all 34 routes

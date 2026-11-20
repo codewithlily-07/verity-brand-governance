@@ -1,7 +1,7 @@
 import uuid
 from datetime import datetime, timezone
 from sqlalchemy import (
-    Column, String, Text, Integer, Float, Boolean, DateTime, ForeignKey, JSON
+    Column, String, Text, Integer, Float, Boolean, DateTime, ForeignKey, JSON, LargeBinary
 )
 from sqlalchemy.orm import relationship
 from backend.app.core.database import Base
@@ -98,6 +98,7 @@ class BrandSource(Base):
     file_type = Column(String(50), nullable=False) # pdf | docx | txt
     raw_text = Column(Text, nullable=False)
     page_count = Column(Integer, default=1)
+    file_bytes = Column(LargeBinary, nullable=True) # Durable binary storage for uploaded document files
     created_at = Column(DateTime(timezone=True), default=utcnow)
 
     brand_profile = relationship("BrandProfile", back_populates="sources")
@@ -178,6 +179,8 @@ class VisualAsset(Base):
     asset_type = Column(String(50), default="palette_color") # palette_color | logo
     hex_color = Column(String(20), nullable=True)
     role = Column(String(50), default="primary")
+    data_blob = Column(LargeBinary, nullable=True) # Durable binary logo/asset blob
+    data_url = Column(Text, nullable=True) # Durable data URL or CDN reference
     created_at = Column(DateTime(timezone=True), default=utcnow)
 
     brand_profile = relationship("BrandProfile", back_populates="visual_assets")

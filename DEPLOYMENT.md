@@ -41,31 +41,52 @@ docker run -p 8000:8000 verity-app
 
 ---
 
-## 3. Production Cloud Deployment: Supabase + Render
+## 3. Production Cloud Deployment: Supabase (Durable PostgreSQL) + Render
 
-### Step A: Database on Supabase (PostgreSQL with pgvector)
-1. Go to [supabase.com](https://supabase.com) and create a free project.
-2. In the Supabase SQL Editor, enable pgvector (optional enhancement):
+### Step A: Database on Supabase (Durable PostgreSQL)
+1. Navigate to [supabase.com](https://supabase.com) and sign in.
+2. Click **New Project**, choose your organization, specify a project name (e.g. `verity-production`), set a strong database password, and choose your preferred cloud region.
+3. Once the database is provisioned (approx. 1-2 minutes):
+   - Navigate to **Project Settings** (gear icon) → **Database**.
+   - Under **Connection Pooling**, choose **Session mode** or **Transaction mode** (port `6543` or direct `5432`).
+   - Copy the URI connection string:
+     ```
+     postgresql://postgres.[PROJECT_REF]:[YOUR_PASSWORD]@aws-0-[REGION].pooler.supabase.com:6543/postgres
+     ```
+   - Replace `[YOUR_PASSWORD]` with your actual database password.
+4. *Optional vector indexing:* In the Supabase SQL Editor, run:
    ```sql
    CREATE EXTENSION IF NOT EXISTS vector;
    ```
-3. Copy your project connection URI from **Project Settings → Database → Connection string (URI)**:
-   ```
-   postgresql://postgres.[PROJECT_REF]:[PASSWORD]@aws-0-[REGION].pooler.supabase.com:6543/postgres
-   ```
 
-### Step B: Web Service on Render
-1. Go to [render.com](https://render.com) and click **New → Web Service**.
-2. Connect your Git repository.
-3. Choose **Docker** as the runtime.
-4. Set the following Environment Variables:
-   - `DATABASE_URL`: *Your Supabase PostgreSQL URI from Step A*
+### Step B: Web Service Configuration on Render
+1. Open [render.com](https://render.com) and go to your dashboard.
+2. Click **New → Web Service** (or select your existing `verity-brand-governance` service).
+3. Connect your GitHub repository.
+4. Set the runtime to **Docker** (Render detects the root `Dockerfile`).
+5. In **Environment Variables**, set:
+   - `DATABASE_URL`: *Paste your Supabase PostgreSQL URI from Step A*
+   - `DEMO_MODE`: `true`
    - `LLM_PROVIDER`: `gemini` (or `openai`)
    - `LLM_MODEL`: `gemini-1.5-flash`
-   - `LLM_API_KEY`: *Your Google AI Studio API key (optional)*
-   - `DEMO_MODE`: `true`
-5. Click **Create Web Service**.
-6. Render will automatically build the multi-stage Dockerfile and start the application.
+   - `LLM_API_KEY`: *(Optional) Your Google AI Studio API key*
+6. In **Health Check Path**, enter `/api/ready`.
+7. Click **Save Changes** / **Manual Deploy → Deploy latest commit**.
+
+### Step C: Verifying Persistence (Survives Restarts)
+1. Open the live deployment URL.
+2. Visit `https://<YOUR-RENDER-URL>/api/ready` in your browser. Confirm it returns:
+   ```json
+   {
+     "status": "ready",
+     "service": "VERITY",
+     "database": "connected",
+     "database_type": "postgresql"
+   }
+   ```
+3. Register a new user account (e.g. `judge@verity.internal`) and submit a new content review.
+4. Go to Render Dashboard → Click **Manual Deploy** → **Restart service** (or redeploy).
+5. Refresh the website once restarted: your user account, workspace, submissions, and review history will remain intact.
 
 ---
 

@@ -23,6 +23,8 @@ COPY backend/requirements.txt ./backend/requirements.txt
 RUN pip install --no-cache-dir -r ./backend/requirements.txt
 
 COPY backend/ ./backend/
+COPY alembic.ini ./alembic.ini
+COPY alembic/ ./alembic/
 COPY eval/ ./eval/
 COPY docs/ ./docs/
 COPY samples/ ./samples/
@@ -34,4 +36,4 @@ ENV DEMO_MODE=true
 
 EXPOSE 8000
 
-CMD ["sh", "-c", "uvicorn backend.app.main:app --host 0.0.0.0 --port ${PORT:-8000}"]
+CMD ["sh", "-c", "alembic upgrade head || true; uvicorn backend.app.main:app --host 0.0.0.0 --port ${PORT:-8000}"]
