@@ -3,6 +3,7 @@ import { motion } from 'framer-motion';
 import { FileText, Sparkles, Tag, CheckCircle2 } from 'lucide-react';
 import { BrandScanningBeam } from './BrandScanningBeam';
 import { FindingMarker } from './FindingMarker';
+import { GoldRefineWord } from './GoldRefineWord';
 
 /**
  * Frame 2: Document Materialisation & Live Scanner Canvas
@@ -111,19 +112,27 @@ export function DocumentMaterialisation({
             className="p-2.5 rounded-lg bg-[#101B35]/60 border border-gray-800/60 transition-colors"
           >
             <span>Our intelligent platform </span>
-            <span
-              className={`transition-all duration-300 px-1.5 py-0.5 rounded font-medium ${
-                currentFrame >= 3
-                  ? currentFrame >= 5
-                    ? 'bg-teal/20 text-teal border border-teal/40 font-semibold'
-                    : 'bg-coral/25 text-coral border border-coral/40 underline decoration-wavy'
-                  : 'text-white'
-              } ${hoveredIssueId === 'issue-2' ? 'ring-2 ring-[#C6A15B] shadow-glow' : ''}`}
-            >
-              {currentFrame >= 5
-                ? 'supports online workflow acceleration with verified team benchmarks'
-                : 'guarantees 100% workflow speed gains for every single business'}
-            </span>
+            {currentFrame >= 5 ? (
+              <GoldRefineWord
+                originalText="guarantees 100% workflow speed gains for every single business"
+                correctedText="supports online workflow acceleration with verified team benchmarks"
+                isRefining={currentFrame === 5}
+                isResolved={currentFrame >= 6}
+                durationMs={700}
+                className={hoveredIssueId === 'issue-2' ? 'ring-2 ring-[#C6A15B] shadow-glow' : ''}
+              />
+            ) : (
+              <span
+                className={`transition-all duration-300 px-1.5 py-0.5 rounded font-medium ${
+                  currentFrame >= 3
+                    ? 'bg-[#E9A23B]/15 text-[#E9A23B] border border-[#E9A23B]/40 shadow-[0_0_12px_rgba(233,162,59,0.35)]'
+                    : 'text-white'
+                } ${hoveredIssueId === 'issue-2' ? 'ring-2 ring-[#C6A15B] shadow-glow' : ''}`}
+                style={currentFrame >= 3 ? { textShadow: '0 0 10px rgba(233,162,59,0.6)' } : {}}
+              >
+                guarantees 100% workflow speed gains for every single business
+              </span>
+            )}
             <span> with zero setup friction.</span>
 
             {/* Finding Marker on Frame 3 & 4 */}
@@ -149,19 +158,27 @@ export function DocumentMaterialisation({
             className="p-2.5 rounded-lg bg-[#101B35]/60 border border-gray-800/60 transition-colors"
           >
             <span>Sign up before the launch window closes to claim our </span>
-            <span
-              className={`transition-all duration-300 px-1.5 py-0.5 rounded font-medium ${
-                currentFrame >= 3
-                  ? currentFrame >= 5
-                    ? 'bg-teal/20 text-teal border border-teal/40 font-semibold'
-                    : 'bg-sky/25 text-sky-300 border border-sky/40 underline decoration-wavy'
-                  : 'text-white'
-              } ${hoveredIssueId === 'issue-3' ? 'ring-2 ring-[#C6A15B] shadow-glow' : ''}`}
-            >
-              {currentFrame >= 5
-                ? 'standard institutional launch pricing'
-                : 'insane crazy discount deal for everybody'}
-            </span>
+            {currentFrame >= 5 ? (
+              <GoldRefineWord
+                originalText="insane crazy discount deal for everybody"
+                correctedText="standard institutional launch pricing"
+                isRefining={currentFrame === 5}
+                isResolved={currentFrame >= 6}
+                durationMs={700}
+                className={hoveredIssueId === 'issue-3' ? 'ring-2 ring-[#C6A15B] shadow-glow' : ''}
+              />
+            ) : (
+              <span
+                className={`transition-all duration-300 px-1.5 py-0.5 rounded font-medium ${
+                  currentFrame >= 3
+                    ? 'bg-[#E9A23B]/15 text-[#E9A23B] border border-[#E9A23B]/40 shadow-[0_0_12px_rgba(233,162,59,0.35)]'
+                    : 'text-white'
+                } ${hoveredIssueId === 'issue-3' ? 'ring-2 ring-[#C6A15B] shadow-glow' : ''}`}
+                style={currentFrame >= 3 ? { textShadow: '0 0 10px rgba(233,162,59,0.6)' } : {}}
+              >
+                insane crazy discount deal for everybody
+              </span>
+            )}
             <span> today.</span>
 
             {/* Finding Marker on Frame 3 & 4 */}

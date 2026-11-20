@@ -6,6 +6,7 @@ import {
 } from 'lucide-react';
 import { getSubmissionDetail, updateFindingStatus } from '../lib/api';
 import { VerdictBadge, SeverityBadge } from '../components/VerdictBadge';
+import { GoldRefineWord } from '../components/animation/GoldRefineWord';
 
 export function AnalysisResultsPage({ submissionId, setActivePage, role }) {
   const [detail, setDetail] = useState(null);
@@ -14,6 +15,7 @@ export function AnalysisResultsPage({ submissionId, setActivePage, role }) {
   const [activeTab, setActiveTab] = useState('findings'); // findings | ledger | score
   const [loading, setLoading] = useState(true);
   const [expandedFinding, setExpandedFinding] = useState(null);
+  const [acceptingFindingId, setAcceptingFindingId] = useState(null);
 
   const loadData = async () => {
     if (!submissionId) return;
@@ -49,6 +51,14 @@ export function AnalysisResultsPage({ submissionId, setActivePage, role }) {
     } catch (err) {
       alert('Error updating finding: ' + err.message);
     }
+  };
+
+  const handleAcceptCorrection = async (finding) => {
+    setAcceptingFindingId(finding.id);
+    setTimeout(async () => {
+      await handleAction(finding.id, 'accepted');
+      setAcceptingFindingId(null);
+    }, 450);
   };
 
   if (loading || !detail) {
@@ -265,7 +275,7 @@ export function AnalysisResultsPage({ submissionId, setActivePage, role }) {
                   key={f.id}
                   className={`bg-white rounded-2xl border p-6 shadow-sm transition-all ${
                     isResolved 
-                      ? 'border-gray-200 bg-gray-50/60 opacity-80' 
+                      ? 'border-teal/30 bg-[#F0FDF4]/70' 
                       : f.severity === 'high' 
                       ? 'border-coral/40 shadow-card' 
                       : 'border-gray-200'
@@ -285,7 +295,7 @@ export function AnalysisResultsPage({ submissionId, setActivePage, role }) {
 
                     <div className="flex items-center gap-2">
                       {isResolved ? (
-                        <span className="text-xs font-medium text-teal capitalize px-2 py-0.5 rounded bg-teal/10">
+                        <span className="text-xs font-medium text-teal capitalize px-2 py-0.5 rounded bg-teal/15 font-bold">
                           ✓ {f.status}
                         </span>
                       ) : (
@@ -294,11 +304,23 @@ export function AnalysisResultsPage({ submissionId, setActivePage, role }) {
                     </div>
                   </div>
 
-                  {/* Title & Quoted Span */}
+                  {/* Title & Quoted Span with Gold Refinement */}
                   <h4 className="font-bold text-ink text-base mb-1">{f.title}</h4>
                   <div className="my-2 p-2.5 bg-mist rounded-lg border border-gray-200 font-mono text-xs text-ink">
                     <span className="text-gray-500 font-sans block text-[10px] mb-0.5">Flagged Text Quote:</span>
-                    "{f.quote}"
+                    {acceptingFindingId === f.id ? (
+                      <GoldRefineWord
+                        originalText={f.quote}
+                        correctedText={f.suggested_replacement || ''}
+                        isRefining={true}
+                        durationMs={450}
+                        isLightBackground={true}
+                      />
+                    ) : isResolved && f.suggested_replacement ? (
+                      <span className="text-teal font-semibold">"{f.suggested_replacement}"</span>
+                    ) : (
+                      <span>"{f.quote}"</span>
+                    )}
                   </div>
 
                   {/* Explanation */}
@@ -379,11 +401,13 @@ export function AnalysisResultsPage({ submissionId, setActivePage, role }) {
                       <div className="flex items-center gap-2">
                         {f.suggested_replacement && (
                           <button
-                            onClick={() => handleAction(f.id, 'accepted')}
-                            className="px-3 py-1.5 rounded-lg bg-teal text-white font-medium hover:bg-teal/90 transition-all flex items-center gap-1 shadow-sm"
+                            type="button"
+                            onClick={() => handleAcceptCorrection(f)}
+                            disabled={acceptingFindingId === f.id}
+                            className="px-3 py-1.5 rounded-lg bg-teal text-white font-medium hover:bg-teal/90 disabled:opacity-50 transition-all flex items-center gap-1.5 shadow-sm cursor-pointer"
                           >
                             <ThumbsUp className="w-3.5 h-3.5" />
-                            <span>Accept Correction</span>
+                            <span>{acceptingFindingId === f.id ? 'Refining...' : 'Accept Correction'}</span>
                           </button>
                         )}
 

@@ -3,8 +3,9 @@ import { motion, AnimatePresence, useReducedMotion } from 'framer-motion';
 import { 
   ShieldCheck, CheckCircle2, AlertTriangle, Cpu, Layers, 
   Search, ArrowRight, ArrowLeft, UserCheck, FileCheck, Sparkles,
-  ChevronDown, ChevronUp, RefreshCw, Lock, Hash, Check
+  ChevronDown, ChevronUp, RefreshCw, Lock, Hash, Check, ThumbsUp
 } from 'lucide-react';
+import { GoldRefineWord } from '../components/animation/GoldRefineWord';
 
 export function HowItWorksPage({ setActivePage }) {
   const prefersReduced = useReducedMotion();
@@ -13,11 +14,22 @@ export function HowItWorksPage({ setActivePage }) {
   const [techOpen, setTechOpen] = useState(false);
   const [selectedStep, setSelectedStep] = useState(0);
 
-  // Try it yourself state
+  // Try it yourself state with Gold Refinement
   const [sampleText, setSampleText] = useState(
     "Our platform guarantees 100% results and is the best learning platform in India!"
   );
   const [checked, setChecked] = useState(true);
+  const [isRefining, setIsRefining] = useState(false);
+  const [resolvedFindings, setResolvedFindings] = useState(false);
+
+  const handleFixIt = () => {
+    setIsRefining(true);
+    setTimeout(() => {
+      setSampleText("Our platform supports verified learning outcomes and is a leading online learning platform in India!");
+      setIsRefining(false);
+      setResolvedFindings(true);
+    }, 700);
+  };
 
   // Sync with URL hash if present
   useEffect(() => {
@@ -568,30 +580,69 @@ export function HowItWorksPage({ setActivePage }) {
                 <span className="italic">Sample Ad Copy (Social Campaign)</span>
               </div>
 
-              {/* Text Area */}
-              <textarea
-                value={sampleText}
-                onChange={(e) => {
-                  setSampleText(e.target.value);
-                  setChecked(false);
-                }}
-                rows={3}
-                className="w-full p-4 rounded-xl bg-[#FAF8F2] border border-[#E6DDC8] text-[#0A1230] text-base focus:ring-2 focus:ring-[#8A5A12] focus:bg-white focus:outline-none mb-4 font-sans leading-relaxed"
-                placeholder="Paste marketing copy here..."
-              />
+              {/* Live Preview Display with Gold Refinement */}
+              {isRefining ? (
+                <div className="w-full p-4 rounded-xl bg-[#FAF8F2] border border-[#E2B857]/50 text-[#0A1230] text-base mb-4 font-serif leading-relaxed shadow-inner">
+                  <span>Our platform </span>
+                  <GoldRefineWord
+                    originalText="guarantees 100% results"
+                    correctedText="supports verified learning outcomes"
+                    isRefining={isRefining}
+                    isResolved={resolvedFindings}
+                    durationMs={700}
+                    isLightBackground={true}
+                  />
+                  <span> and is the </span>
+                  <GoldRefineWord
+                    originalText="best learning platform in India!"
+                    correctedText="leading online learning platform in India."
+                    isRefining={isRefining}
+                    isResolved={resolvedFindings}
+                    durationMs={700}
+                    isLightBackground={true}
+                  />
+                </div>
+              ) : (
+                <textarea
+                  value={sampleText}
+                  onChange={(e) => {
+                    setSampleText(e.target.value);
+                    setChecked(false);
+                    setResolvedFindings(false);
+                  }}
+                  rows={3}
+                  className="w-full p-4 rounded-xl bg-[#FAF8F2] border border-[#E6DDC8] text-[#0A1230] text-base focus:ring-2 focus:ring-[#8A5A12] focus:bg-white focus:outline-none mb-4 font-sans leading-relaxed"
+                  placeholder="Paste marketing copy here..."
+                />
+              )}
 
               <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 mb-6">
                 <span className="text-xs text-[#5B6478]">
-                  Click to run deterministic Layer 01 & Layer 02 verification:
+                  Deterministic Layer 01 & Layer 02 verification with Gold Refinement:
                 </span>
-                <button
-                  type="button"
-                  onClick={() => setChecked(true)}
-                  className="px-6 py-2.5 min-h-[44px] rounded-xl bg-[#E2B857] text-[#0A1226] font-bold text-sm hover:brightness-105 active:scale-[0.98] transition-all flex items-center justify-center gap-2 shadow-md cursor-pointer"
-                >
-                  <RefreshCw className="w-4 h-4 text-[#0A1226]" />
-                  <span>Check This Text</span>
-                </button>
+                <div className="flex items-center gap-2">
+                  <button
+                    type="button"
+                    onClick={() => {
+                      setChecked(true);
+                      setResolvedFindings(false);
+                    }}
+                    className="px-4 py-2.5 min-h-[44px] rounded-xl bg-[#FAF8F2] border border-[#E6DDC8] text-[#0A1230] font-semibold text-sm hover:bg-[#F6F1E7] transition-all flex items-center justify-center gap-2 shadow-sm cursor-pointer"
+                  >
+                    <RefreshCw className="w-4 h-4 text-[#8A5A12]" />
+                    <span>Check Text</span>
+                  </button>
+
+                  <button
+                    type="button"
+                    onClick={handleFixIt}
+                    disabled={isRefining || resolvedFindings}
+                    className="px-6 py-2.5 min-h-[44px] rounded-xl bg-[#E2B857] text-[#0A1226] font-bold text-sm hover:brightness-105 active:scale-[0.98] disabled:opacity-50 transition-all flex items-center justify-center gap-2 shadow-md cursor-pointer"
+                  >
+                    <Sparkles className="w-4 h-4 text-[#0A1226]" />
+                    <span>{isRefining ? 'Refining Copy...' : resolvedFindings ? 'Refined & Verified' : 'Fix it'}</span>
+                  </button>
+                </div>
               </div>
 
               {/* Findings Results Preview */}
@@ -599,44 +650,85 @@ export function HowItWorksPage({ setActivePage }) {
                 <div className="space-y-3 pt-4 border-t border-[#E6DDC8]">
                   <div className="flex items-center justify-between text-xs text-[#5B6478] mb-1">
                     <span className="font-bold text-[#8A5A12] uppercase tracking-wider">
-                      Analysis Results: 2 High-Severity Findings Detected
+                      {resolvedFindings ? 'All Findings Resolved' : 'Analysis Results: 2 High-Severity Findings Detected'}
                     </span>
                     <span className="text-[#085C42] font-semibold">Latency: 12ms</span>
                   </div>
 
-                  {/* Finding 1 */}
-                  <div className="p-4 rounded-xl bg-[#FAF8F2] border border-[#D64550]/40 flex items-start gap-3 text-xs">
-                    <AlertTriangle className="w-5 h-5 text-[#D64550] flex-shrink-0 mt-0.5" />
-                    <div className="flex-grow">
-                      <div className="flex items-center justify-between">
-                        <span className="font-bold text-[#0A1230]">Rule R2: Absolute Guarantees</span>
-                        <span className="px-2 py-0.5 rounded bg-[#D64550]/15 text-[#D64550] font-bold text-[10px]">▲ HIGH</span>
+                  {resolvedFindings ? (
+                    <motion.div
+                      initial={{ opacity: 0, scale: 0.98 }}
+                      animate={{ opacity: 1, scale: 1 }}
+                      className="p-4 rounded-xl bg-[#085C42]/10 border border-[#085C42]/30 flex items-center justify-between text-xs"
+                    >
+                      <div className="flex items-center gap-2.5">
+                        <CheckCircle2 className="w-5 h-5 text-[#085C42]" />
+                        <div>
+                          <span className="font-bold text-[#085C42] block">Verified & Brand Compliant</span>
+                          <span className="text-[11px] text-[#374151]">Grounded in corporate fact sheets. Impurities refined into verified copy.</span>
+                        </div>
                       </div>
-                      <p className="text-[#374151] mt-1">
-                        Flagged text: <span className="text-[#8A5A12] font-semibold underline">“guarantees 100% results”</span>. Brand guidelines prohibit absolute success claims.
-                      </p>
-                      <span className="block text-[#085C42] font-semibold mt-1.5">
-                        Suggested replacement: “supports verified learning outcomes”
+                      <span className="text-[11px] font-bold text-[#085C42] bg-[#085C42]/15 px-2.5 py-1 rounded-full">
+                        Resolved
                       </span>
-                    </div>
-                  </div>
+                    </motion.div>
+                  ) : (
+                    <>
+                      {/* Finding 1 */}
+                      <div className="p-4 rounded-xl bg-[#FAF8F2] border border-[#D64550]/40 flex items-start gap-3 text-xs">
+                        <AlertTriangle className="w-5 h-5 text-[#D64550] flex-shrink-0 mt-0.5" />
+                        <div className="flex-grow">
+                          <div className="flex items-center justify-between">
+                            <span className="font-bold text-[#0A1230]">Rule R2: Absolute Guarantees</span>
+                            <span className="px-2 py-0.5 rounded bg-[#D64550]/15 text-[#D64550] font-bold text-[10px]">▲ HIGH</span>
+                          </div>
+                          <p className="text-[#374151] mt-1">
+                            Flagged text: <span className="text-[#8A5A12] font-semibold underline">“guarantees 100% results”</span>. Brand guidelines prohibit absolute success claims.
+                          </p>
+                          <div className="flex items-center justify-between mt-2 pt-2 border-t border-[#E6DDC8]">
+                            <span className="text-[#085C42] font-semibold">
+                              Suggested: “supports verified learning outcomes”
+                            </span>
+                            <button
+                              type="button"
+                              onClick={handleFixIt}
+                              className="px-3 py-1 rounded-lg bg-[#E2B857] text-[#0A1226] font-bold text-xs hover:brightness-105 flex items-center gap-1 shadow-sm cursor-pointer"
+                            >
+                              <Sparkles className="w-3 h-3 text-[#0A1226]" />
+                              <span>Fix it</span>
+                            </button>
+                          </div>
+                        </div>
+                      </div>
 
-                  {/* Finding 2 */}
-                  <div className="p-4 rounded-xl bg-[#FAF8F2] border border-[#D64550]/40 flex items-start gap-3 text-xs">
-                    <AlertTriangle className="w-5 h-5 text-[#D64550] flex-shrink-0 mt-0.5" />
-                    <div className="flex-grow">
-                      <div className="flex items-center justify-between">
-                        <span className="font-bold text-[#0A1230]">Rule R3: Unsupported Superlative</span>
-                        <span className="px-2 py-0.5 rounded bg-[#D64550]/15 text-[#D64550] font-bold text-[10px]">▲ HIGH</span>
+                      {/* Finding 2 */}
+                      <div className="p-4 rounded-xl bg-[#FAF8F2] border border-[#D64550]/40 flex items-start gap-3 text-xs">
+                        <AlertTriangle className="w-5 h-5 text-[#D64550] flex-shrink-0 mt-0.5" />
+                        <div className="flex-grow">
+                          <div className="flex items-center justify-between">
+                            <span className="font-bold text-[#0A1230]">Rule R3: Unsupported Superlative</span>
+                            <span className="px-2 py-0.5 rounded bg-[#D64550]/15 text-[#D64550] font-bold text-[10px]">▲ HIGH</span>
+                          </div>
+                          <p className="text-[#374151] mt-1">
+                            Flagged text: <span className="text-[#8A5A12] font-semibold underline">“best learning platform in India”</span>. No verified third-party accreditation on record.
+                          </p>
+                          <div className="flex items-center justify-between mt-2 pt-2 border-t border-[#E6DDC8]">
+                            <span className="text-[#085C42] font-semibold">
+                              Suggested: “leading online learning platform in India”
+                            </span>
+                            <button
+                              type="button"
+                              onClick={handleFixIt}
+                              className="px-3 py-1 rounded-lg bg-[#E2B857] text-[#0A1226] font-bold text-xs hover:brightness-105 flex items-center gap-1 shadow-sm cursor-pointer"
+                            >
+                              <Sparkles className="w-3 h-3 text-[#0A1226]" />
+                              <span>Fix it</span>
+                            </button>
+                          </div>
+                        </div>
                       </div>
-                      <p className="text-[#374151] mt-1">
-                        Flagged text: <span className="text-[#8A5A12] font-semibold underline">“best learning platform in India”</span>. No verified third-party accreditation on record.
-                      </p>
-                      <span className="block text-[#085C42] font-semibold mt-1.5">
-                        Suggested replacement: “leading online learning platform in India”
-                      </span>
-                    </div>
-                  </div>
+                    </>
+                  )}
                 </div>
               )}
 
