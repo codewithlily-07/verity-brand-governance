@@ -98,17 +98,17 @@ export function HowItWorksPage({ setActivePage }) {
       number: '04',
       title: 'Human Approval',
       shortLine: 'A person makes the final call.',
-      whatItDoes: 'Verity never publishes copy autonomously. Authorised Reviewers inspect findings, evaluate intent-preserving corrections side-by-side, and apply a cryptographic approval stamp with an immutable SHA-256 fingerprint.',
+      whatItDoes: 'Verity never publishes copy autonomously. Authorised Reviewers inspect findings, evaluate intent-preserving corrections side-by-side, and apply an authoritative approval stamp with an immutable SHA-256 fingerprint.',
       examplePhrase: 'Approved Version 2 (Hash: e3b0c442...)',
-      exampleContext: 'Reviewed by Elena Vance (Authorised Reviewer) with recorded audit justification and permanent cryptographic seal.',
+      exampleContext: 'Reviewed by Authorised Reviewer with recorded audit justification and permanent tamper-evident seal.',
       whatYouSee: {
-        badge: 'Cryptographic Seal',
+        badge: 'Tamper-Evident Seal',
         severity: 'Approved',
         fix: 'Ready for export to CMS, email, and social publishing channels'
       },
       techDetails: [
         'Role-separated sign-off gate: Creators submit; only Reviewers/Admins can approve',
-        'SHA-256 cryptographic fingerprint calculated over normalized content and metadata',
+        'SHA-256 tamper-evident fingerprint calculated over normalized content and metadata',
         'Optimistic concurrency control via integer lock_version prevents race conditions',
         'Immutable audit event trail recorded permanently in durable storage'
       ]
@@ -139,7 +139,7 @@ export function HowItWorksPage({ setActivePage }) {
     {
       number: '5',
       title: 'Approve',
-      description: 'An authorised reviewer evaluates the side-by-side diff and issues a permanent cryptographic approval stamp.'
+      description: 'An authorised reviewer evaluates the side-by-side diff and issues a permanent tamper-evident approval stamp.'
     }
   ];
 
@@ -176,7 +176,7 @@ export function HowItWorksPage({ setActivePage }) {
           </h1>
 
           <p className="text-lg sm:text-xl text-[#D5DBEE] max-w-2xl mx-auto mb-10 leading-relaxed font-sans">
-            From raw draft to cryptographically sealed publication in four disciplined verification layers.
+            From raw draft to authoritatively sealed publication in four disciplined verification layers.
           </p>
 
           {/* Segmented Tab Controls */}
