@@ -1,0 +1,26 @@
+{
+  "landing": {
+    "violations_count": 0,
+    "violations": []
+  },
+  "how_it_works": {
+    "violations_count": 0,
+    "violations": []
+  },
+  "resources": {
+    "violations_count": 0,
+    "violations": []
+  },
+  "product": {
+    "violations_count": 0,
+    "violations": []
+  },
+  "trust_security": {
+    "violations_count": 0,
+    "violations": []
+  },
+  "quality": {
+    "violations_count": 0,
+    "violations": []
+  }
+}
