@@ -122,7 +122,7 @@ export function RegisterPage({ setActivePage, onRegisterSuccess }) {
               <div className="w-5 h-5 rounded-full bg-[#E8B84B]/20 border border-[#E8B84B] flex items-center justify-center text-[#FFF1B8] shrink-0">
                 <CheckCircle2 className="w-3.5 h-3.5" />
               </div>
-              <span>Deterministic regex + vector semantic verification</span>
+              <span>Deterministic regex + approved fact retrieval verification</span>
             </div>
             <div className="flex items-center gap-3 text-xs text-gray-300">
               <div className="w-5 h-5 rounded-full bg-[#E8B84B]/20 border border-[#E8B84B] flex items-center justify-center text-[#FFF1B8] shrink-0">
