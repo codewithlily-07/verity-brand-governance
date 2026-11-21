@@ -129,25 +129,24 @@ export function PublicNavbar({ activePage = 'landing', setActivePage, onOpenRole
                   key={link.id}
                   type="button"
                   onClick={() => handleNavClick(link.id)}
-                  className="relative py-2 group outline-none focus-visible:ring-2 focus-visible:ring-[#E2B857] rounded"
+                  className="relative py-2 group outline-none focus-visible:ring-2 focus-visible:ring-[#E2B857] rounded cursor-pointer"
                   style={{
-                    color: '#F4F1E8',
                     fontSize: '16px',
                     fontWeight: isActive ? 600 : 500,
                     letterSpacing: '0.01em',
                   }}
                 >
-                  <span className="transition-colors duration-200 group-hover:text-[#EBD9A0]">
+                  <span className={`transition-colors duration-200 ${isActive ? 'text-[#E2B857]' : 'text-[#F4F1E8] group-hover:text-[#EBD9A0]'}`}>
                     {link.label}
                   </span>
 
-                  {/* Active Page: short 2px champagne underline (~18px wide) centred under label */}
+                  {/* Active Page: thin gold underline (~22px wide) centred under label */}
                   {isActive && (
                     <span 
-                      className="absolute bottom-0 left-1/2 -translate-x-1/2 w-[18px] h-[2px] rounded-full pointer-events-none"
+                      className="absolute bottom-0 left-1/2 -translate-x-1/2 w-[22px] h-[2px] rounded-full pointer-events-none"
                       style={{
                         backgroundColor: '#E2B857',
-                        boxShadow: '0 0 8px rgba(226, 184, 87, 0.6)'
+                        boxShadow: '0 0 10px rgba(226, 184, 87, 0.7)'
                       }}
                     />
                   )}
@@ -211,15 +210,15 @@ export function PublicNavbar({ activePage = 'landing', setActivePage, onOpenRole
                   key={link.id}
                   type="button"
                   onClick={() => handleNavClick(link.id)}
-                  className={`text-left py-2.5 text-base font-medium border-b border-white/5 transition-colors flex items-center justify-between ${
-                    isActive ? 'text-[#F4F1E8] font-semibold' : 'text-[#D5DBEE] hover:text-[#EBD9A0]'
+                  className={`text-left py-2.5 text-base font-medium border-b border-white/5 transition-colors flex items-center justify-between cursor-pointer ${
+                    isActive ? 'text-[#E2B857] font-semibold' : 'text-[#D5DBEE] hover:text-[#EBD9A0]'
                   }`}
                 >
                   <span>{link.label}</span>
                   {isActive && (
                     <span 
-                      className="w-4 h-[2px] rounded-full" 
-                      style={{ backgroundColor: '#E2B857' }}
+                      className="w-5 h-[2px] rounded-full" 
+                      style={{ backgroundColor: '#E2B857', boxShadow: '0 0 8px rgba(226, 184, 87, 0.6)' }}
                     />
                   )}
                 </button>

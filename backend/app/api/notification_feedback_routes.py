@@ -78,6 +78,7 @@ def list_notifications(request: Request, db: Session = Depends(get_db)):
             workspace_id=profile.workspace_id,
             title="Welcome to VERITY Brand Governance",
             message="Your demonstration workspace has been initialized with the Verity Learning brand catalog.",
+            link="/brand-hub",
             read=False
         )
         db.add(welcome_note)

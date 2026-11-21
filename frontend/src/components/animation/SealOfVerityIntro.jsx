@@ -156,8 +156,7 @@ export function SealOfVerityIntro({ onComplete }) {
 
   if (!visible) return null;
 
-  const phrase1 = "guarantees 100% results";
-  const phrase2 = "best in India!";
+  const flaggedPhrase = "best in India!";
   const correctedSentence = "Our platform supports verified online learning.";
 
   return (
@@ -229,9 +228,9 @@ export function SealOfVerityIntro({ onComplete }) {
                   className="relative z-10 font-serif text-xl sm:text-2xl text-[#F4F1E8] px-6 py-4 bg-[#0A1226]/90 rounded-2xl max-w-2xl leading-relaxed flex flex-wrap items-center justify-center gap-x-1.5"
                   aria-hidden="true"
                 >
-                  <span>Our platform</span>
+                  <span>Our platform is the</span>
 
-                  {/* Flagged Phrase 1: "guarantees 100% results" */}
+                  {/* Flagged Phrase: "best in India!" (Rule R3 Unbacked Superlative) */}
                   <span className="relative inline-flex items-center">
                     <span 
                       className={`inline-flex transition-all duration-300 ${
@@ -245,47 +244,7 @@ export function SealOfVerityIntro({ onComplete }) {
                         textShadow: '0 0 12px rgba(233,162,59,0.75), 0 0 24px rgba(233,162,59,0.4)',
                       } : {}}
                     >
-                      {phrase1.split('').map((char, cIdx) => (
-                        <span
-                          key={cIdx}
-                          ref={el => { if (el) flaggedLettersRef.current.push(el); }}
-                          className={`inline-block transition-transform duration-300 ${stage === 3 ? '-translate-y-1 scale-95' : ''}`}
-                        >
-                          {char === ' ' ? '\u00A0' : char}
-                        </span>
-                      ))}
-                    </span>
-
-                    {/* Rule R2 Tag fading in on Stage 2 */}
-                    {stage === 2 && (
-                      <motion.span
-                        initial={{ opacity: 0, scale: 0.8 }}
-                        animate={{ opacity: 1, scale: 1 }}
-                        transition={{ duration: 0.25 }}
-                        className="ml-1 px-1.5 py-0.5 rounded text-[10px] font-mono font-bold bg-[#E9A23B]/20 text-[#E9A23B] border border-[#E9A23B]/50 leading-none shadow-[0_0_8px_rgba(233,162,59,0.4)]"
-                      >
-                        R2
-                      </motion.span>
-                    )}
-                  </span>
-
-                  <span>and is the</span>
-
-                  {/* Flagged Phrase 2: "best in India!" */}
-                  <span className="relative inline-flex items-center">
-                    <span 
-                      className={`inline-flex transition-all duration-300 ${
-                        stage === 2 
-                          ? 'text-[#E9A23B]' 
-                          : stage === 3 
-                            ? 'text-[#E2B857] blur-[1.5px] -translate-y-1 opacity-20' 
-                            : 'text-[#F4F1E8]'
-                      }`}
-                      style={stage === 2 ? {
-                        textShadow: '0 0 12px rgba(233,162,59,0.75), 0 0 24px rgba(233,162,59,0.4)',
-                      } : {}}
-                    >
-                      {phrase2.split('').map((char, cIdx) => (
+                      {flaggedPhrase.split('').map((char, cIdx) => (
                         <span
                           key={cIdx}
                           ref={el => { if (el) flaggedLettersRef.current.push(el); }}
@@ -301,7 +260,7 @@ export function SealOfVerityIntro({ onComplete }) {
                       <motion.span
                         initial={{ opacity: 0, scale: 0.8 }}
                         animate={{ opacity: 1, scale: 1 }}
-                        transition={{ duration: 0.25, delay: 0.1 }}
+                        transition={{ duration: 0.25, delay: 0.05 }}
                         className="ml-1 px-1.5 py-0.5 rounded text-[10px] font-mono font-bold bg-[#E9A23B]/20 text-[#E9A23B] border border-[#E9A23B]/50 leading-none shadow-[0_0_8px_rgba(233,162,59,0.4)]"
                       >
                         R3
@@ -315,9 +274,9 @@ export function SealOfVerityIntro({ onComplete }) {
               {(stage === 2 || stage === 3) && (
                 <motion.div
                   ref={lensRef}
-                  initial={{ x: -180, opacity: 0 }}
+                  initial={{ x: -100, opacity: 0 }}
                   animate={{ 
-                    x: stage === 2 ? 140 : 180, 
+                    x: stage === 2 ? 80 : 120, 
                     opacity: 1,
                     scale: stage === 3 ? 1.15 : 1
                   }}

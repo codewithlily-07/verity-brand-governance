@@ -7,7 +7,7 @@ from sqlalchemy.orm import Session
 from datetime import datetime, timezone
 from backend.app.core.database import get_db
 from backend.app.models.verity_models import (
-    Submission, SubmissionVersion, ReviewDecision, Comment, AuditEvent, Workspace
+    Submission, SubmissionVersion, ReviewDecision, Comment, AuditEvent, Workspace, Notification
 )
 from backend.app.schemas.verity_schemas import (
     ReviewDecisionRequest, ReviewDecisionResponse, CommentCreate, CommentResponse
@@ -164,6 +164,15 @@ def submit_review_decision(
         version_number=version.version_number
     ))
 
+    # Add notification for review decision
+    db.add(Notification(
+        workspace_id=sub.workspace_id,
+        title=f"Review Decision: {target_status} on '{sub.title[:30]}'",
+        message=f"{payload.reviewer_name} marked draft as {target_status}: {payload.reason[:60]}",
+        link=f"/submissions/{sub.id}",
+        read=False
+    ))
+
     db.commit()
 
     return {
@@ -197,6 +206,16 @@ def add_comment(
         comment_text=payload.comment_text
     )
     db.add(comment)
+
+    # Add notification for comment
+    db.add(Notification(
+        workspace_id=sub.workspace_id,
+        title=f"New Comment on '{sub.title[:30]}'",
+        message=f"{payload.user_name} ({payload.user_role}): {payload.comment_text[:60]}",
+        link=f"/submissions/{sub.id}",
+        read=False
+    ))
+
     db.commit()
 
     return {

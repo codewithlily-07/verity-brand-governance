@@ -185,8 +185,8 @@ export default function App() {
       <div 
         className={`min-h-screen flex flex-col font-sans relative ${
           isPublicPage 
-            ? (activePage === 'quality' ? 'bg-[#F7F2E7]' : 'bg-[#050A1F] text-[#F7F2E7]') + ' selection:bg-[#D4AF37]/30 selection:text-white' 
-            : 'theme-light text-[#2B3345] selection:bg-[#D4AF37]/30 selection:text-[#0A1230]'
+            ? 'bg-[#0A1226] text-[#F4F1E8] selection:bg-[#E2B857]/30 selection:text-white' 
+            : 'theme-light text-[#2B3345] selection:bg-[#E2B857]/30 selection:text-[#0A1226]'
         }`}
         style={!isPublicPage ? { background: 'linear-gradient(180deg, #F6F1E7 0%, #FBF8F1 100%)' } : {}}
       >

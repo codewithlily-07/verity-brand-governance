@@ -30,6 +30,7 @@ export function Navbar({
   const [notifications, setNotifications] = useState([]);
   const [showNotes, setShowNotes] = useState(false);
   const [showRoleMenu, setShowRoleMenu] = useState(false);
+  const [selectedNotifDetail, setSelectedNotifDetail] = useState(null);
   const dropdownRef = useRef(null);
   const bellButtonRef = useRef(null);
   const roleMenuRef = useRef(null);
@@ -100,20 +101,51 @@ export function Navbar({
   };
 
   const handleNotificationClick = async (notif) => {
+    // 1. Immediately update UI state so unread count decrements instantly
     if (!notif.read) {
+      setNotifications(prev => prev.map(n => n.id === notif.id ? { ...n, read: true } : n));
       try {
         await markNotificationRead(notif.id);
-        setNotifications(prev => prev.map(n => n.id === notif.id ? { ...n, read: true } : n));
-      } catch (e) {}
+      } catch (e) {
+        console.error('Failed to mark notification read:', e);
+      }
     }
     
     setShowNotes(false);
-    if (notif.link && notif.link.includes('/submissions/')) {
-      const parts = notif.link.split('/');
-      const subId = parts[parts.length - 1];
-      if (onSelectSubmission) onSelectSubmission(subId);
-      setActivePage('results');
+
+    // 2. Interactive routing based on link
+    if (notif.link) {
+      if (notif.link.includes('/submissions/')) {
+        const parts = notif.link.split('/');
+        const subId = parts[parts.length - 1];
+        if (subId) {
+          try {
+            if (onSelectSubmission) onSelectSubmission(subId);
+            // Update URL search param for deep linking
+            if (typeof window !== 'undefined' && window.history) {
+              const url = new URL(window.location);
+              url.searchParams.set('id', subId);
+              window.history.pushState({}, '', url);
+            }
+            setActivePage('results');
+            return;
+          } catch (err) {
+            console.warn('Submission link target error, showing details:', err);
+            setSelectedNotifDetail(notif);
+            return;
+          }
+        }
+      } else if (notif.link.startsWith('/')) {
+        const route = notif.link.replace(/^\//, '');
+        if (route) {
+          setActivePage(route);
+          return;
+        }
+      }
     }
+
+    // 3. Meaningful detail view if no destination link or custom informational alert
+    setSelectedNotifDetail(notif);
   };
 
   const handleRoleChange = async (newRole) => {
@@ -314,17 +346,40 @@ export function Navbar({
                       <div 
                         key={n.id} 
                         onClick={() => handleNotificationClick(n)}
-                        className={`p-3.5 hover:bg-gray-50 transition-colors cursor-pointer text-left ${!n.read ? 'bg-[#FBF1CF]/30' : ''}`}
+                        className={`p-3.5 transition-all cursor-pointer text-left relative border-l-4 ${
+                          !n.read 
+                            ? 'bg-[#FAF3E0] hover:bg-[#F5ECD2] border-l-[#E2B857]' 
+                            : 'bg-white hover:bg-gray-50 border-l-transparent'
+                        }`}
+                        role="button"
+                        tabIndex={0}
+                        onKeyDown={(e) => {
+                          if (e.key === 'Enter' || e.key === ' ') {
+                            e.preventDefault();
+                            handleNotificationClick(n);
+                          }
+                        }}
                       >
                         <div className="flex items-start justify-between gap-2">
-                          <span className={`font-semibold text-xs text-[#0A1230] ${!n.read ? 'font-bold' : ''}`}>
-                            {n.title}
-                          </span>
-                          <span className="text-[10px] text-[#5B6478] whitespace-nowrap">
+                          <div className="flex items-center gap-1.5 min-w-0">
+                            {!n.read && (
+                              <span className="w-2 h-2 rounded-full bg-[#E2B857] shrink-0" title="Unread notification" />
+                            )}
+                            <span className={`text-xs truncate ${!n.read ? 'font-bold text-[#0A1226]' : 'font-medium text-[#14203D]'}`}>
+                              {n.title}
+                            </span>
+                          </div>
+                          <span className="text-[10px] text-[#5B6478] shrink-0 whitespace-nowrap">
                             {n.created_at ? new Date(n.created_at).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }) : ''}
                           </span>
                         </div>
-                        <p className="text-[11px] text-[#5B6478] mt-1 leading-snug">{n.message}</p>
+                        <p className="text-[11px] text-[#4A5675] mt-1 leading-snug line-clamp-2">{n.message}</p>
+                        {n.link && (
+                          <div className="mt-1.5 flex items-center gap-1 text-[10px] font-semibold text-[#8A6A24]">
+                            <span>Open destination</span>
+                            <ArrowRight className="w-2.5 h-2.5" />
+                          </div>
+                        )}
                       </div>
                     ))
                   )}
@@ -432,6 +487,46 @@ export function Navbar({
         </div>
 
       </div>
+
+      {/* Selected Notification Detail Modal */}
+      {selectedNotifDetail && (
+        <div 
+          className="fixed inset-0 z-[60] flex items-center justify-center p-4 bg-[#0A1226]/80 backdrop-blur-sm"
+          onClick={() => setSelectedNotifDetail(null)}
+          role="dialog"
+          aria-modal="true"
+        >
+          <div 
+            className="bg-[#FAF8F2] border border-[#E2B857]/40 rounded-2xl max-w-md w-full p-6 shadow-2xl text-[#14203D]"
+            onClick={e => e.stopPropagation()}
+          >
+            <div className="flex items-center justify-between mb-3 pb-2 border-b border-[#F3EAD3]">
+              <span className="text-[11px] font-bold uppercase tracking-wider text-[#7A5B18]">System Notification</span>
+              <button 
+                onClick={() => setSelectedNotifDetail(null)}
+                className="p-1 rounded-lg text-[#4A5675] hover:text-[#0A1226] hover:bg-[#14203D]/10 cursor-pointer"
+                aria-label="Close notification detail"
+              >
+                <X className="w-4 h-4" />
+              </button>
+            </div>
+            <h3 className="font-serif text-lg font-bold text-[#0A1226] mb-2">{selectedNotifDetail.title}</h3>
+            <p className="text-sm text-[#4A5675] leading-relaxed mb-4">{selectedNotifDetail.message}</p>
+            <div className="text-[11px] text-[#7A5B18] mb-6">
+              {selectedNotifDetail.created_at ? new Date(selectedNotifDetail.created_at).toLocaleString() : 'Just now'}
+            </div>
+            <div className="flex justify-end gap-2">
+              <button
+                type="button"
+                onClick={() => setSelectedNotifDetail(null)}
+                className="px-4 py-2 rounded-xl bg-[#E2B857] hover:bg-[#F3EAD3] text-[#0A1226] font-bold text-xs transition-colors cursor-pointer"
+              >
+                Dismiss
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </header>
   );
 }

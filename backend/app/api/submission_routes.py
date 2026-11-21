@@ -7,7 +7,7 @@ from typing import List, Dict, Any, Optional
 from backend.app.core.database import get_db
 from backend.app.models.verity_models import (
     Workspace, BrandProfile, Submission, SubmissionVersion,
-    AnalysisRun, Finding, AuditEvent, ReviewDecision, Comment
+    AnalysisRun, Finding, AuditEvent, ReviewDecision, Comment, Notification
 )
 from backend.app.engine.verity_engine import VerityAnalysisEngine, diff_words
 from backend.app.llm.adapter import llm_adapter
@@ -194,6 +194,14 @@ async def create_submission(
         actor_name=payload.author_name,
         actor_role=payload.author_role,
         version_number=1
+    ))
+    # Create system notification
+    db.add(Notification(
+        workspace_id=workspace_id,
+        title=f"New Draft: {submission.title[:35]}",
+        message=f"Created Version 1 ({len(run.findings)} finding{'s' if len(run.findings) != 1 else ''}). Ready for brand review.",
+        link=f"/submissions/{submission.id}",
+        read=False
     ))
     db.commit()
 

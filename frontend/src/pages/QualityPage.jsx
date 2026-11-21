@@ -73,10 +73,11 @@ export function QualityPage({ setActivePage }) {
             <button
               onClick={handleRunEvaluation}
               disabled={running}
-              className="px-6 py-3 rounded-xl font-bold text-sm text-[#101B35] bg-[#E2B857] hover:bg-[#F3EAD3] shadow-[0_2px_12px_rgba(226,184,87,0.35)] flex items-center gap-2.5 transition-all hover:scale-105 active:scale-95 disabled:opacity-50 cursor-pointer"
+              className="px-6 py-3 rounded-xl font-bold text-sm text-[#101B35] bg-[#E2B857] hover:bg-[#F3EAD3] shadow-[0_2px_12px_rgba(226,184,87,0.35)] flex items-center gap-2.5 transition-all hover:scale-105 active:scale-95 disabled:opacity-60 disabled:hover:scale-100 cursor-pointer outline-none focus-visible:ring-2 focus-visible:ring-[#E2B857]"
+              aria-label="Run live evaluation against labelled benchmark drafts"
             >
-              <Play className={`w-4 h-4 fill-current ${running ? 'animate-spin' : ''}`} />
-              <span>{running ? 'Running evaluation...' : 'Run live evaluation'}</span>
+              <RefreshCw className={`w-4 h-4 ${running ? 'animate-spin' : ''}`} />
+              <span>{running ? 'Evaluating drafts...' : evalResults ? 'Re-run evaluation' : 'Run live evaluation'}</span>
             </button>
           </div>
         </div>
@@ -106,54 +107,159 @@ export function QualityPage({ setActivePage }) {
           </div>
 
           {/* 4 Metric Cards */}
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5 mb-10">
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5 mb-10 items-stretch">
 
             {/* Metric 1: Precision */}
-            <div className="bg-[#FFFFFF] rounded-2xl p-6 border border-[#E2B857]/30 border-l-4 border-l-[#E2B857] shadow-[0_4px_20px_rgba(20,32,61,0.05)]">
-              <span className="text-sm font-semibold text-[#8A6A24] uppercase tracking-wider block">Precision</span>
-              <p className="font-serif text-[36px] font-bold text-[#14203D] mt-1 leading-tight">
-                {evalResults ? `${evalResults.metrics.precision_percent}%` : 'Not run yet'}
-              </p>
-              <span className="text-sm text-[#4A5675] mt-1 block">
+            <div className="bg-[#FFFFFF] rounded-2xl p-6 border border-[#E2B857]/30 border-l-4 border-l-[#E2B857] shadow-[0_4px_20px_rgba(20,32,61,0.05)] flex flex-col justify-between">
+              <div>
+                <div className="flex items-center justify-between mb-1">
+                  <span className="text-xs font-bold text-[#8A6A24] uppercase tracking-wider">Precision</span>
+                  <span className={`px-2 py-0.5 rounded-full text-[10px] font-bold uppercase tracking-wider ${
+                    running 
+                      ? 'bg-[#E2B857]/20 text-[#8A6A24] animate-pulse'
+                      : evalResults 
+                        ? 'bg-[#D1FAE5] text-[#065F46]'
+                        : error 
+                          ? 'bg-[#FEE2E2] text-[#B91C1C]'
+                          : 'bg-[#F3EAD3] text-[#7A5B18]'
+                  }`}>
+                    {running ? 'Running' : evalResults ? 'Completed' : error ? 'Failed' : 'Not Run Yet'}
+                  </span>
+                </div>
+                <div className="min-h-[48px] flex items-center">
+                  {running ? (
+                    <div className="flex items-center gap-2 text-[#E2B857]">
+                      <RefreshCw className="w-5 h-5 animate-spin" />
+                      <span className="text-xl font-bold font-serif">Measuring...</span>
+                    </div>
+                  ) : evalResults ? (
+                    <p className="font-serif text-[36px] font-bold text-[#14203D] leading-tight">
+                      {evalResults.metrics.precision_percent}%
+                    </p>
+                  ) : error ? (
+                    <p className="font-serif text-xl font-bold text-[#B91C1C]">
+                      Run Failed
+                    </p>
+                  ) : (
+                    <p className="font-serif text-xl font-semibold text-[#8A6A24]">
+                      Not run yet
+                    </p>
+                  )}
+                </div>
+              </div>
+              <span className="text-xs text-[#4A5675] mt-2 block border-t border-[#F3EAD3] pt-2">
                 {evalResults
-                  ? `${evalResults.metrics.planted_issues_detected} / (${evalResults.metrics.planted_issues_detected} + ${evalResults.metrics.false_positives_on_clean_draft})`
-                  : 'Click Run live evaluation'}
+                  ? `${evalResults.metrics.planted_issues_detected} / (${evalResults.metrics.planted_issues_detected} + ${evalResults.metrics.false_positives_on_clean_draft}) detected`
+                  : 'Requires running evaluation suite'}
               </span>
             </div>
 
             {/* Metric 2: Recall */}
-            <div className="bg-[#FFFFFF] rounded-2xl p-6 border border-[#E2B857]/30 border-l-4 border-l-[#059669] shadow-[0_4px_20px_rgba(20,32,61,0.05)]">
-              <span className="text-sm font-semibold text-[#065F46] uppercase tracking-wider block">Recall</span>
-              <p className="font-serif text-[36px] font-bold text-[#14203D] mt-1 leading-tight">
-                {evalResults ? `${evalResults.metrics.recall_percent}%` : 'Not run yet'}
-              </p>
-              <span className="text-sm text-[#4A5675] mt-1 block">
+            <div className="bg-[#FFFFFF] rounded-2xl p-6 border border-[#E2B857]/30 border-l-4 border-l-[#059669] shadow-[0_4px_20px_rgba(20,32,61,0.05)] flex flex-col justify-between">
+              <div>
+                <div className="flex items-center justify-between mb-1">
+                  <span className="text-xs font-bold text-[#065F46] uppercase tracking-wider">Recall</span>
+                  <span className={`px-2 py-0.5 rounded-full text-[10px] font-bold uppercase tracking-wider ${
+                    running 
+                      ? 'bg-[#E2B857]/20 text-[#8A6A24] animate-pulse'
+                      : evalResults 
+                        ? 'bg-[#D1FAE5] text-[#065F46]'
+                        : error 
+                          ? 'bg-[#FEE2E2] text-[#B91C1C]'
+                          : 'bg-[#F3EAD3] text-[#7A5B18]'
+                  }`}>
+                    {running ? 'Running' : evalResults ? 'Completed' : error ? 'Failed' : 'Not Run Yet'}
+                  </span>
+                </div>
+                <div className="min-h-[48px] flex items-center">
+                  {running ? (
+                    <div className="flex items-center gap-2 text-[#059669]">
+                      <RefreshCw className="w-5 h-5 animate-spin" />
+                      <span className="text-xl font-bold font-serif">Measuring...</span>
+                    </div>
+                  ) : evalResults ? (
+                    <p className="font-serif text-[36px] font-bold text-[#14203D] leading-tight">
+                      {evalResults.metrics.recall_percent}%
+                    </p>
+                  ) : error ? (
+                    <p className="font-serif text-xl font-bold text-[#B91C1C]">
+                      Run Failed
+                    </p>
+                  ) : (
+                    <p className="font-serif text-xl font-semibold text-[#8A6A24]">
+                      Not run yet
+                    </p>
+                  )}
+                </div>
+              </div>
+              <span className="text-xs text-[#4A5675] mt-2 block border-t border-[#F3EAD3] pt-2">
                 {evalResults 
-                  ? `100% · ${evalResults.metrics.planted_issues_detected} of ${evalResults.metrics.planted_issues_total} detected` 
+                  ? `${evalResults.metrics.planted_issues_detected} of ${evalResults.metrics.planted_issues_total} planted issues found` 
                   : 'Ground truth coverage'}
               </span>
             </div>
 
             {/* Metric 3: Evidence accuracy */}
-            <div className="bg-[#FFFFFF] rounded-2xl p-6 border border-[#E2B857]/30 border-l-4 border-l-[#7C3AED] shadow-[0_4px_20px_rgba(20,32,61,0.05)]">
-              <span className="text-sm font-semibold text-[#6D28D9] uppercase tracking-wider block">Evidence accuracy</span>
-              <p className="font-serif text-[36px] font-bold text-[#14203D] mt-1 leading-tight">
-                {evalResults ? `${evalResults.metrics.evidence_accuracy_percent}%` : 'Not run yet'}
-              </p>
-              <span className="text-sm text-[#4A5675] mt-1 block">
+            <div className="bg-[#FFFFFF] rounded-2xl p-6 border border-[#E2B857]/30 border-l-4 border-l-[#7C3AED] shadow-[0_4px_20px_rgba(20,32,61,0.05)] flex flex-col justify-between">
+              <div>
+                <div className="flex items-center justify-between mb-1">
+                  <span className="text-xs font-bold text-[#6D28D9] uppercase tracking-wider">Evidence accuracy</span>
+                  <span className={`px-2 py-0.5 rounded-full text-[10px] font-bold uppercase tracking-wider ${
+                    running 
+                      ? 'bg-[#E2B857]/20 text-[#8A6A24] animate-pulse'
+                      : evalResults 
+                        ? 'bg-[#D1FAE5] text-[#065F46]'
+                        : error 
+                          ? 'bg-[#FEE2E2] text-[#B91C1C]'
+                          : 'bg-[#F3EAD3] text-[#7A5B18]'
+                  }`}>
+                    {running ? 'Running' : evalResults ? 'Completed' : error ? 'Failed' : 'Not Run Yet'}
+                  </span>
+                </div>
+                <div className="min-h-[48px] flex items-center">
+                  {running ? (
+                    <div className="flex items-center gap-2 text-[#7C3AED]">
+                      <RefreshCw className="w-5 h-5 animate-spin" />
+                      <span className="text-xl font-bold font-serif">Measuring...</span>
+                    </div>
+                  ) : evalResults ? (
+                    <p className="font-serif text-[36px] font-bold text-[#14203D] leading-tight">
+                      {evalResults.metrics.evidence_accuracy_percent}%
+                    </p>
+                  ) : error ? (
+                    <p className="font-serif text-xl font-bold text-[#B91C1C]">
+                      Run Failed
+                    </p>
+                  ) : (
+                    <p className="font-serif text-xl font-semibold text-[#8A6A24]">
+                      Not run yet
+                    </p>
+                  )}
+                </div>
+              </div>
+              <span className="text-xs text-[#4A5675] mt-2 block border-t border-[#F3EAD3] pt-2">
                 {evalResults 
-                  ? `100% · ${evalResults.metrics.planted_issues_detected} of ${evalResults.metrics.planted_issues_total} cited an approved source` 
+                  ? `${evalResults.metrics.planted_issues_detected} of ${evalResults.metrics.planted_issues_total} cited an approved source` 
                   : 'Verified citations'}
               </span>
             </div>
 
             {/* Metric 4: Review time */}
-            <div className="bg-[#FFFFFF] rounded-2xl p-6 border border-[#E2B857]/30 border-l-4 border-l-[#D97706] shadow-[0_4px_20px_rgba(20,32,61,0.05)]">
-              <span className="text-sm font-semibold text-[#92400E] uppercase tracking-wider block">Review time</span>
-              <p className="font-serif text-[28px] font-bold text-[#14203D] mt-2 leading-tight">
-                Not measured yet
-              </p>
-              <span className="text-sm text-[#4A5675] mt-1 block">
+            <div className="bg-[#FFFFFF] rounded-2xl p-6 border border-[#E2B857]/30 border-l-4 border-l-[#D97706] shadow-[0_4px_20px_rgba(20,32,61,0.05)] flex flex-col justify-between">
+              <div>
+                <div className="flex items-center justify-between mb-1">
+                  <span className="text-xs font-bold text-[#92400E] uppercase tracking-wider">Review time</span>
+                  <span className="px-2 py-0.5 rounded-full text-[10px] font-bold uppercase tracking-wider bg-[#F3EAD3] text-[#7A5B18]">
+                    Planned
+                  </span>
+                </div>
+                <div className="min-h-[48px] flex items-center">
+                  <p className="font-serif text-xl font-bold text-[#14203D]">
+                    Not measured yet
+                  </p>
+                </div>
+              </div>
+              <span className="text-xs text-[#4A5675] mt-2 block border-t border-[#F3EAD3] pt-2">
                 Requires multi-reviewer study
               </span>
             </div>
