@@ -26,7 +26,7 @@ const SAMPLES = {
     type: 'social',
     testLabel: 'Clean draft',
     content: 'Verity Learning supports online learning with live and recorded classes.',
-    desc: 'Sample C: 100% compliant text citing approved facts F-01 & F-02'
+    desc: 'Sample C: Verified clean draft citing approved facts F-01 & F-02'
   },
   D: {
     title: 'Adversarial Prompt Override (Sample D)',
