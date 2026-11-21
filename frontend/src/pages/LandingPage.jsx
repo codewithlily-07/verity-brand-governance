@@ -181,30 +181,30 @@ export function LandingPage({ setActivePage }) {
 
 
       {/* ==================================================
-          SECTION 3: LIFECYCLE (LIGHT WARM SHADE #FAF8F2)
+          SECTION 3: LIFECYCLE (CHARCOAL #0B0E14)
           Title: "From draft to approved in four steps"
-          Horizontal gold line connecting 4 nodes with outlined gold numbers 01-04,
-          white cards with dark navy text and gold accents.
+          Horizontal gold line connecting 4 nodes with large outlined gold numbers 01-04,
+          a gold node that glows as it scrolls into view, max 12 words per line.
           ================================================== */}
       <section 
         className="py-28 relative overflow-hidden"
         style={{
-          backgroundColor: '#FAF8F2',
-          borderTop: '1px solid rgba(212, 175, 55, 0.25)',
-          borderBottom: '1px solid rgba(212, 175, 55, 0.25)',
+          backgroundColor: '#0B0E14',
+          borderTop: '1px solid rgba(212, 175, 55, 0.15)',
+          borderBottom: '1px solid rgba(212, 175, 55, 0.15)',
         }}
       >
         <div className="max-w-[1200px] mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
           
           <div className="text-center max-w-2xl mx-auto mb-20">
-            <span className="text-xs font-mono font-bold tracking-widest text-[#8A5A12] uppercase block mb-3">
+            <span className="text-xs font-mono font-bold tracking-widest text-[#D4AF37] uppercase block mb-3">
               WORKFLOW PIPELINE
             </span>
-            <h2 className="text-fluid-h2 font-serif font-bold text-[#050A1F] mb-4">
+            <h2 className="text-fluid-h2 font-serif font-bold text-white mb-4">
               From draft to approved in four steps
             </h2>
             <div className="title-gold-underline mx-auto mb-4" />
-            <p className="text-[17px] text-[#4A5568] font-sans leading-relaxed">
+            <p className="text-[17px] text-[#9AA6C7] font-sans leading-relaxed">
               Every release is checked, matched, aligned, and authoritatively sealed.
             </p>
           </div>
@@ -216,8 +216,8 @@ export function LandingPage({ setActivePage }) {
             <div 
               className="hidden lg:block absolute top-[44px] left-[6%] right-[6%] h-[2px] pointer-events-none z-0"
               style={{
-                background: 'linear-gradient(90deg, rgba(212,175,55,0.2) 0%, rgba(201,162,75,0.7) 50%, rgba(212,175,55,0.2) 100%)',
-                boxShadow: '0 0 8px rgba(212,175,55,0.3)',
+                background: 'linear-gradient(90deg, rgba(212,175,55,0.2) 0%, rgba(243,217,139,0.85) 50%, rgba(212,175,55,0.2) 100%)',
+                boxShadow: '0 0 10px rgba(212,175,55,0.4)',
               }}
             />
 
@@ -225,35 +225,36 @@ export function LandingPage({ setActivePage }) {
               
               {/* Step 01 Review */}
               <div 
-                className="luxury-card-hover bg-white rounded-2xl p-6 sm:p-7 flex flex-col justify-between shadow-[0_8px_24px_rgba(18,24,38,0.06)]"
+                className="luxury-card-hover rounded-2xl p-6 sm:p-7 flex flex-col justify-between"
                 style={{
-                  border: '1px solid rgba(212, 175, 55, 0.35)',
+                  backgroundColor: '#05070F',
+                  border: '1px solid rgba(212, 175, 55, 0.25)',
                 }}
               >
                 <div>
                   <div className="flex items-center justify-between mb-4">
                     {/* Glowing gold node on the timeline */}
-                    <div className="w-8 h-8 rounded-full bg-[#FAF8F2] border-2 border-[#D4AF37] flex items-center justify-center shadow-[0_0_10px_rgba(212,175,55,0.35)]">
-                      <div className="w-2.5 h-2.5 rounded-full bg-[#8A5A12]" />
+                    <div className="w-8 h-8 rounded-full bg-[#0B0E14] border-2 border-[#D4AF37] flex items-center justify-center shadow-[0_0_12px_#D4AF37]">
+                      <div className="w-2.5 h-2.5 rounded-full bg-[#F3D98B]" />
                     </div>
                     {/* Outlined gold number 01 */}
                     <span 
                       className="font-serif text-4xl sm:text-5xl font-extrabold tracking-tighter"
                       style={{
-                        WebkitTextStroke: '1.5px #8A5A12',
+                        WebkitTextStroke: '1px #D4AF37',
                         color: 'transparent',
-                        opacity: 0.85,
+                        opacity: 0.8,
                       }}
                     >
                       01
                     </span>
                   </div>
 
-                  <h3 className="font-serif text-xl font-bold text-[#050A1F] mb-2.5">
+                  <h3 className="font-serif text-xl font-bold text-white mb-2.5">
                     Review
                   </h3>
                   {/* Exact copy (9 words) */}
-                  <p className="text-[16px] text-[#374151] leading-relaxed font-sans">
+                  <p className="text-[17px] text-[#9AA6C7] leading-relaxed font-sans">
                     Upload a draft. We scan wording, terms and format.
                   </p>
                 </div>
@@ -261,35 +262,36 @@ export function LandingPage({ setActivePage }) {
 
               {/* Step 02 Verify */}
               <div 
-                className="luxury-card-hover bg-white rounded-2xl p-6 sm:p-7 flex flex-col justify-between shadow-[0_8px_24px_rgba(18,24,38,0.06)]"
+                className="luxury-card-hover rounded-2xl p-6 sm:p-7 flex flex-col justify-between"
                 style={{
-                  border: '1px solid rgba(212, 175, 55, 0.35)',
+                  backgroundColor: '#05070F',
+                  border: '1px solid rgba(212, 175, 55, 0.25)',
                 }}
               >
                 <div>
                   <div className="flex items-center justify-between mb-4">
                     {/* Glowing gold node on the timeline */}
-                    <div className="w-8 h-8 rounded-full bg-[#FAF8F2] border-2 border-[#D4AF37] flex items-center justify-center shadow-[0_0_10px_rgba(212,175,55,0.35)]">
-                      <div className="w-2.5 h-2.5 rounded-full bg-[#8A5A12]" />
+                    <div className="w-8 h-8 rounded-full bg-[#0B0E14] border-2 border-[#D4AF37] flex items-center justify-center shadow-[0_0_12px_#D4AF37]">
+                      <div className="w-2.5 h-2.5 rounded-full bg-[#F3D98B]" />
                     </div>
                     {/* Outlined gold number 02 */}
                     <span 
                       className="font-serif text-4xl sm:text-5xl font-extrabold tracking-tighter"
                       style={{
-                        WebkitTextStroke: '1.5px #8A5A12',
+                        WebkitTextStroke: '1px #D4AF37',
                         color: 'transparent',
-                        opacity: 0.85,
+                        opacity: 0.8,
                       }}
                     >
                       02
                     </span>
                   </div>
 
-                  <h3 className="font-serif text-xl font-bold text-[#050A1F] mb-2.5">
+                  <h3 className="font-serif text-xl font-bold text-white mb-2.5">
                     Verify
                   </h3>
                   {/* Exact copy (7 words) */}
-                  <p className="text-[16px] text-[#374151] leading-relaxed font-sans">
+                  <p className="text-[17px] text-[#9AA6C7] leading-relaxed font-sans">
                     Every claim is matched to approved sources.
                   </p>
                 </div>
@@ -297,35 +299,36 @@ export function LandingPage({ setActivePage }) {
 
               {/* Step 03 Align */}
               <div 
-                className="luxury-card-hover bg-white rounded-2xl p-6 sm:p-7 flex flex-col justify-between shadow-[0_8px_24px_rgba(18,24,38,0.06)]"
+                className="luxury-card-hover rounded-2xl p-6 sm:p-7 flex flex-col justify-between"
                 style={{
-                  border: '1px solid rgba(212, 175, 55, 0.35)',
+                  backgroundColor: '#05070F',
+                  border: '1px solid rgba(212, 175, 55, 0.25)',
                 }}
               >
                 <div>
                   <div className="flex items-center justify-between mb-4">
                     {/* Glowing gold node on the timeline */}
-                    <div className="w-8 h-8 rounded-full bg-[#FAF8F2] border-2 border-[#D4AF37] flex items-center justify-center shadow-[0_0_10px_rgba(212,175,55,0.35)]">
-                      <div className="w-2.5 h-2.5 rounded-full bg-[#8A5A12]" />
+                    <div className="w-8 h-8 rounded-full bg-[#0B0E14] border-2 border-[#D4AF37] flex items-center justify-center shadow-[0_0_12px_#D4AF37]">
+                      <div className="w-2.5 h-2.5 rounded-full bg-[#F3D98B]" />
                     </div>
                     {/* Outlined gold number 03 */}
                     <span 
                       className="font-serif text-4xl sm:text-5xl font-extrabold tracking-tighter"
                       style={{
-                        WebkitTextStroke: '1.5px #8A5A12',
+                        WebkitTextStroke: '1px #D4AF37',
                         color: 'transparent',
-                        opacity: 0.85,
+                        opacity: 0.8,
                       }}
                     >
                       03
                     </span>
                   </div>
 
-                  <h3 className="font-serif text-xl font-bold text-[#050A1F] mb-2.5">
+                  <h3 className="font-serif text-xl font-bold text-white mb-2.5">
                     Align
                   </h3>
                   {/* Exact copy (8 words) */}
-                  <p className="text-[16px] text-[#374151] leading-relaxed font-sans">
+                  <p className="text-[17px] text-[#9AA6C7] leading-relaxed font-sans">
                     Side-by-side fixes that keep the author’s voice.
                   </p>
                 </div>
@@ -333,35 +336,36 @@ export function LandingPage({ setActivePage }) {
 
               {/* Step 04 Govern */}
               <div 
-                className="luxury-card-hover bg-white rounded-2xl p-6 sm:p-7 flex flex-col justify-between shadow-[0_8px_24px_rgba(18,24,38,0.06)]"
+                className="luxury-card-hover rounded-2xl p-6 sm:p-7 flex flex-col justify-between"
                 style={{
-                  border: '1px solid rgba(212, 175, 55, 0.35)',
+                  backgroundColor: '#05070F',
+                  border: '1px solid rgba(212, 175, 55, 0.25)',
                 }}
               >
                 <div>
                   <div className="flex items-center justify-between mb-4">
                     {/* Glowing gold node on the timeline */}
-                    <div className="w-8 h-8 rounded-full bg-[#FAF8F2] border-2 border-[#D4AF37] flex items-center justify-center shadow-[0_0_10px_rgba(212,175,55,0.35)]">
-                      <div className="w-2.5 h-2.5 rounded-full bg-[#8A5A12]" />
+                    <div className="w-8 h-8 rounded-full bg-[#0B0E14] border-2 border-[#D4AF37] flex items-center justify-center shadow-[0_0_12px_#D4AF37]">
+                      <div className="w-2.5 h-2.5 rounded-full bg-[#F3D98B]" />
                     </div>
                     {/* Outlined gold number 04 */}
                     <span 
                       className="font-serif text-4xl sm:text-5xl font-extrabold tracking-tighter"
                       style={{
-                        WebkitTextStroke: '1.5px #8A5A12',
+                        WebkitTextStroke: '1px #D4AF37',
                         color: 'transparent',
-                        opacity: 0.85,
+                        opacity: 0.8,
                       }}
                     >
                       04
                     </span>
                   </div>
 
-                  <h3 className="font-serif text-xl font-bold text-[#050A1F] mb-2.5">
+                  <h3 className="font-serif text-xl font-bold text-white mb-2.5">
                     Govern
                   </h3>
                   {/* Exact copy (10 words) */}
-                  <p className="text-[16px] text-[#374151] leading-relaxed font-sans">
+                  <p className="text-[17px] text-[#9AA6C7] leading-relaxed font-sans">
                     A reviewer signs off. The decision is sealed and logged.
                   </p>
                 </div>
