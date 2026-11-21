@@ -211,7 +211,7 @@ export function ReviewApprovalPage({ submissionId, setActivePage, role, onRoleCh
           </button>
           
           <div className="flex items-center gap-2">
-            <span className="text-xs font-semibold uppercase tracking-wider text-[#8A6A00]">Human Authority Gate</span>
+            <span className="text-xs font-semibold uppercase tracking-wider text-[#614A00]">Human Authority Gate</span>
             {detail && <StatusChip status={detail.status} />}
           </div>
 

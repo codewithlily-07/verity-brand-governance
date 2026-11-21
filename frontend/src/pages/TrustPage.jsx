@@ -29,25 +29,25 @@ export function TrustPage({ setActivePage }) {
     <div className="min-h-screen text-[#14203D] select-none bg-[#FAF8F2]">
       
       {/* ==================================================
-          SECTION 1: HERO (NAVY LIKE: #0A1226 to #101B35 with gold glow)
+          SECTION 1: HERO (LIGHT WARM IVORY #FAF7F0)
           ================================================== */}
       <section 
-        className="relative pt-24 pb-14 px-4 sm:px-6 lg:px-8 text-center border-b border-[#F3EAD3]/20 flex flex-col items-center justify-center min-h-[38vh]"
+        className="relative pt-24 pb-14 px-4 sm:px-6 lg:px-8 text-center border-b border-[#E3DCCB] flex flex-col items-center justify-center min-h-[38vh]"
         style={{ 
-          background: 'linear-gradient(180deg, #0A1226 0%, #101B35 100%)',
-          backgroundImage: 'radial-gradient(ellipse at 85% 10%, rgba(226,184,87,0.12), transparent 55%), linear-gradient(180deg, #0A1226 0%, #101B35 100%)',
+          backgroundColor: '#FAF7F0',
+          backgroundImage: 'radial-gradient(ellipse at 85% 10%, rgba(201,162,75,0.12), transparent 55%)',
         }}
       >
-        <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-[#0A1226]/80 border border-[#E2B857]/40 text-sm font-sans font-semibold tracking-wider text-[#E2B857] mb-3 shadow-sm">
-          <Shield className="w-4 h-4 text-[#E2B857]" />
+        <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-[#FAF7F0] border border-[#C9A24B]/40 text-sm font-sans font-semibold tracking-wider text-[#8A6A24] mb-3 shadow-sm">
+          <Shield className="w-4 h-4 text-[#B8862B]" />
           <span>RESPONSIBLE AI & HUMAN OVERSIGHT</span>
         </div>
         
-        <h1 className="text-3xl sm:text-5xl font-serif font-bold text-[#FAF8F2] mb-3 tracking-tight">
-          Built so the AI <span className="text-[#E2B857]">never has the last word.</span>
+        <h1 className="text-3xl sm:text-5xl font-serif font-bold text-[#14213D] mb-3 tracking-tight">
+          Built so the AI <span className="text-[#B8862B]">never has the last word.</span>
         </h1>
         
-        <p className="text-[17px] text-[#D5DBEE] max-w-[65ch] mx-auto font-sans leading-relaxed mb-6">
+        <p className="text-[17px] text-[#3F4A5F] max-w-[65ch] mx-auto font-sans leading-relaxed mb-6">
           Verity enforces deterministic rules, transparent citations, and strict human review so unverified AI claims never reach production.
         </p>
 
@@ -55,10 +55,10 @@ export function TrustPage({ setActivePage }) {
           <button
             type="button"
             onClick={() => handleNav('review')}
-            className="px-7 py-3 rounded-xl font-bold text-sm text-[#101B35] bg-[#E2B857] hover:bg-[#F3EAD3] shadow-[0_2px_12px_rgba(226,184,87,0.35)] inline-flex items-center gap-2 transition-all hover:scale-105 active:scale-95 cursor-pointer"
+            className="px-7 py-3 rounded-xl font-bold text-sm text-[#14213D] bg-[#C9A24B] hover:bg-[#B8862B] hover:text-white shadow-[0_4px_16px_rgba(201,162,75,0.25)] inline-flex items-center gap-2 transition-all hover:scale-105 active:scale-95 cursor-pointer"
           >
             <span>Launch Trust Demo</span>
-            <ArrowRight className="w-4 h-4 text-[#101B35]" />
+            <ArrowRight className="w-4 h-4 text-[#14213D]" />
           </button>
         </div>
       </section>
@@ -583,94 +583,90 @@ export function TrustPage({ setActivePage }) {
         </div>
       </section>
 
-      {/* 48px gradient blend: Ivory to Midnight */}
-      <div className="h-12 bg-gradient-to-b from-[#FAF8F2] to-[#0A1226]" />
+      {/* Subtle blend */}
+      <div className="h-8 bg-gradient-to-b from-[#FAF8F2] to-[#F1ECE0]" />
 
       {/* ==================================================
-          SECTION 7: ROADMAP & PRODUCT BOUNDARIES (MIDNIGHT #0A1226 - The ONE dark band)
+          SECTION 7: ROADMAP & PRODUCT BOUNDARIES (WARM SAND #F1ECE0)
           ================================================== */}
       <section 
         id="roadmap"
-        className="py-20 bg-[#0A1226] text-[#FAF8F2]"
-        style={{
-          background: 'linear-gradient(180deg, #0A1226 0%, #101B35 100%)',
-          backgroundImage: 'radial-gradient(ellipse at 50% 0%, rgba(226,184,87,0.12), transparent 60%), linear-gradient(180deg, #0A1226 0%, #101B35 100%)',
-        }}
+        className="py-20 bg-[#F1ECE0] text-[#14213D] border-t border-[#E3DCCB]"
       >
         <div className="max-w-[1200px] mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center max-w-2xl mx-auto mb-16">
-            <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-[#0A1226] border border-[#E2B857]/40 text-sm font-sans font-semibold text-[#E2B857] mb-3">
-              <Clock className="w-4 h-4 text-[#E2B857]" />
+            <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-[#FAF7F0] border border-[#C9A24B]/40 text-sm font-sans font-semibold text-[#8A6A24] mb-3 shadow-sm">
+              <Clock className="w-4 h-4 text-[#B8862B]" />
               <span>ROUND 3 SCOPE BOUNDARY</span>
             </div>
-            <h2 className="text-3xl sm:text-4xl font-serif font-bold text-[#FAF8F2] mb-3">
-              Product Roadmap & <span className="text-[#E2B857]">Engineering Boundaries</span>
+            <h2 className="text-3xl sm:text-4xl font-serif font-bold text-[#14213D] mb-3">
+              Product Roadmap & <span className="text-[#7A5B18]">Engineering Boundaries</span>
             </h2>
-            <p className="text-[17px] text-[#D5DBEE] font-sans leading-relaxed">
+            <p className="text-[17px] text-[#3F4A5F] font-sans leading-relaxed">
               Transparent demarcation between what is live in the current release and what belongs to future enterprise cycles.
             </p>
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-2 gap-8 mb-12">
-            <div className="bg-[#101B35] rounded-3xl p-8 border border-[#059669]/40 shadow-xl">
-              <span className="font-bold text-[#34D399] flex items-center gap-2 text-base mb-4 font-serif">
-                <CheckCircle2 className="w-5 h-5 text-[#34D399]" /> Delivered in Current Round 3 Build
+            <div className="bg-white rounded-3xl p-8 border border-[#059669]/40 shadow-sm">
+              <span className="font-bold text-[#065F46] flex items-center gap-2 text-base mb-4 font-serif">
+                <CheckCircle2 className="w-5 h-5 text-[#059669]" /> Delivered in Current Round 3 Build
               </span>
-              <ul className="space-y-3 text-[14px] text-[#F4F1E8] font-sans">
+              <ul className="space-y-3 text-[14px] text-[#3F4A5F] font-sans">
                 <li className="flex items-start gap-2">
-                  <span className="text-[#34D399] font-bold">✓</span>
+                  <span className="text-[#059669] font-bold">✓</span>
                   <span>Multi-layer deterministic rule engine (casing, phrases, regex R1–R7)</span>
                 </li>
                 <li className="flex items-start gap-2">
-                  <span className="text-[#34D399] font-bold">✓</span>
+                  <span className="text-[#059669] font-bold">✓</span>
                   <span>Approved facts retrieval and citation grounding (F-01–F-03)</span>
                 </li>
                 <li className="flex items-start gap-2">
-                  <span className="text-[#34D399] font-bold">✓</span>
+                  <span className="text-[#059669] font-bold">✓</span>
                   <span>Side-by-side intent-preserving diff correction workspace</span>
                 </li>
                 <li className="flex items-start gap-2">
-                  <span className="text-[#34D399] font-bold">✓</span>
+                  <span className="text-[#059669] font-bold">✓</span>
                   <span>Tamper-evident version-bound approvals with server-verified SHA-256</span>
                 </li>
                 <li className="flex items-start gap-2">
-                  <span className="text-[#34D399] font-bold">✓</span>
+                  <span className="text-[#059669] font-bold">✓</span>
                   <span>PDF and DOCX document text parsing (PyMuPDF & python-docx)</span>
                 </li>
                 <li className="flex items-start gap-2">
-                  <span className="text-[#34D399] font-bold">✓</span>
+                  <span className="text-[#059669] font-bold">✓</span>
                   <span>WCAG AA contrast checking & palette CIE ΔE color distance</span>
                 </li>
                 <li className="flex items-start gap-2">
-                  <span className="text-[#34D399] font-bold">✓</span>
+                  <span className="text-[#059669] font-bold">✓</span>
                   <span>Adaptive telemetry surfacing unclear policies and channel friction</span>
                 </li>
               </ul>
             </div>
 
-            <div className="bg-[#101B35] rounded-3xl p-8 border border-[#E2B857]/30 shadow-xl">
-              <span className="font-bold text-[#E2B857] flex items-center gap-2 text-base mb-4 font-serif">
-                <Clock className="w-5 h-5 text-[#E2B857]" /> Future Enterprise Scope
+            <div className="bg-white rounded-3xl p-8 border border-[#E3DCCB] shadow-sm">
+              <span className="font-bold text-[#8A6A24] flex items-center gap-2 text-base mb-4 font-serif">
+                <Clock className="w-5 h-5 text-[#B8862B]" /> Future Enterprise Scope
               </span>
-              <ul className="space-y-3 text-[14px] text-[#D5DBEE] font-sans">
+              <ul className="space-y-3 text-[14px] text-[#3F4A5F] font-sans">
                 <li className="flex items-start gap-2">
-                  <span className="text-[#E2B857] font-bold">○</span>
+                  <span className="text-[#B8862B] font-bold">○</span>
                   <span>Advanced visual logo distortion and layout geometry analysis</span>
                 </li>
                 <li className="flex items-start gap-2">
-                  <span className="text-[#E2B857] font-bold">○</span>
+                  <span className="text-[#B8862B] font-bold">○</span>
                   <span>Direct automated webhooks into CMS and social publishing platforms</span>
                 </li>
                 <li className="flex items-start gap-2">
-                  <span className="text-[#E2B857] font-bold">○</span>
+                  <span className="text-[#B8862B] font-bold">○</span>
                   <span>SAML 2.0 / SCIM enterprise Single Sign-On (Okta, Azure AD)</span>
                 </li>
                 <li className="flex items-start gap-2">
-                  <span className="text-[#E2B857] font-bold">○</span>
+                  <span className="text-[#B8862B] font-bold">○</span>
                   <span>Multi-tenant parent/child cross-brand guideline inheritance hierarchies</span>
                 </li>
                 <li className="flex items-start gap-2">
-                  <span className="text-[#E2B857] font-bold">○</span>
+                  <span className="text-[#B8862B] font-bold">○</span>
                   <span>Automated jurisdiction and legal advertising compliance mapping</span>
                 </li>
               </ul>
@@ -678,21 +674,21 @@ export function TrustPage({ setActivePage }) {
           </div>
 
           {/* Known Limitations Box */}
-          <div className="bg-[#101B35] rounded-3xl p-8 border border-[#F3EAD3]/20 shadow-xl">
-            <h3 className="font-serif text-xl font-bold text-[#FAF8F2] mb-4">
+          <div className="bg-white rounded-3xl p-8 border border-[#E3DCCB] shadow-sm">
+            <h3 className="font-serif text-xl font-bold text-[#14213D] mb-4">
               Honest Engineering Limitations
             </h3>
-            <div className="grid grid-cols-1 sm:grid-cols-3 gap-6 text-sm text-[#D5DBEE] font-sans leading-relaxed">
-              <div className="p-4 bg-[#0A1226] rounded-2xl border border-[#F3EAD3]/15">
-                <strong className="text-[#FAF8F2] block text-sm mb-1">1. Deterministic Local Retrieval</strong>
+            <div className="grid grid-cols-1 sm:grid-cols-3 gap-6 text-sm text-[#3F4A5F] font-sans leading-relaxed">
+              <div className="p-4 bg-[#FAF7F0] rounded-2xl border border-[#E3DCCB]">
+                <strong className="text-[#14213D] block text-sm mb-1">1. Deterministic Local Retrieval</strong>
                 Keyword-indexed fact verification and BM25 token matching run locally without external search dependencies.
               </div>
-              <div className="p-4 bg-[#0A1226] rounded-2xl border border-[#F3EAD3]/15">
-                <strong className="text-[#FAF8F2] block text-sm mb-1">2. AI Context Optionality</strong>
+              <div className="p-4 bg-[#FAF7F0] rounded-2xl border border-[#E3DCCB]">
+                <strong className="text-[#14213D] block text-sm mb-1">2. AI Context Optionality</strong>
                 If an external LLM key is absent, Layer 3 is gracefully bypassed while Layer 1 (Rules) and Layer 2 (Facts) execute deterministically.
               </div>
-              <div className="p-4 bg-[#0A1226] rounded-2xl border border-[#F3EAD3]/15">
-                <strong className="text-[#FAF8F2] block text-sm mb-1">3. Human Ownership Requirement</strong>
+              <div className="p-4 bg-[#FAF7F0] rounded-2xl border border-[#E3DCCB]">
+                <strong className="text-[#14213D] block text-sm mb-1">3. Human Ownership Requirement</strong>
                 No content is automatically published or marked approved by AI alone. Human reviewer sign-off is mandatory.
               </div>
             </div>

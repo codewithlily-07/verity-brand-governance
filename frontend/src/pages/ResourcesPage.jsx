@@ -214,38 +214,38 @@ export function ResourcesPage({ setActivePage }) {
     <div className="w-full bg-[#FAF8F2] text-[#14203D] min-h-screen">
 
       {/* =========================================================================
-          HERO SECTION: Midnight-to-Navy gradient with Soft Gold Glow (NO BLUE)
+          HERO SECTION: Warm Ivory Background #FAF7F0
           ========================================================================= */}
       <section 
-        className="relative pt-16 pb-20 px-4 sm:px-6 lg:px-8 text-center overflow-hidden"
+        className="relative pt-16 pb-20 px-4 sm:px-6 lg:px-8 text-center overflow-hidden border-b border-[#E3DCCB]"
         style={{
-          background: 'linear-gradient(180deg, #0A1226 0%, #101B35 100%)',
-          color: '#FAF8F2'
+          backgroundColor: '#FAF7F0',
+          color: '#14213D'
         }}
       >
         {/* Soft gold ambient glow (top right) */}
         <div 
           className="absolute -top-24 right-0 w-96 h-96 rounded-full pointer-events-none opacity-20 blur-3xl"
-          style={{ background: 'radial-gradient(circle, #E2B857 0%, transparent 70%)' }}
+          style={{ background: 'radial-gradient(circle, #C9A24B 0%, transparent 70%)' }}
         />
 
         <div className="max-w-4xl mx-auto relative z-10">
           {/* Eyebrow Chip */}
-          <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-[#0A1226]/80 border border-[#E2B857]/40 text-[#E2B857] text-sm font-semibold tracking-wider uppercase mb-5">
-            <BookOpen className="w-4 h-4 text-[#E2B857]" />
+          <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-[#FAF7F0] border border-[#C9A24B]/40 text-[#8A6A24] text-sm font-semibold tracking-wider uppercase mb-5 shadow-sm">
+            <BookOpen className="w-4 h-4 text-[#B8862B]" />
             <span>Developer & Governance Documentation</span>
           </div>
 
-          <h1 className="font-serif text-4xl sm:text-5xl lg:text-6xl font-bold tracking-tight text-[#FAF8F2] mb-5 leading-tight">
-            Resources & <span className="text-[#E2B857]">Documentation</span>
+          <h1 className="font-serif text-4xl sm:text-5xl lg:text-6xl font-bold tracking-tight text-[#14213D] mb-5 leading-tight">
+            Resources & <span className="text-[#B8862B]">Documentation</span>
           </h1>
 
-          <p className="text-[17px] sm:text-xl text-[#D5DBEE] max-w-2xl mx-auto mb-10 leading-relaxed font-sans">
+          <p className="text-[17px] sm:text-xl text-[#3F4A5F] max-w-2xl mx-auto mb-10 leading-relaxed font-sans">
             Architectural guides, technical specifications, terminology glossaries, and integration resources for Verity.
           </p>
 
-          {/* Sub-Tab Bar: Navy Like #13203F with champagne border, solid gold pill active */}
-          <div className="inline-flex p-1.5 rounded-full bg-[#13203F] border border-[#F3EAD3]/30 backdrop-blur-md shadow-2xl max-w-full overflow-x-auto min-h-[44px]">
+          {/* Sub-Tab Bar */}
+          <div className="inline-flex p-1.5 rounded-full bg-white border border-[#E3DCCB] backdrop-blur-md shadow-md max-w-full overflow-x-auto min-h-[44px]">
             {[
               { id: 'grid', label: 'Resource Grid' },
               { id: 'architecture', label: 'Architecture' },
@@ -257,10 +257,10 @@ export function ResourcesPage({ setActivePage }) {
                 <button
                   key={tab.id}
                   onClick={() => handleTabChange(tab.id)}
-                  className={`px-5 py-2.5 min-h-[44px] rounded-full text-sm font-semibold transition-all duration-200 whitespace-nowrap outline-none focus:outline-none focus:ring-2 focus:ring-[#E2B857] cursor-pointer ${
+                  className={`px-5 py-2.5 min-h-[44px] rounded-full text-sm font-semibold transition-all duration-200 whitespace-nowrap outline-none focus:outline-none focus:ring-2 focus:ring-[#C9A24B] cursor-pointer ${
                     isActive
-                      ? 'bg-[#E2B857] text-[#101B35] font-bold shadow-md'
-                      : 'text-[#FAF8F2] hover:text-[#FAF8F2] hover:underline hover:decoration-[#E2B857] hover:underline-offset-4 bg-transparent'
+                      ? 'bg-[#C9A24B] text-[#14213D] font-bold shadow-md'
+                      : 'text-[#3F4A5F] hover:text-[#14213D] hover:bg-[#F1ECE0]'
                   }`}
                 >
                   {tab.label}
@@ -269,14 +269,6 @@ export function ResourcesPage({ setActivePage }) {
             })}
           </div>
         </div>
-
-        {/* 48px Smooth Gradient Blend from Navy to Ivory */}
-        <div 
-          className="absolute bottom-0 left-0 right-0 h-12 pointer-events-none"
-          style={{
-            background: 'linear-gradient(180deg, transparent 0%, #FAF8F2 100%)'
-          }}
-        />
       </section>
 
       {/* =========================================================================
@@ -540,19 +532,16 @@ export function ResourcesPage({ setActivePage }) {
       )}
 
       {/* =========================================================================
-          BOTTOM CALL TO ACTION (Navy to Midnight Blend - The ONE dark band)
+          BOTTOM CALL TO ACTION (Warm Sand #F1ECE0)
           ========================================================================= */}
       <section 
-        className="py-16 px-4 sm:px-6 lg:px-8 text-center text-[#FAF8F2] relative overflow-hidden"
-        style={{
-          background: 'linear-gradient(180deg, #101B35 0%, #0A1226 100%)',
-        }}
+        className="py-16 px-4 sm:px-6 lg:px-8 text-center text-[#14213D] relative overflow-hidden bg-[#F1ECE0] border-t border-[#E3DCCB]"
       >
         <div className="max-w-3xl mx-auto relative z-10">
-          <h2 className="font-serif text-3xl sm:text-4xl font-bold text-[#FAF8F2] mb-4">
+          <h2 className="font-serif text-3xl sm:text-4xl font-bold text-[#14213D] mb-4">
             Ready to Explore the Platform?
           </h2>
-          <p className="text-[17px] text-[#D5DBEE] mb-8 font-sans">
+          <p className="text-[17px] text-[#3F4A5F] mb-8 font-sans">
             Jump into our interactive demo workspace or test your own campaign copy in real time.
           </p>
           <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
@@ -562,10 +551,10 @@ export function ResourcesPage({ setActivePage }) {
                 window.scrollTo({ top: 0, behavior: 'smooth' });
                 setActivePage('dashboard');
               }}
-              className="w-full sm:w-auto px-8 py-3.5 min-h-[44px] rounded-xl bg-[#E2B857] text-[#101B35] font-bold text-sm hover:bg-[#F3EAD3] active:scale-[0.98] transition-all shadow-xl flex items-center justify-center gap-2 cursor-pointer"
+              className="w-full sm:w-auto px-8 py-3.5 min-h-[44px] rounded-xl bg-[#C9A24B] text-[#14213D] font-bold text-sm hover:bg-[#B8862B] hover:text-white active:scale-[0.98] transition-all shadow-md flex items-center justify-center gap-2 cursor-pointer"
             >
               <span>Explore Demo Workspace</span>
-              <ArrowRight className="w-4 h-4 text-[#101B35]" />
+              <ArrowRight className="w-4 h-4 text-[#14213D]" />
             </button>
             <button
               type="button"
@@ -573,7 +562,7 @@ export function ResourcesPage({ setActivePage }) {
                 window.scrollTo({ top: 0, behavior: 'smooth' });
                 setActivePage('how-it-works');
               }}
-              className="w-full sm:w-auto px-7 py-3.5 min-h-[44px] rounded-xl border border-[#F3EAD3]/40 text-[#FAF8F2] hover:bg-white/5 font-semibold text-sm transition-colors cursor-pointer"
+              className="w-full sm:w-auto px-7 py-3.5 min-h-[44px] rounded-xl border border-[#14213D] bg-white text-[#14213D] hover:bg-[#FAF7F0] font-semibold text-sm transition-colors cursor-pointer"
             >
               How It Works
             </button>

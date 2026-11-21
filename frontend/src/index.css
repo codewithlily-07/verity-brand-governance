@@ -10,41 +10,52 @@
 @tailwind utilities;
 
 :root {
-  --font-display: 'Playfair Display', 'Fraunces', Georgia, serif;
-  --font-body: 'Inter', 'Manrope', system-ui, -apple-system, sans-serif;
+  /* Warm Premium Light Color System */
+  --bg: #FAF7F0;
+  --bg-alt: #F1ECE0;
+  --bg-tint: #EEF3FB;
+  --surface: #FFFFFF;
+  --border-card: #E3DCCB;
+  --shadow-card: 0 8px 24px rgba(20, 33, 61, 0.08);
+  --heading: #14213D;
+  --text: #3F4A5F;
+  --gold: #B8862B;
+  --gold-btn: #C9A24B;
+  --gold-btn-hover: #B8862B;
+  --navbar: #0B1A3A;
+
+  --font-display: 'Playfair Display', 'Cormorant Garamond', Georgia, serif;
+  --font-body: 'Inter', system-ui, -apple-system, sans-serif;
 
   --midnight: #0A1226;
-  --navy: #101B35;
-  --navy-soft: #17254A;
-  --ivory: #FAF8F2;
-  --champagne: #F3EAD3;
+  --navy: #14213D;
+  --navy-soft: #1D2D50;
+  --ivory: #FAF7F0;
+  --champagne: #F1ECE0;
   --paper: #FFFFFF;
-  --ink: #14203D;
-  --ink-soft: #4A5675;
-  --text-on-navy: #F4F1E8;
+  --ink: #14213D;
+  --ink-soft: #3F4A5F;
+  --text-on-navy: #FAF7F0;
   --text-soft-on-navy: #D5DBEE;
-  --gold: #E2B857;
   --gold-deep: #8A6A24;
   --gold-light: #F3D98B;
-  --gold-gradient: linear-gradient(135deg, #F3D98B, #E2B857 50%, #8A6A24);
+  --gold-gradient: linear-gradient(135deg, #F3D98B, #C9A24B 50%, #B8862B);
   --verified-teal: #1E9E78;
   --high-coral: #D64550;
   --medium-amber: #D99A2B;
 
-  --navy-950: #0A1226;
-  --navy-800: #101B35;
-  --charcoal: #0B0E14;
-  --cream: #F3EAD3;
-  --text-dark: #14203D;
+  --navy-950: #0B1A3A;
+  --navy-800: #14213D;
+  --charcoal: #14213D;
+  --cream: #F1ECE0;
+  --text-dark: #14213D;
 
-  /* Default theme scope is dark */
-  --text-strong: #F4F1E8;
-  --text: #F4F1E8;
-  --text-muted: #D5DBEE;
-  --border: rgba(226, 184, 87, 0.35);
-  --surface: #101B35;
-  --surface-elevated: #17254A;
-  --link: #E2B857;
+  /* Scoped Variables */
+  --text-strong: #14213D;
+  --text-muted: #5B6478;
+  --border: #E3DCCB;
+  --surface-elevated: #FAF7F0;
+  --link: #B8862B;
 }
 
 .theme-dark {
@@ -84,21 +95,25 @@ html {
 
 @layer base {
   body {
-    background-color: var(--navy-950);
+    background-color: var(--bg);
     color: var(--text);
     font-family: var(--font-body);
-    font-size: 17px;
+    font-size: 16px;
     line-height: 1.6;
     letter-spacing: 0;
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
   }
 
+  h1, h2, h3, h4, h5, h6 {
+    color: var(--heading);
+  }
+
   h1 {
     font-family: var(--font-display);
     font-weight: 600;
     letter-spacing: 0;
-    line-height: 1.18;
+    line-height: 1.22;
     font-size: clamp(1.8rem, 2.6vw, 2.5rem);
   }
 
@@ -106,7 +121,7 @@ html {
     font-family: var(--font-display);
     font-weight: 600;
     letter-spacing: 0;
-    line-height: 1.22;
+    line-height: 1.25;
     font-size: clamp(1.5rem, 2.2vw, 2rem);
   }
 
@@ -223,29 +238,18 @@ html {
 
 .luxury-card-hover {
   position: relative;
-  transition: transform 0.3s cubic-bezier(0.16, 1, 0.3, 1), box-shadow 0.3s ease;
+  transition: transform 0.28s cubic-bezier(0.16, 1, 0.3, 1), box-shadow 0.28s ease, border-color 0.28s ease;
   will-change: transform, box-shadow;
 }
 
 .luxury-card-hover:hover {
-  transform: translateY(-8px);
-  box-shadow: 0 0 40px rgba(212, 175, 55, 0.35);
+  transform: translateY(-5px);
+  box-shadow: 0 12px 28px rgba(20, 33, 61, 0.08), 0 0 20px rgba(184, 134, 43, 0.16);
+  border-color: #C9A24B !important;
 }
 
 .luxury-card-hover::before {
-  content: '';
-  position: absolute;
-  inset: -1.5px;
-  border-radius: inherit;
-  background: conic-gradient(from var(--angle), transparent 20%, var(--gold) 45%, var(--gold-light) 50%, var(--gold) 55%, transparent 80%);
-  z-index: -1;
-  opacity: 0;
-  transition: opacity 0.3s ease;
-  animation: rotateBorder 4s linear infinite;
-}
-
-.luxury-card-hover:hover::before {
-  opacity: 1;
+  display: none;
 }
 
 /* Gold Gradient Shimmer sweep for buttons */

@@ -27,25 +27,25 @@ export function ProductPage({ setActivePage }) {
     <div className="min-h-screen text-[#14203D] select-none bg-[#FAF8F2]">
 
       {/* ==================================================
-          SECTION 1: HERO (NAVY LIKE: #0A1226 to #101B35 with gold glow)
+          SECTION 1: HERO (LIGHT WARM IVORY #FAF7F0)
           ================================================== */}
       <section
-        className="relative pt-24 pb-14 px-4 sm:px-6 lg:px-8 text-center border-b border-[#F3EAD3]/20 flex flex-col items-center justify-center min-h-[38vh]"
+        className="relative pt-24 pb-14 px-4 sm:px-6 lg:px-8 text-center border-b border-[#E3DCCB] flex flex-col items-center justify-center min-h-[38vh]"
         style={{
-          background: 'linear-gradient(180deg, #0A1226 0%, #101B35 100%)',
-          backgroundImage: 'radial-gradient(ellipse at 85% 10%, rgba(226,184,87,0.12), transparent 55%), linear-gradient(180deg, #0A1226 0%, #101B35 100%)',
+          backgroundColor: '#FAF7F0',
+          backgroundImage: 'radial-gradient(ellipse at 85% 10%, rgba(201,162,75,0.12), transparent 55%)',
         }}
       >
-        <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-[#0A1226]/80 border border-[#E2B857]/40 text-sm font-sans font-semibold tracking-wider text-[#E2B857] mb-3 shadow-sm">
-          <Sparkles className="w-4 h-4 text-[#E2B857]" />
+        <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-[#FAF7F0] border border-[#C9A24B]/40 text-sm font-sans font-semibold tracking-wider text-[#8A6A24] mb-3 shadow-sm">
+          <Sparkles className="w-4 h-4 text-[#B8862B]" />
           <span>ONE WORKSPACE FROM DRAFT TO APPROVAL</span>
         </div>
 
-        <h1 className="text-3xl sm:text-5xl font-serif font-bold text-[#FAF8F2] mb-3 tracking-tight">
-          Intelligent Pre-Publication <span className="text-[#E2B857]">Brand Governance</span>
+        <h1 className="text-3xl sm:text-5xl font-serif font-bold text-[#14213D] mb-3 tracking-tight">
+          Intelligent Pre-Publication <span className="text-[#B8862B]">Brand Governance</span>
         </h1>
 
-        <p className="text-[17px] text-[#D5DBEE] max-w-[65ch] mx-auto font-sans leading-relaxed mb-6">
+        <p className="text-[17px] text-[#3F4A5F] max-w-[65ch] mx-auto font-sans leading-relaxed mb-6">
           Unify marketing, communications, and editorial standards before content reaches public channels.
         </p>
 
@@ -53,10 +53,10 @@ export function ProductPage({ setActivePage }) {
           <button
             type="button"
             onClick={() => handleNav('dashboard')}
-            className="px-7 py-3 rounded-xl font-bold text-sm text-[#101B35] bg-[#E2B857] hover:bg-[#F3EAD3] shadow-[0_2px_12px_rgba(226,184,87,0.35)] inline-flex items-center gap-2 transition-all hover:scale-105 active:scale-95 cursor-pointer"
+            className="px-7 py-3 rounded-xl font-bold text-sm text-[#14213D] bg-[#C9A24B] hover:bg-[#B8862B] hover:text-white shadow-[0_4px_16px_rgba(201,162,75,0.25)] inline-flex items-center gap-2 transition-all hover:scale-105 active:scale-95 cursor-pointer"
           >
             <span>Explore Demo Workspace</span>
-            <ArrowRight className="w-4 h-4 text-[#101B35]" />
+            <ArrowRight className="w-4 h-4 text-[#14213D]" />
           </button>
         </div>
       </section>
@@ -527,39 +527,35 @@ export function ProductPage({ setActivePage }) {
         </div>
       </section>
 
-      {/* 48px gradient blend: Ivory to Midnight */}
-      <div className="h-12 bg-gradient-to-b from-[#FAF8F2] to-[#0A1226]" />
+      {/* Subtle transition */}
+      <div className="h-8 bg-gradient-to-b from-[#FAF8F2] to-[#F1ECE0]" />
 
       {/* ==================================================
-          SECTION 5: CALL TO ACTION (MIDNIGHT #0A1226)
+          SECTION 5: CALL TO ACTION (WARM SAND #F1ECE0)
           ================================================== */}
       <section
         id="cta"
-        className="py-20 text-center relative overflow-hidden bg-[#0A1226]"
-        style={{
-          background: 'linear-gradient(180deg, #0A1226 0%, #101B35 100%)',
-          backgroundImage: 'radial-gradient(ellipse at 50% 0%, rgba(226,184,87,0.12), transparent 60%), linear-gradient(180deg, #0A1226 0%, #101B35 100%)',
-        }}
+        className="py-20 text-center relative overflow-hidden bg-[#F1ECE0] border-t border-[#E3DCCB]"
       >
         <div className="max-w-[1200px] mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
-          <h2 className="text-2xl sm:text-4xl font-serif font-bold text-[#FAF8F2] mb-3">
+          <h2 className="text-2xl sm:text-4xl font-serif font-bold text-[#14213D] mb-3">
             See one draft go from check to approval.
           </h2>
-          <p className="text-[17px] text-[#D5DBEE] max-w-xl mx-auto mb-8 font-sans leading-relaxed">
+          <p className="text-[17px] text-[#3F4A5F] max-w-xl mx-auto mb-8 font-sans leading-relaxed">
             Test the live three-layer analysis engine and experience human-in-the-loop sign-off without passwords.
           </p>
           <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
             <button
               type="button"
               onClick={() => handleNav('dashboard')}
-              className="px-8 py-3.5 rounded-xl font-bold text-sm tracking-wide text-[#101B35] bg-[#E2B857] hover:bg-[#F3EAD3] shadow-[0_2px_12px_rgba(226,184,87,0.35)] transition-all active:scale-95 cursor-pointer"
+              className="px-8 py-3.5 rounded-xl font-bold text-sm tracking-wide text-[#14213D] bg-[#C9A24B] hover:bg-[#B8862B] hover:text-white shadow-[0_4px_16px_rgba(201,162,75,0.25)] transition-all active:scale-95 cursor-pointer"
             >
               Explore Demo Workspace
             </button>
             <button
               type="button"
               onClick={() => handleNav('how-it-works')}
-              className="px-6 py-3.5 rounded-xl font-semibold text-sm text-[#FAF8F2] border border-[#F3EAD3]/40 hover:bg-white/5 transition-all cursor-pointer"
+              className="px-6 py-3.5 rounded-xl font-semibold text-sm text-[#14213D] bg-white border border-[#14213D] hover:bg-[#FAF7F0] transition-all cursor-pointer"
             >
               See How It Works
             </button>

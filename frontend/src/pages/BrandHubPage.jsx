@@ -230,7 +230,7 @@ export function BrandHubPage() {
       {/* Header */}
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-6 mb-8 border-b border-[#E6DDC8]">
         <div>
-          <span className="text-xs font-semibold uppercase tracking-wider text-[#8A6A00]">Institutional Knowledge Base</span>
+          <span className="text-xs font-semibold uppercase tracking-wider text-[#614A00]">Institutional Knowledge Base</span>
           <h1 className="font-serif text-3xl font-bold text-[#0A1230] mt-1">Brand Knowledge Hub</h1>
           <p className="text-[16px] text-[#5B6478] mt-1">
             Rules, approved factual claims, and guidelines used by the 3-layer engine to verify content.

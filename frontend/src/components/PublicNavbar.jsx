@@ -62,10 +62,8 @@ export function PublicNavbar({ activePage = 'landing', setActivePage, onOpenRole
       className="sticky top-0 left-0 right-0 z-50 w-full flex items-center transition-all duration-300 relative"
       style={{
         height: '72px',
-        backgroundColor: isScrolled ? 'rgba(10, 18, 38, 0.92)' : 'rgba(10, 18, 38, 0.72)',
-        backdropFilter: 'blur(12px) saturate(120%)',
-        WebkitBackdropFilter: 'blur(12px) saturate(120%)',
-        boxShadow: isScrolled ? '0 10px 30px rgba(0, 0, 0, 0.28)' : 'none',
+        backgroundColor: '#0B1A3A',
+        boxShadow: isScrolled ? '0 10px 30px rgba(0, 0, 0, 0.28)' : '0 2px 10px rgba(0, 0, 0, 0.15)',
       }}
     >
       {/* 1px soft champagne hairline along the bottom edge fading out at both ends */}
