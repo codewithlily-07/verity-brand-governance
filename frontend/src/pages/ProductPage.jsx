@@ -318,7 +318,7 @@ export function ProductPage({ setActivePage }) {
         <div className="max-w-[1100px] mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
 
           <div className="text-center max-w-2xl mx-auto mb-16">
-            <span className="text-sm font-sans font-semibold tracking-widest text-[#8A6A24] uppercase block mb-2">
+            <span className="text-sm font-sans font-semibold tracking-widest text-[#7A5B18] uppercase block mb-2">
               REAL-WORLD WORKFLOW EXAMPLE
             </span>
             <h2 className="text-2xl sm:text-4xl font-serif font-bold text-[#14203D] mb-3">
