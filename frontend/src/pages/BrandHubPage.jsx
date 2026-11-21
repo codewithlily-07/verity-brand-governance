@@ -1,9 +1,10 @@
 import React, { useState, useEffect } from 'react';
 import { 
   BookOpen, Plus, Upload, Trash2, CheckCircle2, Shield, Eye,
-  Sparkles, FileText, Palette, FileCheck, AlertCircle, Layers, FileCode
+  Sparkles, FileText, Palette, FileCheck, AlertCircle, Layers, FileCode,
+  Download, FileUp, Check, X, Search, ChevronDown, ChevronUp, Beaker
 } from 'lucide-react';
-import { getBrandProfile, addBrandFact, uploadBrandSource } from '../lib/api';
+import { getBrandProfile, addBrandFact, uploadBrandSource, updateBrandProfile } from '../lib/api';
 
 export function BrandHubPage() {
   const [profile, setProfile] = useState(null);
@@ -15,6 +16,15 @@ export function BrandHubPage() {
   // New Fact Modal State
   const [showFactModal, setShowFactModal] = useState(false);
   const [newFact, setNewFact] = useState({ code: 'F-04', name: '', statement: '', source: '', category: 'Product Facts' });
+
+  // Rule Tester State
+  const [activeTestRuleCode, setActiveTestRuleCode] = useState(null);
+  const [ruleTestInputs, setRuleTestInputs] = useState({});
+
+  // Brand Kit Import/Export State
+  const [importCandidate, setImportCandidate] = useState(null);
+  const [showImportModal, setShowImportModal] = useState(false);
+  const [importing, setImporting] = useState(false);
 
   const loadProfile = async () => {
     setLoading(true);
@@ -39,7 +49,7 @@ export function BrandHubPage() {
       await addBrandFact(newFact);
       setShowFactModal(false);
       setNewFact({ code: `F-0${(profile?.facts?.length || 3) + 2}`, name: '', statement: '', source: '', category: 'Product Facts' });
-      loadProfile();
+      await loadProfile();
     } catch (err) {
       alert('Error adding fact: ' + err.message);
     }
@@ -53,11 +63,155 @@ export function BrandHubPage() {
     try {
       const res = await uploadBrandSource(file);
       setUploadMsg(`Successfully indexed "${res.filename}" into ${res.passages_created} guideline passages!`);
-      loadProfile();
+      await loadProfile();
     } catch (err) {
       setUploadMsg(`Upload failed: ${err.message}`);
     } finally {
       setUploading(false);
+    }
+  };
+
+  // Rule Tester Match Logic
+  const testRuleMatch = (rule, text) => {
+    if (!text || !text.trim()) return null;
+    const t = text.trim();
+
+    if (rule.code === 'R1' || rule.category === 'Tone') {
+      const m = t.match(/\b(guys|hey guys|folks|hiya|sup|cool|awesome)\b/i);
+      if (m) return { triggered: true, quote: m[0], reason: 'Informal colloquial greeting violates professional tone standard.' };
+    }
+    if (rule.code === 'R2' || rule.category === 'Claims') {
+      const m = t.match(/\b(guarantee|guarantees|100%|always|promise|zero risk|risk-free|best in)\b/i);
+      if (m) return { triggered: true, quote: m[0], reason: 'Absolute outcome guarantee or unsubstantiated claim.' };
+    }
+    if (rule.code === 'R3' || rule.category === 'Messaging') {
+      const m = t.match(/\b(fastest|best|#1|no\. 1|number one|world-class|unmatched|unbeatable|top-rated)\b/i);
+      if (m) return { triggered: true, quote: m[0], reason: 'Unaccredited superlative claim requires third-party citation.' };
+    }
+    if (rule.code === 'R4' || rule.category === 'Terminology') {
+      const m = t.match(/\bverity\b/);
+      if (m) return { triggered: true, quote: m[0], reason: 'Brand name must be properly title-cased as "Verity".' };
+    }
+    if (rule.code === 'R5') {
+      const m = t.match(/[!?]{2,}/);
+      if (m) return { triggered: true, quote: m[0], reason: 'Repeated excessive punctuation reduces corporate authority.' };
+    }
+    if (rule.pattern) {
+      try {
+        const reg = new RegExp(rule.pattern, 'i');
+        const m = t.match(reg);
+        if (m) return { triggered: true, quote: m[0], reason: `Matches pattern: ${rule.pattern}` };
+      } catch (e) {}
+    }
+    if (rule.avoid_term) {
+      const m = t.match(new RegExp(`\\b${rule.avoid_term}\\b`, 'i'));
+      if (m) return { triggered: true, quote: m[0], reason: `Contains restricted term "${rule.avoid_term}".` };
+    }
+    return { triggered: false };
+  };
+
+  // Export Brand Kit (JSON)
+  const handleExportBrandKit = () => {
+    if (!profile) return;
+    const exportData = {
+      schema: 'verity-brand-kit-v1',
+      brand_name: profile.name,
+      tagline: profile.tagline,
+      audience: profile.audience,
+      voice_attributes: profile.voice_attributes,
+      palette: profile.palette_json || [],
+      facts: (profile.facts || []).map(f => ({
+        code: f.code,
+        name: f.name,
+        statement: f.statement,
+        source: f.source,
+        category: f.category
+      })),
+      rules: (profile.rules || []).map(r => ({
+        code: r.code,
+        category: r.category,
+        title: r.title,
+        description: r.description,
+        severity: r.severity,
+        source_ref: r.source_ref
+      })),
+      terms: (profile.terms || []).map(t => ({
+        avoid: t.avoid,
+        prefer: t.prefer,
+        note: t.note
+      })),
+      exported_at: new Date().toISOString()
+    };
+
+    const blob = new Blob([JSON.stringify(exportData, null, 2)], { type: 'application/json' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = `verity-brand-kit-${(profile.name || 'brand').toLowerCase().replace(/\s+/g, '-')}.json`;
+    a.click();
+    URL.revokeObjectURL(url);
+  };
+
+  // Import Brand Kit (JSON)
+  const handleImportFileSelect = (e) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+    const reader = new FileReader();
+    reader.onload = (event) => {
+      try {
+        const parsed = JSON.parse(event.target.result);
+        if (!parsed.facts && !parsed.rules && !parsed.terms && !parsed.brand_name) {
+          throw new Error('Invalid Brand Kit schema. Missing brand attributes, facts, or rules.');
+        }
+        setImportCandidate(parsed);
+        setShowImportModal(true);
+      } catch (err) {
+        alert('Failed to parse Brand Kit JSON: ' + err.message);
+      }
+    };
+    reader.readAsText(file);
+    e.target.value = '';
+  };
+
+  const handleConfirmImport = async () => {
+    if (!importCandidate) return;
+    setImporting(true);
+    try {
+      // Update profile metadata if present
+      const updates = {};
+      if (importCandidate.brand_name) updates.name = importCandidate.brand_name;
+      if (importCandidate.tagline) updates.tagline = importCandidate.tagline;
+      if (importCandidate.audience) updates.audience = importCandidate.audience;
+      if (importCandidate.voice_attributes) updates.voice_attributes = importCandidate.voice_attributes;
+      if (importCandidate.palette) updates.palette_json = importCandidate.palette;
+
+      if (Object.keys(updates).length > 0) {
+        await updateBrandProfile(updates).catch(() => null);
+      }
+
+      // Add imported facts if any
+      if (Array.isArray(importCandidate.facts)) {
+        for (const f of importCandidate.facts) {
+          if (f.statement && f.source) {
+            await addBrandFact({
+              code: f.code || 'F-IMP',
+              name: f.name || 'Imported Fact',
+              statement: f.statement,
+              source: f.source,
+              category: f.category || 'Product Facts'
+            }).catch(() => null);
+          }
+        }
+      }
+
+      setShowImportModal(false);
+      setImportCandidate(null);
+      await loadProfile();
+      setUploadMsg('Brand Kit imported and applied successfully.');
+    } catch (err) {
+      alert('Error importing Brand Kit: ' + err.message);
+    } finally {
+      setImporting(false);
     }
   };
 
@@ -83,10 +237,33 @@ export function BrandHubPage() {
           </p>
         </div>
 
-        <div className="flex items-center gap-3">
+        <div className="flex flex-wrap items-center gap-2.5">
+          {/* Export Brand Kit */}
+          <button
+            type="button"
+            onClick={handleExportBrandKit}
+            className="px-3.5 py-2 rounded-xl bg-white border border-[#E6DDC8] hover:bg-[#FAF8F3] text-[#0A1230] text-xs font-semibold transition-all flex items-center gap-1.5 shadow-sm"
+            title="Download clean Brand Kit JSON"
+          >
+            <Download className="w-3.5 h-3.5 text-[#8A6A00]" />
+            <span>Export Kit</span>
+          </button>
+
+          {/* Import Brand Kit */}
+          <label className="cursor-pointer px-3.5 py-2 rounded-xl bg-white border border-[#E6DDC8] hover:bg-[#FAF8F3] text-[#0A1230] text-xs font-semibold transition-all flex items-center gap-1.5 shadow-sm">
+            <FileUp className="w-3.5 h-3.5 text-[#8A6A00]" />
+            <span>Import Kit</span>
+            <input
+              type="file"
+              accept=".json"
+              className="hidden"
+              onChange={handleImportFileSelect}
+            />
+          </label>
+
           <button
             onClick={() => setShowFactModal(true)}
-            className="px-4 py-2.5 rounded-xl font-bold text-xs text-[#0A1230] flex items-center gap-1.5 shadow-sm transition-all hover:opacity-95"
+            className="px-4 py-2 rounded-xl font-bold text-xs text-[#0A1230] flex items-center gap-1.5 shadow-sm transition-all hover:opacity-95"
             style={{
               background: 'linear-gradient(135deg, #F3D98B, #D4AF37 50%, #A67C00)'
             }}
@@ -95,7 +272,7 @@ export function BrandHubPage() {
             <span>Add approved fact</span>
           </button>
 
-          <label className="cursor-pointer px-4 py-2.5 rounded-xl bg-white border border-[#0A1230] hover:bg-[#F6F1E7] text-[#0A1230] text-xs font-semibold transition-all flex items-center gap-1.5 shadow-sm">
+          <label className="cursor-pointer px-4 py-2 rounded-xl bg-white border border-[#0A1230] hover:bg-[#F6F1E7] text-[#0A1230] text-xs font-semibold transition-all flex items-center gap-1.5 shadow-sm">
             <Upload className="w-3.5 h-3.5 text-[#8A6A00]" />
             <span>{uploading ? 'Processing PDF/DOCX...' : 'Upload guideline'}</span>
             <input type="file" accept=".pdf,.docx,.txt" className="hidden" onChange={handleFileUpload} disabled={uploading} />
@@ -152,7 +329,7 @@ export function BrandHubPage() {
 
           <div className="grid grid-cols-1 md:grid-cols-3 gap-5">
             {profile.facts?.map((f) => (
-              <div key={f.id || f.code} className="bg-white rounded-[14px] p-5 border border-[#E6DDC8] shadow-[0_1px_2px_rgba(10,18,48,0.06),0_8px_24px_rgba(10,18,48,0.06)] flex flex-col justify-between">
+              <div key={f.id || f.code} className="bg-white rounded-[14px] p-5 border border-[#E6DDC8] shadow-sm flex flex-col justify-between">
                 <div>
                   <div className="flex items-center justify-between mb-3">
                     <span className="font-mono text-[12px] font-bold px-2 py-0.5 rounded bg-[#FBF1CF] text-[#614A00] border border-[#8A6A00]/25">
@@ -178,25 +355,23 @@ export function BrandHubPage() {
 
       {/* TAB CONTENT: BRAND SOURCES */}
       {activeTab === 'sources' && (
-        <div className="bg-white rounded-[14px] border border-[#E6DDC8] shadow-[0_1px_2px_rgba(10,18,48,0.06),0_8px_24px_rgba(10,18,48,0.06)] overflow-hidden">
-          <div className="p-5 border-b border-[#E6DDC8] flex items-center justify-between">
+        <div className="bg-white rounded-[14px] border border-[#E6DDC8] shadow-sm overflow-hidden">
+          <div className="p-5 border-b border-[#E6DDC8] flex flex-col sm:flex-row sm:items-center justify-between gap-3">
             <div>
-              <h3 className="font-serif text-lg font-bold text-[#0A1230]">Indexed Brand Sources</h3>
-              <p className="text-[14px] text-[#5B6478] mt-0.5">Authoritative governance documents parsed into indexed passages for semantic fact grounding.</p>
+              <h3 className="font-serif text-lg font-bold text-[#0A1230]">Indexed Corporate Source Documents</h3>
+              <p className="text-[14px] text-[#5B6478] mt-0.5">Primary policy artifacts ingested into passage chunks for vector retrieval.</p>
             </div>
-            <label className="cursor-pointer px-3.5 py-1.5 rounded-lg border border-[#0A1230] bg-white hover:bg-[#F6F1E7] text-[#0A1230] font-semibold text-xs transition-colors flex items-center gap-1.5 shadow-sm">
-              <Upload className="w-3.5 h-3.5 text-[#8A6A00]" />
-              <span>Upload Document</span>
-              <input type="file" accept=".pdf,.docx,.txt" className="hidden" onChange={handleFileUpload} disabled={uploading} />
-            </label>
+            <span className="text-xs font-mono px-3 py-1 bg-[#FAF8F3] rounded-lg border border-[#E6DDC8] text-[#5B6478]">
+              {profile.sources?.length || 0} active sources
+            </span>
           </div>
 
           <div className="overflow-x-auto">
-            <table className="w-full text-left text-[15px]">
-              <thead className="bg-[#FAF8F3] text-[13px] font-semibold uppercase tracking-wider text-[#5B6478] border-b border-[#E6DDC8]">
+            <table className="w-full text-left text-[14px]">
+              <thead className="bg-[#FAF8F3] text-[#5B6478] uppercase tracking-wider font-semibold border-b border-[#E6DDC8] text-[13px]">
                 <tr>
                   <th className="px-6 py-3.5">Filename</th>
-                  <th className="px-6 py-3.5">Owner</th>
+                  <th className="px-6 py-3.5">Governance Owner</th>
                   <th className="px-6 py-3.5">Version</th>
                   <th className="px-6 py-3.5">Status</th>
                   <th className="px-6 py-3.5">Passages Count</th>
@@ -236,55 +411,116 @@ export function BrandHubPage() {
         </div>
       )}
 
-      {/* TAB CONTENT: RULES */}
+      {/* TAB CONTENT: RULES & INTERACTIVE RULE TESTER */}
       {activeTab === 'rules' && (
         <div className="space-y-4">
           <p className="text-[14px] text-[#5B6478] mb-2">
-            Layer 1 deterministic rules active across all submissions. Normalised before matching and inflections handled.
+            Layer 1 deterministic rules active across all submissions. Normalised before matching and inflections handled. Click <strong>"Test this rule"</strong> on any rule to test sample text instantly.
           </p>
 
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-            {profile.rules?.map((r) => (
-              <div key={r.id || r.code} className="bg-white rounded-[14px] p-5 border border-[#E6DDC8] shadow-[0_1px_2px_rgba(10,18,48,0.06),0_8px_24px_rgba(10,18,48,0.06)] flex flex-col justify-between">
-                <div>
-                  <div className="flex items-center justify-between mb-2">
-                    <div className="flex items-center gap-2">
-                      <span className="font-mono text-xs font-bold text-[#0A1230] px-2 py-0.5 rounded bg-[#F6F1E7] border border-[#E6DDC8]">
-                        {r.code}
-                      </span>
-                      <span className="text-xs font-semibold px-2 py-0.5 rounded-full capitalize bg-[#FAF8F3] text-[#5B6478] border border-[#E6DDC8]">
-                        {r.category}
-                      </span>
-                    </div>
-                    <span className={`text-[12px] font-bold uppercase tracking-wider ${
-                      r.severity === 'high' ? 'text-[#B91C1C]' : r.severity === 'medium' ? 'text-[#D97706]' : 'text-[#0F766E]'
-                    }`}>
-                      {r.severity}
-                    </span>
-                  </div>
-                  <h4 className="font-bold text-[#0A1230] text-[16px] mb-1">{r.title}</h4>
-                  <p className="text-[14px] text-[#2B3345] leading-relaxed mb-3">{r.description}</p>
-                  
-                  {r.source_excerpt && (
-                    <div className="p-3 bg-[#FAF8F3] rounded-xl border border-[#E6DDC8] text-[13px] text-[#5B6478]">
-                      <strong className="text-[#0A1230]">Policy source:</strong> {r.source_excerpt}
-                    </div>
-                  )}
-                </div>
+            {profile.rules?.map((r) => {
+              const isTesting = activeTestRuleCode === r.code;
+              const testText = ruleTestInputs[r.code] || '';
+              const testResult = testRuleMatch(r, testText);
 
-                <div className="mt-4 pt-3 border-t border-[#E6DDC8]/60 flex items-center justify-between text-[13px] text-[#5B6478]">
-                  <span>Citation: {r.source_ref}</span>
-                  <span className="text-[#5B6478]">Flagged {r.times_flagged || 0} times</span>
+              return (
+                <div key={r.id || r.code} className="bg-white rounded-[14px] p-5 border border-[#E6DDC8] shadow-sm flex flex-col justify-between">
+                  <div>
+                    <div className="flex items-center justify-between mb-2">
+                      <div className="flex items-center gap-2">
+                        <span className="font-mono text-xs font-bold text-[#0A1230] px-2 py-0.5 rounded bg-[#F6F1E7] border border-[#E6DDC8]">
+                          {r.code}
+                        </span>
+                        <span className="text-xs font-semibold px-2 py-0.5 rounded-full capitalize bg-[#FAF8F3] text-[#5B6478] border border-[#E6DDC8]">
+                          {r.category}
+                        </span>
+                      </div>
+                      <span className={`text-[12px] font-bold uppercase tracking-wider ${
+                        r.severity === 'high' ? 'text-[#B91C1C]' : r.severity === 'medium' ? 'text-[#D97706]' : 'text-[#0F766E]'
+                      }`}>
+                        {r.severity}
+                      </span>
+                    </div>
+                    <h4 className="font-bold text-[#0A1230] text-[16px] mb-1">{r.title}</h4>
+                    <p className="text-[14px] text-[#2B3345] leading-relaxed mb-3">{r.description}</p>
+                    
+                    {r.source_excerpt && (
+                      <div className="p-3 bg-[#FAF8F3] rounded-xl border border-[#E6DDC8] text-[13px] text-[#5B6478] mb-3">
+                        <strong className="text-[#0A1230]">Policy source:</strong> {r.source_excerpt}
+                      </div>
+                    )}
+                  </div>
+
+                  {/* Interactive Rule Tester Section */}
+                  <div className="pt-3 border-t border-[#E6DDC8]/60">
+                    <button
+                      type="button"
+                      onClick={() => setActiveTestRuleCode(isTesting ? null : r.code)}
+                      className="text-xs font-semibold text-[#8A6A00] hover:text-[#0A1230] flex items-center gap-1.5 transition-colors mb-2 cursor-pointer"
+                    >
+                      <Beaker className="w-3.5 h-3.5" />
+                      <span>{isTesting ? 'Hide Rule Tester' : 'Test this rule with sample text'}</span>
+                      {isTesting ? <ChevronUp className="w-3 h-3" /> : <ChevronDown className="w-3 h-3" />}
+                    </button>
+
+                    {isTesting && (
+                      <div className="p-3 rounded-xl bg-[#FAF8F3] border border-[#D4AF37]/40 space-y-2.5 animate-fadeIn text-xs">
+                        <label className="font-semibold text-[#0A1230] block">
+                          Paste test snippet to verify triggers:
+                        </label>
+                        <input
+                          type="text"
+                          value={testText}
+                          placeholder={`e.g. Test copy for ${r.title.toLowerCase()}...`}
+                          onChange={(e) => setRuleTestInputs({ ...ruleTestInputs, [r.code]: e.target.value })}
+                          className="w-full px-3 py-2 rounded-lg border border-[#E6DDC8] bg-white text-[#0A1230] text-xs focus:ring-1 focus:ring-[#D4AF37] focus:outline-none"
+                        />
+
+                        {testText.trim() && testResult && (
+                          <div className={`p-2.5 rounded-lg border text-xs ${
+                            testResult.triggered 
+                              ? 'bg-[#FEF2F2] border-[#DC2626]/30 text-[#991B1B]' 
+                              : 'bg-[#D1FAE5] border-[#065F46]/30 text-[#065F46]'
+                          }`}>
+                            {testResult.triggered ? (
+                              <div className="space-y-1">
+                                <div className="flex items-center gap-1.5 font-bold">
+                                  <AlertCircle className="w-4 h-4 text-[#DC2626] shrink-0" />
+                                  <span>Rule Triggered (Match Found)</span>
+                                </div>
+                                <p className="text-[11px] leading-relaxed">
+                                  Matched quote: <strong className="bg-[#FEE2E2] px-1 py-0.5 rounded text-[#991B1B]">"{testResult.quote}"</strong>
+                                </p>
+                                <p className="text-[11px] opacity-90">{testResult.reason}</p>
+                              </div>
+                            ) : (
+                              <div className="flex items-center gap-1.5 font-bold">
+                                <CheckCircle2 className="w-4 h-4 text-[#065F46] shrink-0" />
+                                <span>Rule Passed: No violation detected in sample copy.</span>
+                              </div>
+                            )}
+                          </div>
+                        )}
+                      </div>
+                    )}
+
+                    <div className="mt-3 flex items-center justify-between text-[13px] text-[#5B6478]">
+                      <span>Citation: {r.source_ref}</span>
+                      <span>Flagged {r.times_flagged || 0} times</span>
+                    </div>
+                  </div>
+
                 </div>
-              </div>
-            ))}
+              );
+            })}
           </div>
         </div>
       )}
 
       {/* TAB CONTENT: TERMINOLOGY */}
       {activeTab === 'terminology' && (
-        <div className="bg-white rounded-[14px] border border-[#E6DDC8] shadow-[0_1px_2px_rgba(10,18,48,0.06),0_8px_24px_rgba(10,18,48,0.06)] overflow-hidden">
+        <div className="bg-white rounded-[14px] border border-[#E6DDC8] shadow-sm overflow-hidden">
           <div className="p-5 border-b border-[#E6DDC8]">
             <h3 className="font-serif text-lg font-bold text-[#0A1230]">Glossary & Nomenclature</h3>
             <p className="text-[14px] text-[#5B6478] mt-0.5">Automated replacement maps and brand tone restrictions.</p>
@@ -322,7 +558,7 @@ export function BrandHubPage() {
 
       {/* TAB CONTENT: IDENTITY */}
       {activeTab === 'identity' && (
-        <div className="bg-white rounded-[14px] border border-[#E6DDC8] p-6 shadow-[0_1px_2px_rgba(10,18,48,0.06),0_8px_24px_rgba(10,18,48,0.06)] max-w-2xl">
+        <div className="bg-white rounded-[14px] border border-[#E6DDC8] p-6 shadow-sm max-w-2xl">
           <h3 className="font-serif text-xl font-bold text-[#0A1230] mb-4">Brand Profile Identity</h3>
           
           <div className="space-y-4 text-[14px]">
@@ -364,7 +600,7 @@ export function BrandHubPage() {
 
           <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
             {(profile.palette_json || []).map((p, idx) => (
-              <div key={idx} className="bg-white rounded-[14px] p-5 border border-[#E6DDC8] shadow-[0_1px_2px_rgba(10,18,48,0.06),0_8px_24px_rgba(10,18,48,0.06)] flex flex-col items-center text-center">
+              <div key={idx} className="bg-white rounded-[14px] p-5 border border-[#E6DDC8] shadow-sm flex flex-col items-center text-center">
                 <div 
                   className="w-16 h-16 rounded-xl shadow-inner border border-[#E6DDC8] mb-3"
                   style={{ backgroundColor: p.hex }}
@@ -452,6 +688,71 @@ export function BrandHubPage() {
                 </button>
               </div>
             </form>
+          </div>
+        </div>
+      )}
+
+      {/* Brand Kit Import Preview Modal */}
+      {showImportModal && importCandidate && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-[#0A1230]/60 backdrop-blur-sm p-4">
+          <div className="bg-white rounded-2xl max-w-lg w-full p-6 shadow-2xl border border-[#D4AF37]/50 text-xs text-[#0A1230]">
+            <div className="flex items-center justify-between pb-3 border-b border-[#E6DDC8]">
+              <div className="flex items-center gap-2">
+                <FileUp className="w-5 h-5 text-[#8A6A00]" />
+                <h3 className="font-serif text-lg font-bold">Import Brand Kit</h3>
+              </div>
+              <button
+                type="button"
+                onClick={() => { setShowImportModal(false); setImportCandidate(null); }}
+                className="text-[#5B6478] hover:text-[#0A1230]"
+              >
+                <X className="w-4 h-4" />
+              </button>
+            </div>
+
+            <div className="py-4 space-y-3">
+              <p className="text-[#5B6478]">
+                Valid Brand Kit found for <strong>{importCandidate.brand_name || 'Brand'}</strong>. Review the contents below before applying to your workspace:
+              </p>
+
+              <div className="p-3.5 bg-[#FAF8F3] rounded-xl border border-[#E6DDC8] grid grid-cols-2 gap-3 font-medium">
+                <div>
+                  <span className="text-[10px] text-[#5B6478] uppercase block">Brand Name</span>
+                  <span className="text-[#0A1230] font-bold">{importCandidate.brand_name || profile.name}</span>
+                </div>
+                <div>
+                  <span className="text-[10px] text-[#5B6478] uppercase block">Approved Facts</span>
+                  <span className="text-[#065F46] font-bold">{importCandidate.facts?.length || 0} facts</span>
+                </div>
+                <div>
+                  <span className="text-[10px] text-[#5B6478] uppercase block">Rules</span>
+                  <span className="text-[#0A1230] font-bold">{importCandidate.rules?.length || 0} rules</span>
+                </div>
+                <div>
+                  <span className="text-[10px] text-[#5B6478] uppercase block">Terminology</span>
+                  <span className="text-[#0A1230] font-bold">{importCandidate.terms?.length || 0} terms</span>
+                </div>
+              </div>
+            </div>
+
+            <div className="flex justify-end gap-2.5 pt-3 border-t border-[#E6DDC8]">
+              <button
+                type="button"
+                onClick={() => { setShowImportModal(false); setImportCandidate(null); }}
+                className="px-4 py-2 rounded-lg border border-[#E6DDC8] text-[#5B6478] hover:bg-[#FAF8F3] font-medium"
+              >
+                Cancel
+              </button>
+              <button
+                type="button"
+                onClick={handleConfirmImport}
+                disabled={importing}
+                className="px-4 py-2 rounded-lg bg-[#0A1230] text-[#D4AF37] font-bold hover:bg-[#0A1230]/90 transition-all flex items-center gap-1.5 shadow-sm disabled:opacity-50"
+              >
+                <Check className="w-3.5 h-3.5" />
+                <span>{importing ? 'Importing...' : 'Apply Brand Kit'}</span>
+              </button>
+            </div>
           </div>
         </div>
       )}
