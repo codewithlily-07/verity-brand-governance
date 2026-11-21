@@ -204,7 +204,7 @@ export function TrustPage({ setActivePage }) {
         <div className="max-w-[1200px] mx-auto px-4 sm:px-6 lg:px-8">
           
           <div className="text-center max-w-2xl mx-auto mb-16">
-            <span className="text-sm font-sans font-semibold tracking-widest text-[#8A6A24] uppercase block mb-2">
+            <span className="text-sm font-sans font-semibold tracking-widest text-[#7A5B18] uppercase block mb-2">
               SECURITY ARCHITECTURE
             </span>
             <h2 className="text-2xl sm:text-4xl font-serif font-bold text-[#14203D] mb-3">
@@ -239,7 +239,7 @@ export function TrustPage({ setActivePage }) {
                 </div>
                 <h4 className="font-serif text-lg font-bold text-[#14203D] mb-1">FastAPI Backend</h4>
                 <p className="text-sm text-[#4A5675] font-sans mb-3">Rule Engine & Retrieval</p>
-                <div className="p-2.5 rounded-lg bg-[#F3EAD3]/70 border border-[#E2B857]/30 text-sm text-[#8A6A24] font-sans font-semibold">
+                <div className="p-2.5 rounded-lg bg-[#F3EAD3]/70 border border-[#E2B857]/30 text-sm text-[#7A5B18] font-sans font-semibold">
                   API keys stored in server env
                 </div>
               </div>
@@ -404,7 +404,7 @@ export function TrustPage({ setActivePage }) {
         <div className="max-w-[1200px] mx-auto px-4 sm:px-6 lg:px-8">
           
           <div className="text-center max-w-2xl mx-auto mb-16">
-            <span className="text-sm font-sans font-semibold tracking-widest text-[#8A6A24] uppercase block mb-2">
+            <span className="text-sm font-sans font-semibold tracking-widest text-[#7A5B18] uppercase block mb-2">
               AUTHORITY MATRIX
             </span>
             <h2 className="text-2xl sm:text-4xl font-serif font-bold text-[#14203D] mb-3">
@@ -419,7 +419,7 @@ export function TrustPage({ setActivePage }) {
           {/* Permissions Matrix */}
           <div className="bg-[#FFFFFF] rounded-3xl p-6 sm:p-8 border border-[#E2B857]/40 shadow-xl mb-12 overflow-x-auto">
             <table className="w-full text-left text-sm font-sans">
-              <thead className="border-b border-[#F3EAD3] text-[#8A6A24] uppercase text-sm font-semibold">
+              <thead className="border-b border-[#F3EAD3] text-[#7A5B18] uppercase text-sm font-semibold">
                 <tr>
                   <th className="py-3 px-4">Role</th>
                   <th className="py-3 px-4">Submit Drafts</th>
@@ -443,7 +443,7 @@ export function TrustPage({ setActivePage }) {
                   <td className="py-3 px-4 text-[#065F46] font-bold">✓ Yes</td>
                   <td className="py-3 px-4 text-[#065F46] font-bold">✓ Yes</td>
                   <td className="py-3 px-4 text-[#4A5675]">✗ No</td>
-                  <td className="py-3 px-4 text-[#8A6A24] font-semibold">View Only</td>
+                  <td className="py-3 px-4 text-[#7A5B18] font-semibold">View Only</td>
                   <td className="py-3 px-4 text-[#4A5675]">✗ No</td>
                 </tr>
                 <tr>
@@ -455,11 +455,11 @@ export function TrustPage({ setActivePage }) {
                   <td className="py-3 px-4 text-[#4A5675]">✗ No</td>
                 </tr>
                 <tr>
-                  <td className="py-3 px-4 font-bold text-[#8A6A24]">Authorised Reviewer</td>
+                  <td className="py-3 px-4 font-bold text-[#7A5B18]">Authorised Reviewer</td>
                   <td className="py-3 px-4 text-[#065F46] font-bold">✓ Yes</td>
                   <td className="py-3 px-4 text-[#065F46] font-bold">✓ Yes</td>
                   <td className="py-3 px-4 text-[#065F46] font-bold">✓ Full Authority</td>
-                  <td className="py-3 px-4 text-[#8A6A24] font-semibold">View Only</td>
+                  <td className="py-3 px-4 text-[#7A5B18] font-semibold">View Only</td>
                   <td className="py-3 px-4 text-[#065F46] font-bold">✓ With Reason</td>
                 </tr>
               </tbody>
