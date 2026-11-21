@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { 
   CheckCircle, XCircle, AlertTriangle, MessageSquare, Send,
   Shield, Lock, Hash, ArrowLeft, Clock, FileCheck, Layers, 
@@ -21,15 +21,21 @@ export function ReviewApprovalPage({ submissionId, setActivePage, role, onRoleCh
   const [overrideReason, setOverrideReason] = useState('');
   const [commentText, setCommentText] = useState('');
   const [actionLoading, setActionLoading] = useState(false);
+  const [commentLoading, setCommentLoading] = useState(false);
+  const [conflictError, setConflictError] = useState(null);
   const [stampSuccess, setStampSuccess] = useState(false);
   const [integrityResult, setIntegrityResult] = useState(null);
   const [verifyingIntegrity, setVerifyingIntegrity] = useState(false);
+
+  const actionLoadingRef = useRef(false);
+  const commentLoadingRef = useRef(false);
 
   // Top level tabs: 'review' | 'history'
   const [mainTab, setMainTab] = useState('review');
   const [historySubTab, setHistorySubTab] = useState('submissions'); // 'submissions' | 'audit'
   const [auditEvents, setAuditEvents] = useState([]);
   const [historySearch, setHistorySearch] = useState('');
+  const [historyStatusFilter, setHistoryStatusFilter] = useState('all');
 
   const loadData = async (targetId) => {
     setLoading(true);
@@ -103,6 +109,8 @@ export function ReviewApprovalPage({ submissionId, setActivePage, role, onRoleCh
   const isReviewerOrAdmin = role === 'reviewer' || role === 'admin' || role === 'owner';
 
   const handleDecision = async (decision) => {
+    if (actionLoadingRef.current || actionLoading) return;
+
     const explicitVersionId = selectedVersionId || activeVersion?.id;
     if (!explicitVersionId || !currentSubId) {
       alert("Error: Explicit version_id is required. Please select the specific version on screen to review.");
@@ -116,7 +124,11 @@ export function ReviewApprovalPage({ submissionId, setActivePage, role, onRoleCh
       alert("Access Denied: Only authorized Reviewers or Admins can submit decisions. Please switch to Reviewer.");
       return;
     }
+
+    actionLoadingRef.current = true;
     setActionLoading(true);
+    setConflictError(null);
+
     try {
       await submitReviewDecision(currentSubId, {
         version_id: explicitVersionId,
@@ -134,15 +146,24 @@ export function ReviewApprovalPage({ submissionId, setActivePage, role, onRoleCh
       setDecisionReason('');
       await loadData(currentSubId);
     } catch (err) {
-      alert(err.message);
+      const msg = err.message || '';
+      if (msg.includes('409') || msg.toLowerCase().includes('stale') || msg.toLowerCase().includes('newer version') || msg.toLowerCase().includes('conflict')) {
+        setConflictError(msg);
+      } else {
+        alert(msg);
+      }
     } finally {
       setActionLoading(false);
+      actionLoadingRef.current = false;
     }
   };
 
   const handleAddComment = async (e) => {
     e.preventDefault();
-    if (!commentText.trim() || !currentSubId) return;
+    if (!commentText.trim() || !currentSubId || commentLoadingRef.current || commentLoading) return;
+    
+    commentLoadingRef.current = true;
+    setCommentLoading(true);
     try {
       await addComment(currentSubId, {
         submission_version_id: selectedVersionId,
@@ -151,9 +172,12 @@ export function ReviewApprovalPage({ submissionId, setActivePage, role, onRoleCh
         comment_text: commentText
       });
       setCommentText('');
-      loadData(currentSubId);
+      await loadData(currentSubId);
     } catch (err) {
       alert('Error adding comment: ' + err.message);
+    } finally {
+      setCommentLoading(false);
+      commentLoadingRef.current = false;
     }
   };
 
@@ -507,6 +531,29 @@ export function ReviewApprovalPage({ submissionId, setActivePage, role, onRoleCh
                         </div>
                       )}
 
+                      {/* Concurrency Conflict Banner (409) */}
+                      {conflictError && (
+                        <div className="p-3.5 rounded-xl bg-[#FEF2F2] border border-[#DC2626]/40 text-xs text-[#991B1B] space-y-2">
+                          <div className="flex items-start gap-2">
+                            <AlertTriangle className="w-4 h-4 text-[#DC2626] shrink-0 mt-0.5" />
+                            <div>
+                              <strong className="block font-bold">Version Conflict Detected (409)</strong>
+                              <span>{conflictError}</span>
+                            </div>
+                          </div>
+                          <button
+                            type="button"
+                            onClick={async () => {
+                              setConflictError(null);
+                              await loadData(currentSubId);
+                            }}
+                            className="w-full py-1.5 px-2.5 rounded-lg bg-[#991B1B] text-white font-semibold text-xs hover:bg-[#7F1D1D] transition-colors"
+                          >
+                            Reload Latest Version
+                          </button>
+                        </div>
+                      )}
+
                       {/* Action Buttons: Approve, Request Changes, Reject */}
                       <div className="space-y-2 pt-2">
                         <button
@@ -595,7 +642,8 @@ export function ReviewApprovalPage({ submissionId, setActivePage, role, onRoleCh
                       />
                       <button
                         type="submit"
-                        className="p-2.5 rounded-xl bg-[#0A1230] text-[#D4AF37] hover:bg-[#0A1230]/90 transition-colors"
+                        disabled={commentLoading || !commentText.trim()}
+                        className="p-2.5 rounded-xl bg-[#0A1230] text-[#D4AF37] hover:bg-[#0A1230]/90 transition-colors disabled:opacity-40 disabled:cursor-not-allowed"
                         title="Send comment"
                       >
                         <Send className="w-4 h-4" />

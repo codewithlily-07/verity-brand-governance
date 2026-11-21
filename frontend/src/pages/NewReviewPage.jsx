@@ -1,7 +1,8 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { 
   Sparkles, FileText, Upload, AlertCircle, ArrowRight, 
-  CheckCircle2, Image as ImageIcon, Sliders, Shield, Check, Loader2
+  CheckCircle2, Image as ImageIcon, Sliders, Shield, Check, Loader2,
+  RotateCcw, FileCheck, Info
 } from 'lucide-react';
 import { createSubmission, uploadSubmissionDocument } from '../lib/api';
 
@@ -17,8 +18,8 @@ const SAMPLES = {
     title: 'Admissions Welcome Email (Sample B)',
     type: 'email',
     testLabel: 'Tone and terminology',
-    content: 'Hi guys, join Verity learning today!! Classes are 24/7.',
-    desc: 'Sample B: Slang ("guys"), brand casing, repeated "!", 24/7 claim, missing unsubscribe'
+    content: 'Hi guys, join Verity learning today!! Classes are 24/7. Unsubscribe at any time.',
+    desc: 'Sample B: Slang ("guys"), brand casing, repeated "!", 24/7 claim, opt-out notice'
   },
   C: {
     title: 'Verified Curriculum Overview (Sample C)',
@@ -36,6 +37,39 @@ const SAMPLES = {
   }
 };
 
+const CHANNEL_HINTS = {
+  social: [
+    'Character length optimal under 280 characters',
+    'No absolute or 100% outcome guarantees (Rule R2)',
+    'Verified superlative accreditation required (Rule R3)'
+  ],
+  ad: [
+    'Clear and substantiated pricing claim (Rule R2)',
+    'Accredited third-party rating citation required (Rule R3)',
+    'Explicit terms and conditions disclaimer present'
+  ],
+  email: [
+    'Professional, welcoming greeting tone (Rule R1)',
+    'Mandatory opt-out or unsubscribe notice included',
+    'Approved corporate fact phrasing for program metrics'
+  ],
+  press: [
+    'Accredited publication date line & media contact',
+    'Grounded numbers verified against approved fact sheets',
+    'Authoritative, objective corporate voice'
+  ],
+  website: [
+    'Accessible descriptions and compliant contrast (WCAG AA)',
+    'Clear call to action without aggressive urgency slang',
+    'Accurate product feature and SLA terminology'
+  ],
+  document: [
+    'Under 10MB file limit with valid PDF or DOCX structures',
+    'Official corporate facts match Knowledge Hub citations',
+    'Cryptographic SHA-256 seal generated on publication'
+  ]
+};
+
 export function NewReviewPage({ setActivePage, setSelectedSubmissionId, role }) {
   const [title, setTitle] = useState('');
   const [contentType, setContentType] = useState('social');
@@ -49,6 +83,68 @@ export function NewReviewPage({ setActivePage, setSelectedSubmissionId, role }) 
   const [loading, setLoading] = useState(false);
   const [currentStep, setCurrentStep] = useState(0); // 0: idle, 1: layer 1, 2: layer 2, 3: layer 3
   const [error, setError] = useState(null);
+  const [hasRestoredDraft, setHasRestoredDraft] = useState(false);
+
+  const submittingRef = useRef(false);
+
+  // Restore draft from localStorage on mount
+  useEffect(() => {
+    try {
+      const saved = localStorage.getItem('verity_draft_autosave');
+      if (saved) {
+        const parsed = JSON.parse(saved);
+        if (parsed.content || parsed.title) {
+          setTitle(parsed.title || '');
+          setContentType(parsed.contentType || 'social');
+          setCampaign(parsed.campaign || '');
+          setContent(parsed.content || '');
+          setHasRestoredDraft(true);
+        }
+      }
+    } catch (e) {
+      console.warn('Could not read autosaved draft:', e);
+    }
+  }, []);
+
+  // Autosave draft on text change
+  useEffect(() => {
+    if (!content.trim() && !title.trim()) return;
+    const timer = setTimeout(() => {
+      try {
+        localStorage.setItem('verity_draft_autosave', JSON.stringify({
+          title,
+          contentType,
+          campaign,
+          content,
+          updatedAt: new Date().toISOString()
+        }));
+      } catch (e) {
+        console.warn('Autosave error:', e);
+      }
+    }, 400);
+    return () => clearTimeout(timer);
+  }, [title, contentType, campaign, content]);
+
+  // Warn before closing tab if unsaved text is present
+  useEffect(() => {
+    const handleBeforeUnload = (e) => {
+      if (content.trim() && !loading) {
+        e.preventDefault();
+        e.returnValue = '';
+      }
+    };
+    window.addEventListener('beforeunload', handleBeforeUnload);
+    return () => window.removeEventListener('beforeunload', handleBeforeUnload);
+  }, [content, loading]);
+
+  const handleDiscardDraft = () => {
+    localStorage.removeItem('verity_draft_autosave');
+    setTitle('');
+    setCampaign('');
+    setContent('');
+    setContentType('social');
+    setHasRestoredDraft(false);
+  };
 
   const loadSample = (key) => {
     const s = SAMPLES[key];
@@ -57,15 +153,24 @@ export function NewReviewPage({ setActivePage, setSelectedSubmissionId, role }) 
     setContent(s.content);
     setCampaign('Acceptance Test');
     setError(null);
+    setHasRestoredDraft(false);
   };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+    if (submittingRef.current || loading) return;
+
     if (!content.trim() && !fileToUpload) {
       setError('Please enter text content or select a PDF/DOCX file to analyze.');
       return;
     }
 
+    if (content.length > 150000) {
+      setError('Content exceeds 150,000 character limit. Please shorten or upload as a document.');
+      return;
+    }
+
+    submittingRef.current = true;
     setLoading(true);
     setError(null);
     setCurrentStep(1);
@@ -102,6 +207,8 @@ export function NewReviewPage({ setActivePage, setSelectedSubmissionId, role }) 
 
       setCurrentStep(3);
       clearInterval(stepInterval);
+      localStorage.removeItem('verity_draft_autosave');
+      setHasRestoredDraft(false);
       setSelectedSubmissionId(res.submission_id);
       setTimeout(() => {
         setActivePage('review');
@@ -112,6 +219,7 @@ export function NewReviewPage({ setActivePage, setSelectedSubmissionId, role }) 
       setCurrentStep(0);
     } finally {
       setLoading(false);
+      submittingRef.current = false;
     }
   };
 
@@ -121,6 +229,25 @@ export function NewReviewPage({ setActivePage, setSelectedSubmissionId, role }) 
   return (
     <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
       
+      {/* Restored Autosaved Draft Notification */}
+      {hasRestoredDraft && (
+        <div className="mb-6 p-3.5 rounded-2xl bg-[#FAF8F2] border border-[#D4AF37]/50 shadow-sm flex items-center justify-between text-xs text-[#0A1230]">
+          <div className="flex items-center gap-2.5">
+            <FileCheck className="w-4 h-4 text-[#8A5A12] shrink-0" />
+            <span>
+              <strong>Draft restored:</strong> Unsaved changes from your previous session were automatically retrieved.
+            </span>
+          </div>
+          <button
+            type="button"
+            onClick={handleDiscardDraft}
+            className="text-[#B91C1C] hover:underline font-semibold ml-3 shrink-0 cursor-pointer"
+          >
+            Discard Draft
+          </button>
+        </div>
+      )}
+
       {/* Page Title */}
       <div className="mb-6">
         <span className="text-xs font-semibold uppercase tracking-wider text-[#8A6A00]">Governance Engine</span>
@@ -201,6 +328,24 @@ export function NewReviewPage({ setActivePage, setSelectedSubmissionId, role }) 
             />
           </div>
         </div>
+
+        {/* Content Type Quality Checklist (Hints tied to real brand rules) */}
+        {CHANNEL_HINTS[contentType] && (
+          <div className="p-3.5 rounded-xl bg-[#FAF8F2] border border-[#E6DDC8] text-xs">
+            <div className="flex items-center gap-1.5 font-bold text-[#0A1230] mb-2">
+              <Info className="w-3.5 h-3.5 text-[#8A5A12]" />
+              <span>Channel Checklist & Policy Hints ({contentType.replace('_', ' ').toUpperCase()}):</span>
+            </div>
+            <ul className="grid grid-cols-1 sm:grid-cols-3 gap-2 text-[#4A5675]">
+              {CHANNEL_HINTS[contentType].map((hint, hIdx) => (
+                <li key={hIdx} className="flex items-start gap-1.5">
+                  <Check className="w-3.5 h-3.5 text-[#085C42] mt-0.5 shrink-0" />
+                  <span>{hint}</span>
+                </li>
+              ))}
+            </ul>
+          </div>
+        )}
 
         {/* Content Editor */}
         <div>
