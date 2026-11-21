@@ -53,7 +53,7 @@ export function PageSubNav({ sections = [] }) {
 
       {/* Sticky Sub-navigation Bar */}
       <div 
-        className="sticky top-[60px] sm:top-[72px] z-30 w-full min-h-[44px] py-1.5 px-4 select-none border-b border-[#E3DCCB] bg-[#FAF7F0]/95 backdrop-blur-md shadow-sm"
+        className="sticky top-[60px] sm:top-[72px] z-30 w-full min-h-[44px] py-1.5 px-4 select-none border-b border-[#F3EAD3]/30 bg-[#13203F] backdrop-blur-md shadow-md"
       >
         <div className="max-w-[1200px] mx-auto flex items-center justify-start sm:justify-center gap-2 overflow-x-auto no-scrollbar py-0.5 min-h-[44px]">
           {sections.map((sec) => {
@@ -63,10 +63,10 @@ export function PageSubNav({ sections = [] }) {
                 key={sec.id}
                 type="button"
                 onClick={() => scrollToSection(sec.id)}
-                className={`inline-flex items-center justify-center px-4 py-2 min-h-[44px] rounded-full text-sm tracking-wide transition-all whitespace-nowrap cursor-pointer focus:outline-none focus:ring-2 focus:ring-[#C9A24B] ${
+                className={`inline-flex items-center justify-center px-4 py-2 min-h-[44px] rounded-full text-sm tracking-wide transition-all whitespace-nowrap cursor-pointer focus:outline-none focus:ring-2 focus:ring-[#E2B857] ${
                   isActive
-                    ? 'bg-[#C9A24B] text-[#14213D] font-bold shadow-sm'
-                    : 'text-[#3F4A5F] hover:text-[#14213D] hover:bg-[#F1ECE0]'
+                    ? 'bg-[#E2B857] text-[#101B35] font-bold shadow-[0_2px_10px_rgba(226,184,87,0.35)]'
+                    : 'text-[#FAF8F2] hover:text-[#FAF8F2] hover:underline hover:decoration-[#E2B857] hover:underline-offset-4 bg-transparent'
                 }`}
               >
                 {sec.label}

@@ -26,9 +26,9 @@ export function SettingsPage({ role, setRole, onResetDemo }) {
       
       {/* Header */}
       <div className="pb-6 mb-8 border-b border-gray-200">
-        <span className="text-xs font-semibold uppercase tracking-wider text-[#614A00]">Governance Controls</span>
+        <span className="text-xs font-semibold uppercase tracking-wider text-gold">Governance Controls</span>
         <h1 className="font-serif text-3xl font-bold text-ink mt-1">Workspace Settings & Disclosures</h1>
-        <p className="text-xs text-[#3F4A5F] mt-0.5">
+        <p className="text-xs text-gray-500 mt-0.5">
           Configure demo workflow simulations, review AI engine integration, and manage guest workspaces.
         </p>
       </div>

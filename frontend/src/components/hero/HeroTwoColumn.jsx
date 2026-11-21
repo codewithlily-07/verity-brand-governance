@@ -11,7 +11,7 @@ function DrawingCheck({ delay = 0 }) {
   const prefersReduced = useReducedMotion();
   return (
     <svg 
-      className="w-4 h-4 shrink-0 text-[#B8862B]" 
+      className="w-4 h-4 shrink-0 text-[#D4AF37]" 
       viewBox="0 0 24 24" 
       fill="none" 
       stroke="currentColor" 
@@ -19,7 +19,7 @@ function DrawingCheck({ delay = 0 }) {
       strokeLinecap="round" 
       strokeLinejoin="round"
     >
-      <circle cx="12" cy="12" r="10" stroke="rgba(184, 134, 43, 0.4)" strokeWidth="1.5" />
+      <circle cx="12" cy="12" r="10" stroke="rgba(212, 175, 55, 0.35)" strokeWidth="1.5" />
       <motion.path 
         d="m9 12 2 2 4-4" 
         initial={prefersReduced ? { pathLength: 1 } : { pathLength: 0 }}
@@ -31,17 +31,17 @@ function DrawingCheck({ delay = 0 }) {
 }
 
 /**
- * Rebuilt VERITY Hero Component (Warm Premium Light Theme):
- * - Light ivory warm background (--bg: #FAF7F0) with delicate gold aura & starfield specks
+ * Rebuilt VERITY Hero Component:
+ * - Rich layered background gradients + starfield canvas + gold light sweep
  * - Left Column:
  *   - Live indicator pulsing dot in eyebrow
- *   - Line-by-line slide-up H1 reveal with 120ms stagger in deep navy #14213D
- *   - Subtext max-width 560px, 16px, deep body text #3F4A5F
- *   - High-contrast gold button (--gold-btn: #C9A24B) with navy #14213D text
- *   - Secondary button in white #FFFFFF with navy #14213D border
+ *   - Line-by-line slide-up H1 reveal with 120ms stagger
+ *   - Subtext max-width 520px, 18px, ivory at 85%
+ *   - High-contrast solid gold Explore Demo button (full opacity, arrow slide, glow pulse)
+ *   - Gold outline See How It Works with left-to-right fill sweep
  *   - Proof line items fade in with self-drawing checks
  * - Right Column:
- *   - CinematicGlobe (perfect circle, concentric 3D orbit rings, open book, 4 floating HUD cards)
+ *   - CinematicGlobe (perfect circle, concentric 3D orbit rings, open book, 4 floating cards)
  */
 export function HeroTwoColumn({ setActivePage }) {
   const prefersReduced = useReducedMotion();
@@ -61,13 +61,13 @@ export function HeroTwoColumn({ setActivePage }) {
 
   return (
     <section 
-      className="relative w-full flex items-center justify-center overflow-hidden py-6 lg:py-4 select-none"
+      className="relative w-full flex items-center justify-center overflow-hidden py-4 sm:py-6 lg:py-0 select-none"
       style={{
         minHeight: 'calc(100vh - 72px)',
-        backgroundColor: '#FAF7F0',
-        backgroundImage: `
-          radial-gradient(circle at 75% 45%, rgba(201, 162, 75, 0.15) 0%, transparent 55%),
-          radial-gradient(circle at 18% 25%, rgba(241, 236, 224, 0.9) 0%, transparent 60%)
+        background: `
+          radial-gradient(circle at 85% 85%, rgba(212, 175, 55, 0.12) 0%, transparent 45%),
+          radial-gradient(circle at 15% 15%, rgba(45, 25, 85, 0.25) 0%, transparent 50%),
+          radial-gradient(ellipse at 72% 45%, #1A2B66 0%, #0C1740 40%, #060B1F 80%)
         `,
       }}
     >
@@ -78,9 +78,9 @@ export function HeroTwoColumn({ setActivePage }) {
       <div 
         className="absolute inset-0 pointer-events-none z-0"
         style={{
-          backgroundImage: 'radial-gradient(rgba(184, 134, 43, 0.18) 1px, transparent 1px)',
+          backgroundImage: 'radial-gradient(rgba(212, 175, 55, 0.15) 1px, transparent 1px)',
           backgroundSize: '36px 36px',
-          opacity: 0.35,
+          opacity: 0.28,
         }}
       />
 
@@ -101,7 +101,7 @@ export function HeroTwoColumn({ setActivePage }) {
             }}
             className="w-1/2 h-full opacity-20 transform -skew-x-12"
             style={{
-              background: 'linear-gradient(90deg, transparent 0%, rgba(201, 162, 75, 0.20) 50%, transparent 100%)',
+              background: 'linear-gradient(90deg, transparent 0%, rgba(243, 217, 139, 0.25) 50%, transparent 100%)',
             }}
           />
         </div>
@@ -125,20 +125,20 @@ export function HeroTwoColumn({ setActivePage }) {
           <div className="flex flex-col items-start text-left z-10 overflow-hidden max-w-[600px]">
             
             {/* Eyebrow in Inter 12px, weight 600, uppercase, 0.08em tracking */}
-            <div className="inline-flex items-center gap-2 px-3.5 py-1 rounded-full bg-[#F1ECE0] border border-[#B8862B]/40 text-[12px] font-sans font-semibold text-[#7A5B18] tracking-[0.08em] uppercase mb-4 shadow-sm">
+            <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-[#050814]/85 border border-[#D4AF37]/50 text-[12px] font-sans font-semibold text-[#F3D98B] tracking-[0.08em] uppercase mb-4 shadow-[0_0_15px_rgba(212,175,55,0.18)]">
               <span className="relative flex h-2 w-2">
-                <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-[#B8862B] opacity-75" />
-                <span className="relative inline-flex rounded-full h-2 w-2 bg-[#B8862B]" />
+                <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-[#D4AF37] opacity-75" />
+                <span className="relative inline-flex rounded-full h-2 w-2 bg-[#F3D98B]" />
               </span>
               <span>Brand Governance for Fast Teams</span>
             </div>
 
-            {/* H1 Heading: 3 lines, clamp(1.8rem, 2.6vw, 2.5rem), line-height 1.2, letter-spacing 0 */}
+            {/* H1 Heading: 3 lines, clamp(1.8rem, 2.6vw, 2.5rem), line-height 1.18, letter-spacing 0, non-breaking hyphen */}
             <h1 
-              className="font-serif font-semibold text-[#14213D] mb-4"
+              className="font-serif font-semibold text-white mb-4"
               style={{
                 fontSize: 'clamp(1.8rem, 2.6vw, 2.5rem)',
-                lineHeight: 1.2,
+                lineHeight: 1.18,
                 letterSpacing: 0,
               }}
             >
@@ -167,21 +167,21 @@ export function HeroTwoColumn({ setActivePage }) {
                   initial={prefersReduced ? { y: 0 } : { y: '100%' }}
                   animate={{ y: 0 }}
                   transition={{ duration: 0.65, delay: 0.24, ease: [0.16, 1, 0.3, 1] }}
-                  className="text-[#B8862B] not-italic font-semibold block"
+                  className="text-gold-shimmer not-italic font-semibold block"
                 >
                   Every Release Human&#8209;Approved.
                 </motion.span>
               </span>
             </h1>
 
-            {/* Subtext: max 3 lines, 16px, body color #3F4A5F */}
+            {/* Subtext: max 3 lines, 17-18px */}
             <p 
               className="leading-relaxed mb-6 font-sans"
               style={{
-                maxWidth: '560px',
-                fontSize: '16.5px',
+                maxWidth: '600px',
+                fontSize: '17.5px',
                 lineHeight: 1.6,
-                color: '#3F4A5F',
+                color: 'var(--text)',
               }}
             >
               Verity checks drafts against your approved sources, shows the evidence for every finding, and leaves the final decision to an authorised human reviewer.
@@ -190,35 +190,39 @@ export function HeroTwoColumn({ setActivePage }) {
             {/* CTAs: Full Opacity Always */}
             <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-3.5 w-full sm:w-auto mb-6">
               
-              {/* Explore Demo Workspace: Gold-btn #C9A24B with navy #14213D text */}
+              {/* Explore Demo Workspace: Navy #0A1230 at full opacity 1 on gold gradient */}
               <button
                 type="button"
                 onClick={handleExplore}
-                className="btn-gold-sweep group relative px-7 py-3 rounded-xl font-bold text-[15px] flex items-center justify-center gap-2 transition-all hover:brightness-105 active:scale-[0.98] cursor-pointer shadow-[0_4px_16px_rgba(201,162,75,0.35)]"
+                className="btn-gold-sweep group relative px-7 py-3 rounded-xl font-semibold text-[15px] shadow-gold-glow flex items-center justify-center gap-2 transition-all hover:brightness-105 active:scale-[0.98] cursor-pointer"
                 style={{
-                  backgroundColor: '#C9A24B',
-                  color: '#14213D',
+                  background: 'linear-gradient(135deg, #F3D98B, #D4AF37 50%, #A67C00)',
                   opacity: 1,
+                  boxShadow: '0 0 24px rgba(212, 175, 55, 0.45)',
+                  color: '#0A1230',
                 }}
               >
-                <span className="relative z-10 font-bold" style={{ color: '#14213D' }}>Explore Demo Workspace</span>
-                <ArrowRight className="w-4 h-4 text-[#14213D] stroke-[2.5] relative z-10 transition-transform duration-200 group-hover:translate-x-1" />
+                <span className="relative z-10 font-semibold" style={{ color: '#0A1230', opacity: 1 }}>Explore Demo Workspace</span>
+                <ArrowRight className="w-4 h-4 text-[#0A1230] stroke-[2.5] relative z-10 transition-transform duration-200 group-hover:translate-x-1" />
               </button>
 
-              {/* See How It Works: Secondary = white with navy border */}
+              {/* See How It Works */}
               <button
                 type="button"
                 onClick={() => handleNav('how-it-works')}
-                className="relative overflow-hidden group px-6 py-3 rounded-xl bg-white text-[#14213D] font-semibold text-[15px] tracking-wide transition-colors duration-200 active:scale-[0.98] text-center cursor-pointer border-[1.5px] border-[#14213D] hover:bg-[#F1ECE0]"
+                className="relative overflow-hidden group px-6 py-3 rounded-xl text-[#D4AF37] font-semibold text-[15px] tracking-wide transition-colors duration-300 active:scale-[0.98] text-center cursor-pointer border-[1.5px] border-[#D4AF37]"
               >
-                <span className="relative z-10 font-semibold text-[#14213D]">
+                <span 
+                  className="absolute inset-0 w-0 bg-gradient-to-r from-[#D4AF37] to-[#F3D98B] transition-all duration-300 ease-out group-hover:w-full pointer-events-none -z-0"
+                />
+                <span className="relative z-10 transition-colors duration-200 group-hover:text-[#0A1230]">
                   See How It Works
                 </span>
               </button>
             </div>
 
             {/* Proof Line for Judges: 3 items with 14px chips */}
-            <div className="flex flex-wrap items-center gap-x-5 gap-y-2 text-[14px] font-sans font-medium text-[#3F4A5F]">
+            <div className="flex flex-wrap items-center gap-x-5 gap-y-2 text-[14px] font-sans font-medium" style={{ color: 'rgba(247, 242, 231, 0.88)' }}>
               <motion.div 
                 initial={prefersReduced ? { opacity: 1 } : { opacity: 0, x: -6 }}
                 animate={{ opacity: 1, x: 0 }}

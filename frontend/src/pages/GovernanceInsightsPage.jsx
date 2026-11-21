@@ -72,7 +72,7 @@ export function GovernanceInsightsPage({ setActivePage }) {
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-6 mb-8 border-b border-[#E6DDC8]">
         <div>
           <div className="flex items-center gap-2">
-            <span className="text-xs font-semibold uppercase tracking-wider text-[#614A00]">Continuous Policy Learning</span>
+            <span className="text-xs font-semibold uppercase tracking-wider text-[#8A6A00]">Continuous Policy Learning</span>
             <span className="text-xs px-2.5 py-0.5 rounded-full bg-[#D1FAE5] text-[#065F46] font-semibold border border-[#065F46]/20">
               {insights.label || 'Measured workspace data'}
             </span>

@@ -62,15 +62,15 @@ export function StarfieldCanvas() {
       if (!isVisible) return;
       ctx.clearRect(0, 0, width, height);
 
-      // Render 80 Twinkling Subtle Ambient Specks
+      // Render 80 Twinkling Stars
       for (let i = 0; i < stars.length; i++) {
         const s = stars[i];
         s.twinklePhase += s.twinkleSpeed;
-        const currentAlpha = 0.15 + (Math.sin(s.twinklePhase) * 0.5 + 0.5) * 0.45;
+        const currentAlpha = 0.2 + (Math.sin(s.twinklePhase) * 0.5 + 0.5) * 0.8;
 
         ctx.beginPath();
-        ctx.arc(s.x, s.y, s.radius * 0.9, 0, Math.PI * 2);
-        ctx.fillStyle = `rgba(184, 134, 43, ${currentAlpha * s.baseAlpha * 0.6})`;
+        ctx.arc(s.x, s.y, s.radius, 0, Math.PI * 2);
+        ctx.fillStyle = `rgba(247, 242, 231, ${currentAlpha * s.baseAlpha})`;
         ctx.fill();
       }
 
@@ -88,12 +88,12 @@ export function StarfieldCanvas() {
         if (p.x < 0) p.x = width;
         if (p.x > width) p.x = 0;
 
-        const twinkle = 0.5 + Math.sin(p.twinklePhase) * 0.5;
+        const twinkle = 0.6 + Math.sin(p.twinklePhase) * 0.4;
         ctx.beginPath();
         ctx.arc(p.x, p.y, p.radius, 0, Math.PI * 2);
-        ctx.fillStyle = `rgba(201, 162, 75, ${p.alpha * twinkle * 0.7})`;
-        ctx.shadowBlur = 4;
-        ctx.shadowColor = 'rgba(184, 134, 43, 0.3)';
+        ctx.fillStyle = `rgba(243, 217, 139, ${p.alpha * twinkle})`;
+        ctx.shadowBlur = 6;
+        ctx.shadowColor = 'rgba(212, 175, 55, 0.4)';
         ctx.fill();
         ctx.shadowBlur = 0;
       }

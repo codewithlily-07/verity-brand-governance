@@ -170,11 +170,11 @@ export function DottedGlobeCanvas({ active = true }) {
         ctx.beginPath();
         ctx.arc(projX, projY, Math.max(0.5, size), 0, Math.PI * 2);
 
-        // Light-theme gold and navy dots
-        if (normalizedZ > 0.55) {
-          ctx.fillStyle = `rgba(184, 134, 43, ${Math.min(0.92, alpha * 0.95)})`;
+        // Ivory-gold tint: front dots warmer champagne gold, back dots soft cream ivory
+        if (normalizedZ > 0.6) {
+          ctx.fillStyle = `rgba(243, 217, 139, ${Math.min(1, alpha)})`;
         } else {
-          ctx.fillStyle = `rgba(20, 33, 61, ${Math.min(0.32, alpha * 0.38)})`;
+          ctx.fillStyle = `rgba(247, 242, 231, ${Math.min(1, alpha)})`;
         }
         ctx.fill();
       }

@@ -192,10 +192,10 @@ export default function App() {
       <div 
         className={`min-h-screen flex flex-col font-sans relative ${
           isPublicPage 
-            ? 'bg-[#FAF7F0] text-[#3F4A5F] selection:bg-[#C9A24B]/30 selection:text-[#14213D]' 
-            : 'theme-light text-[#2B3345] selection:bg-[#C9A24B]/30 selection:text-[#14213D]'
+            ? 'bg-[#0A1226] text-[#F4F1E8] selection:bg-[#E2B857]/30 selection:text-white' 
+            : 'theme-light text-[#2B3345] selection:bg-[#E2B857]/30 selection:text-[#0A1226]'
         }`}
-        style={{ background: isPublicPage ? '#FAF7F0' : '#F1ECE0' }}
+        style={!isPublicPage ? { background: 'linear-gradient(180deg, #F6F1E7 0%, #FBF8F1 100%)' } : {}}
       >
         {/* Network Offline Safeguard Banner */}
         <OfflineBanner />

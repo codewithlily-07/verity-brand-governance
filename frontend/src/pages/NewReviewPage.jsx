@@ -250,7 +250,7 @@ export function NewReviewPage({ setActivePage, setSelectedSubmissionId, role }) 
 
       {/* Page Title */}
       <div className="mb-6">
-        <span className="text-xs font-semibold uppercase tracking-wider text-[#614A00]">Governance Engine</span>
+        <span className="text-xs font-semibold uppercase tracking-wider text-[#8A6A00]">Governance Engine</span>
         <h1 className="font-serif text-3xl font-bold text-[#0A1230] mt-1">New review</h1>
         <p className="text-[16px] text-[#5B6478] mt-1">
           Instant multi-layer scan against Verity Learning brand guidelines, facts, and accessibility rules.

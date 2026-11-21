@@ -267,27 +267,27 @@ export function CinematicGlobe({ setActivePage }) {
           </motion.div>
 
           {/* WORDMARK "VERITY" IN LUXURY SERIF WITH WIDE LETTER-SPACING */}
-          <h2 className="font-serif font-bold text-[#14213D] tracking-[0.28em] leading-tight text-xl sm:text-2xl drop-shadow-[0_2px_8px_rgba(201,162,75,0.4)]">
+          <h2 className="font-serif font-bold text-transparent bg-clip-text bg-gradient-to-b from-[#FFF6D0] via-[#F3D98B] to-[#D4AF37] tracking-[0.28em] leading-tight text-xl sm:text-2xl drop-shadow-[0_2px_12px_rgba(212,175,55,0.7)]">
             VERITY
           </h2>
 
           {/* "— BRAND GOVERNANCE —" WITH THIN GOLD LINES */}
           <div className="flex items-center justify-center gap-2 mt-1">
-            <span className="w-5 sm:w-8 h-[1px] bg-gradient-to-r from-transparent to-[#B8862B]" />
-            <span className="text-[9px] sm:text-[10px] font-sans tracking-[0.26em] text-[#B8862B] uppercase font-bold">
+            <span className="w-5 sm:w-8 h-[1px] bg-gradient-to-r from-transparent to-[#D4AF37]" />
+            <span className="text-[9px] sm:text-[10px] font-sans tracking-[0.26em] text-[#D4AF37] uppercase font-semibold">
               BRAND GOVERNANCE
             </span>
-            <span className="w-5 sm:w-8 h-[1px] bg-gradient-to-l from-transparent to-[#B8862B]" />
+            <span className="w-5 sm:w-8 h-[1px] bg-gradient-to-l from-transparent to-[#D4AF37]" />
           </div>
 
           {/* 4-PILLAR TAGLINE: Review · Verify · Align · Govern */}
-          <div className="text-[10px] sm:text-[11px] font-sans tracking-widest text-[#3F4A5F] mt-1 flex items-center font-medium">
+          <div className="text-[10px] sm:text-[11px] font-sans tracking-widest text-[#F7F2E7]/90 mt-1 flex items-center">
             <span>Review</span>
-            <span className="text-[#B8862B] mx-1.5 font-bold">·</span>
+            <span className="text-[#D4AF37] mx-1.5 font-bold">·</span>
             <span>Verify</span>
-            <span className="text-[#B8862B] mx-1.5 font-bold">·</span>
+            <span className="text-[#D4AF37] mx-1.5 font-bold">·</span>
             <span>Align</span>
-            <span className="text-[#B8862B] mx-1.5 font-bold">·</span>
+            <span className="text-[#D4AF37] mx-1.5 font-bold">·</span>
             <span>Govern</span>
           </div>
         </div>
@@ -419,19 +419,19 @@ export function CinematicGlobe({ setActivePage }) {
 
             {/* Document Plaque */}
             <div 
-              className="flex items-center gap-2.5 px-4 py-2.5 rounded-xl border border-[#E3DCCB] shadow-[0_8px_24px_rgba(20,33,61,0.08),0_0_20px_rgba(184,134,43,0.25)] backdrop-blur-md"
+              className="flex items-center gap-2.5 px-4 py-2.5 rounded-xl border border-[#D4AF37] shadow-[0_0_35px_rgba(212,175,55,0.85)] backdrop-blur-md"
               style={{
-                backgroundColor: 'rgba(255, 255, 255, 0.95)',
+                backgroundColor: 'rgba(8, 15, 42, 0.95)',
               }}
             >
-              <div className="w-7 h-7 rounded-lg bg-[#FAF7F0] border border-[#B8862B]/50 flex items-center justify-center">
-                <FileText className="w-4 h-4 text-[#B8862B]" />
+              <div className="w-7 h-7 rounded-lg bg-[#D4AF37]/20 border border-[#D4AF37]/60 flex items-center justify-center">
+                <FileText className="w-4 h-4 text-[#FFF6D0]" />
               </div>
               <div className="space-y-1 pr-1">
-                <div className="w-14 h-1.5 rounded-full bg-gradient-to-r from-[#C9A24B] to-[#B8862B]" />
-                <div className="w-9 h-1 rounded-full bg-[#E3DCCB]" />
+                <div className="w-14 h-1.5 rounded-full bg-gradient-to-r from-[#FFF6D0] via-[#F3D98B] to-[#D4AF37]" />
+                <div className="w-9 h-1 rounded-full bg-[#9AA6C7]/70" />
               </div>
-              <div className="w-6 h-6 rounded-full bg-gradient-to-r from-[#C9A24B] via-[#E2B857] to-[#C9A24B] text-[#14213D] flex items-center justify-center shadow-[0_0_10px_rgba(184,134,43,0.4)]">
+              <div className="w-6 h-6 rounded-full bg-gradient-to-r from-[#D4AF37] via-[#FFF2B2] to-[#D4AF37] text-[#050814] flex items-center justify-center shadow-[0_0_14px_#F3D98B]">
                 <Check className="w-4 h-4 stroke-[3]" />
               </div>
             </div>
@@ -489,24 +489,24 @@ export function CinematicGlobe({ setActivePage }) {
           style={{
             top: '4%',
             left: '-14%',
-            backgroundColor: 'rgba(255, 255, 255, 0.95)',
+            backgroundColor: 'rgba(8, 15, 42, 0.85)',
             backdropFilter: 'blur(16px)',
             WebkitBackdropFilter: 'blur(16px)',
-            border: '1px solid #E3DCCB',
-            boxShadow: '0 8px 24px rgba(20, 33, 61, 0.08), 0 0 16px rgba(184, 134, 43, 0.12)',
+            border: '1px solid rgba(212, 175, 55, 0.45)',
+            boxShadow: '0 12px 32px rgba(0,0,0,0.65), 0 0 20px rgba(212,175,55,0.25)',
           }}
         >
           {/* Subtle Document Stack Graphic Watermark behind card */}
-          <div className="absolute -left-6 top-1/2 -translate-y-1/2 w-10 h-12 border border-[#B8862B]/20 rounded-lg -rotate-12 pointer-events-none -z-10 opacity-35" />
+          <div className="absolute -left-6 top-1/2 -translate-y-1/2 w-10 h-12 border border-[#D4AF37]/30 rounded-lg -rotate-12 pointer-events-none -z-10 opacity-50" />
 
-          <div className="w-9 h-9 rounded-xl bg-[#FAF7F0] border border-[#B8862B]/50 flex items-center justify-center text-[#B8862B] shrink-0 shadow-sm group-hover:border-[#B8862B]">
-            <FileSearch className="w-4 h-4 text-[#B8862B]" />
+          <div className="w-9 h-9 rounded-xl bg-gradient-to-br from-[#162758] to-[#070D22] border border-[#D4AF37] flex items-center justify-center text-[#FFF6D0] shrink-0 shadow-[0_0_16px_rgba(212,175,55,0.4)] group-hover:border-[#FFF6D0]">
+            <FileSearch className="w-4 h-4 text-[#F3D98B]" />
           </div>
           <div className="text-left leading-tight pr-1">
-            <h4 className="text-[14px] font-serif font-bold text-[#14213D] tracking-wide group-hover:text-[#B8862B] transition-colors">
+            <h4 className="text-[14px] font-serif font-bold text-[#FFF6D0] tracking-wide group-hover:text-[#F3D98B] transition-colors">
               Review
             </h4>
-            <p className="text-[12px] text-[#3F4A5F] font-sans whitespace-nowrap mt-0.5">
+            <p className="text-[12px] text-[#F7F2E7]/85 font-sans whitespace-nowrap mt-0.5">
               Analyse your content
             </p>
           </div>
@@ -525,24 +525,24 @@ export function CinematicGlobe({ setActivePage }) {
           style={{
             top: '4%',
             right: '-14%',
-            backgroundColor: 'rgba(255, 255, 255, 0.95)',
+            backgroundColor: 'rgba(8, 15, 42, 0.85)',
             backdropFilter: 'blur(16px)',
             WebkitBackdropFilter: 'blur(16px)',
-            border: '1px solid #E3DCCB',
-            boxShadow: '0 8px 24px rgba(20, 33, 61, 0.08), 0 0 16px rgba(184, 134, 43, 0.12)',
+            border: '1px solid rgba(212, 175, 55, 0.45)',
+            boxShadow: '0 12px 32px rgba(0,0,0,0.65), 0 0 20px rgba(212,175,55,0.25)',
           }}
         >
           {/* Subtle Checklist Card Watermark behind card */}
-          <div className="absolute -right-6 top-1/2 -translate-y-1/2 w-10 h-12 border border-[#B8862B]/20 rounded-lg rotate-12 pointer-events-none -z-10 opacity-35" />
+          <div className="absolute -right-6 top-1/2 -translate-y-1/2 w-10 h-12 border border-[#D4AF37]/30 rounded-lg rotate-12 pointer-events-none -z-10 opacity-50" />
 
-          <div className="w-9 h-9 rounded-xl bg-[#FAF7F0] border border-[#B8862B]/50 flex items-center justify-center text-[#B8862B] shrink-0 shadow-sm group-hover:border-[#B8862B]">
-            <ShieldCheck className="w-4 h-4 text-[#B8862B]" />
+          <div className="w-9 h-9 rounded-xl bg-gradient-to-br from-[#162758] to-[#070D22] border border-[#D4AF37] flex items-center justify-center text-[#FFF6D0] shrink-0 shadow-[0_0_16px_rgba(212,175,55,0.4)] group-hover:border-[#FFF6D0]">
+            <ShieldCheck className="w-4 h-4 text-[#F3D98B]" />
           </div>
           <div className="text-left leading-tight pr-1">
-            <h4 className="text-[14px] font-serif font-bold text-[#14213D] tracking-wide group-hover:text-[#B8862B] transition-colors">
+            <h4 className="text-[14px] font-serif font-bold text-[#FFF6D0] tracking-wide group-hover:text-[#F3D98B] transition-colors">
               Verify
             </h4>
-            <p className="text-[12px] text-[#3F4A5F] font-sans whitespace-nowrap mt-0.5">
+            <p className="text-[12px] text-[#F7F2E7]/85 font-sans whitespace-nowrap mt-0.5">
               Check facts & claims
             </p>
           </div>
@@ -561,24 +561,24 @@ export function CinematicGlobe({ setActivePage }) {
           style={{
             bottom: '14%',
             left: '-14%',
-            backgroundColor: 'rgba(255, 255, 255, 0.95)',
+            backgroundColor: 'rgba(8, 15, 42, 0.85)',
             backdropFilter: 'blur(16px)',
             WebkitBackdropFilter: 'blur(16px)',
-            border: '1px solid #E3DCCB',
-            boxShadow: '0 8px 24px rgba(20, 33, 61, 0.08), 0 0 16px rgba(184, 134, 43, 0.12)',
+            border: '1px solid rgba(212, 175, 55, 0.45)',
+            boxShadow: '0 12px 32px rgba(0,0,0,0.65), 0 0 20px rgba(212,175,55,0.25)',
           }}
         >
           {/* Subtle Stacked Layers Watermark behind card */}
-          <div className="absolute -left-6 top-1/2 -translate-y-1/2 w-10 h-10 border border-[#B8862B]/20 rounded-md -rotate-6 pointer-events-none -z-10 opacity-35" />
+          <div className="absolute -left-6 top-1/2 -translate-y-1/2 w-10 h-10 border border-[#D4AF37]/30 rounded-md -rotate-6 pointer-events-none -z-10 opacity-50" />
 
-          <div className="w-9 h-9 rounded-xl bg-[#FAF7F0] border border-[#B8862B]/50 flex items-center justify-center text-[#B8862B] shrink-0 shadow-sm group-hover:border-[#B8862B]">
-            <Layers className="w-4 h-4 text-[#B8862B]" />
+          <div className="w-9 h-9 rounded-xl bg-gradient-to-br from-[#162758] to-[#070D22] border border-[#D4AF37] flex items-center justify-center text-[#FFF6D0] shrink-0 shadow-[0_0_16px_rgba(212,175,55,0.4)] group-hover:border-[#FFF6D0]">
+            <Layers className="w-4 h-4 text-[#F3D98B]" />
           </div>
           <div className="text-left leading-tight pr-1">
-            <h4 className="text-[14px] font-serif font-bold text-[#14213D] tracking-wide group-hover:text-[#B8862B] transition-colors">
+            <h4 className="text-[14px] font-serif font-bold text-[#FFF6D0] tracking-wide group-hover:text-[#F3D98B] transition-colors">
               Align
             </h4>
-            <p className="text-[12px] text-[#3F4A5F] font-sans whitespace-nowrap mt-0.5">
+            <p className="text-[12px] text-[#F7F2E7]/85 font-sans whitespace-nowrap mt-0.5">
               Keep it on brand
             </p>
           </div>
@@ -597,24 +597,24 @@ export function CinematicGlobe({ setActivePage }) {
           style={{
             bottom: '14%',
             right: '-14%',
-            backgroundColor: 'rgba(255, 255, 255, 0.95)',
+            backgroundColor: 'rgba(8, 15, 42, 0.85)',
             backdropFilter: 'blur(16px)',
             WebkitBackdropFilter: 'blur(16px)',
-            border: '1px solid #E3DCCB',
-            boxShadow: '0 8px 24px rgba(20, 33, 61, 0.08), 0 0 16px rgba(184, 134, 43, 0.12)',
+            border: '1px solid rgba(212, 175, 55, 0.45)',
+            boxShadow: '0 12px 32px rgba(0,0,0,0.65), 0 0 20px rgba(212,175,55,0.25)',
           }}
         >
           {/* Subtle Telemetry Bars Watermark behind card */}
-          <div className="absolute -right-6 top-1/2 -translate-y-1/2 w-10 h-10 border border-[#B8862B]/20 rounded-md rotate-6 pointer-events-none -z-10 opacity-35" />
+          <div className="absolute -right-6 top-1/2 -translate-y-1/2 w-10 h-10 border border-[#D4AF37]/30 rounded-md rotate-6 pointer-events-none -z-10 opacity-50" />
 
-          <div className="w-9 h-9 rounded-xl bg-[#FAF7F0] border border-[#B8862B]/50 flex items-center justify-center text-[#B8862B] shrink-0 shadow-sm group-hover:border-[#B8862B]">
-            <TrendingUp className="w-4 h-4 text-[#B8862B]" />
+          <div className="w-9 h-9 rounded-xl bg-gradient-to-br from-[#162758] to-[#070D22] border border-[#D4AF37] flex items-center justify-center text-[#FFF6D0] shrink-0 shadow-[0_0_16px_rgba(212,175,55,0.4)] group-hover:border-[#FFF6D0]">
+            <TrendingUp className="w-4 h-4 text-[#F3D98B]" />
           </div>
           <div className="text-left leading-tight pr-1">
-            <h4 className="text-[14px] font-serif font-bold text-[#14213D] tracking-wide group-hover:text-[#B8862B] transition-colors">
+            <h4 className="text-[14px] font-serif font-bold text-[#FFF6D0] tracking-wide group-hover:text-[#F3D98B] transition-colors">
               Govern
             </h4>
-            <p className="text-[12px] text-[#3F4A5F] font-sans whitespace-nowrap mt-0.5">
+            <p className="text-[12px] text-[#F7F2E7]/85 font-sans whitespace-nowrap mt-0.5">
               Ensure safe publishing
             </p>
           </div>

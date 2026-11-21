@@ -46,21 +46,25 @@ export function QualityPage({ setActivePage }) {
     <div className="w-full min-h-screen bg-[#FAF8F2] text-[#14203D]">
 
       {/* ==================================================
-          SECTION 1: HERO (LIGHT WARM IVORY #FAF7F0)
+          SECTION 1: HERO (NAVY LIKE: #0A1226 to #101B35 with gold glow)
           ================================================== */}
       <section
-        className="relative py-12 px-4 sm:px-6 lg:px-8 border-b border-[#E3DCCB] bg-[#FAF7F0]"
+        className="relative py-12 px-4 sm:px-6 lg:px-8 border-b border-[#F3EAD3]/20"
+        style={{
+          background: 'linear-gradient(180deg, #0A1226 0%, #101B35 100%)',
+          backgroundImage: 'radial-gradient(ellipse at 85% 10%, rgba(226,184,87,0.12), transparent 55%), linear-gradient(180deg, #0A1226 0%, #101B35 100%)',
+        }}
       >
         <div className="max-w-7xl mx-auto flex flex-col md:flex-row md:items-center justify-between gap-6">
           <div className="max-w-3xl">
-            <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full border border-[#C9A24B]/40 text-sm font-sans font-semibold text-[#8A6A24] tracking-wider uppercase mb-3 bg-[#FAF7F0] shadow-sm">
-              <BarChart2 className="w-4 h-4 text-[#B8862B]" />
+            <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full border border-[#E2B857]/40 text-sm font-sans font-semibold text-[#E2B857] tracking-wider uppercase mb-3 bg-[#0A1226]/80 shadow-sm">
+              <BarChart2 className="w-4 h-4 text-[#E2B857]" />
               <span>ROUND 3 · EMPIRICAL MEASUREMENT PLAN</span>
             </div>
-            <h1 className="font-serif text-3xl sm:text-4xl font-semibold text-[#14213D] tracking-tight">
-              Labelled test set and <span className="text-[#B8862B]">engine quality</span>
+            <h1 className="font-serif text-3xl sm:text-4xl font-semibold text-[#FAF8F2] tracking-tight">
+              Labelled test set and <span className="text-[#E2B857]">engine quality</span>
             </h1>
-            <p className="text-[17px] text-[#3F4A5F] mt-2 leading-relaxed font-sans">
+            <p className="text-[17px] text-[#D5DBEE] mt-2 leading-relaxed font-sans">
               We run our engine on a small labelled set of drafts and report what it actually catches.
             </p>
           </div>
@@ -69,7 +73,7 @@ export function QualityPage({ setActivePage }) {
             <button
               onClick={handleRunEvaluation}
               disabled={running}
-              className="px-6 py-3 rounded-xl font-bold text-sm text-[#14213D] bg-[#C9A24B] hover:bg-[#B8862B] hover:text-white shadow-[0_4px_16px_rgba(201,162,75,0.25)] flex items-center gap-2.5 transition-all hover:scale-105 active:scale-95 disabled:opacity-60 disabled:hover:scale-100 cursor-pointer outline-none focus-visible:ring-2 focus-visible:ring-[#C9A24B]"
+              className="px-6 py-3 rounded-xl font-bold text-sm text-[#101B35] bg-[#E2B857] hover:bg-[#F3EAD3] shadow-[0_2px_12px_rgba(226,184,87,0.35)] flex items-center gap-2.5 transition-all hover:scale-105 active:scale-95 disabled:opacity-60 disabled:hover:scale-100 cursor-pointer outline-none focus-visible:ring-2 focus-visible:ring-[#E2B857]"
               aria-label="Run live evaluation against labelled benchmark drafts"
             >
               <RefreshCw className={`w-4 h-4 ${running ? 'animate-spin' : ''}`} />
@@ -283,7 +287,7 @@ export function QualityPage({ setActivePage }) {
                 >
                   <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 mb-4 pb-3 border-b border-[#F3EAD3]">
                     <div className="flex items-center gap-3">
-                      <span className="w-8 h-8 rounded-full bg-[#FAF7F0] border border-[#C9A24B]/40 text-[#7A5B18] flex items-center justify-center text-sm font-bold shadow-sm">
+                      <span className="w-8 h-8 rounded-full bg-[#101B35] text-[#E2B857] flex items-center justify-center text-sm font-bold">
                         0{idx + 1}
                       </span>
                       <div>
