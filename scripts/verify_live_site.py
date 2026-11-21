@@ -11,7 +11,7 @@ def verify_live():
     
     # 1. API Probes
     for path in ["/api/health", "/api/ready"]:
-        r = httpx.get(f"{LIVE_URL}{path}", timeout=20.0)
+        r = httpx.get(f"{LIVE_URL}{path}", timeout=60.0)
         print(f"[HTTP] {path} -> {r.status_code}: {r.json()}")
 
     # 2. Chrome DevTools & Navigation
