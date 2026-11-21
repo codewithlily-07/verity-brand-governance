@@ -164,7 +164,7 @@ export function DashboardPage({ setActivePage, setSelectedSubmissionId }) {
       title: 'Configure Brand Knowledge Hub',
       desc: 'Verify rules R1–R7 and institutional facts F-01–F-03 are loaded.',
       completed: true,
-      action: () => setActivePage('brand')
+      action: () => setActivePage('brand-hub')
     },
     {
       id: 'submit_draft',

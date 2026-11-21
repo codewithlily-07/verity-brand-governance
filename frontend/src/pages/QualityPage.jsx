@@ -48,7 +48,7 @@ export function QualityPage({ setActivePage }) {
       {/* ==================================================
           SECTION 1: HERO (NAVY LIKE: #0A1226 to #101B35 with gold glow)
           ================================================== */}
-      <section 
+      <section
         className="relative py-12 px-4 sm:px-6 lg:px-8 border-b border-[#F3EAD3]/20"
         style={{
           background: 'linear-gradient(180deg, #0A1226 0%, #101B35 100%)',

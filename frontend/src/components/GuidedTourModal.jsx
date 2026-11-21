@@ -1,18 +1,20 @@
 import React, { useState, useEffect } from 'react';
 import { BookOpen, FileText, CheckCircle2, ShieldCheck, ArrowRight, ArrowLeft, X, Sparkles } from 'lucide-react';
 
-export function GuidedTourModal({ activePage, setActivePage }) {
+export function GuidedTourModal({ activePage, setActivePage, isPublicPage = false }) {
   const [isOpen, setIsOpen] = useState(false);
   const [step, setStep] = useState(0);
 
   useEffect(() => {
+    // Do not auto-popup over public marketing / landing pages
+    if (isPublicPage) return;
     try {
       const completed = localStorage.getItem('verity_tour_completed');
       if (!completed) {
         setIsOpen(true);
       }
     } catch (e) {}
-  }, []);
+  }, [isPublicPage]);
 
   // Listen for custom event to trigger tour anytime
   useEffect(() => {
@@ -24,12 +26,22 @@ export function GuidedTourModal({ activePage, setActivePage }) {
     return () => window.removeEventListener('verity_trigger_tour', handleTriggerTour);
   }, []);
 
+  // Escape key closes tour
+  useEffect(() => {
+    if (!isOpen) return;
+    const handleKeyDown = (e) => {
+      if (e.key === 'Escape') handleClose();
+    };
+    window.addEventListener('keydown', handleKeyDown);
+    return () => window.removeEventListener('keydown', handleKeyDown);
+  }, [isOpen]);
+
   const steps = [
     {
       title: 'Brand Knowledge Hub',
       badge: 'Step 1 of 4: Setup & Rules',
       icon: BookOpen,
-      page: 'brand',
+      page: 'brand-hub',
       desc: 'Define institutional rules R1–R7, approved facts F-01–F-03, and brand voice guidelines. The 3-layer engine enforces these rules automatically.',
       tip: 'You can test any rule interactively or export/import your complete Brand Kit in JSON.'
     },
@@ -90,8 +102,16 @@ export function GuidedTourModal({ activePage, setActivePage }) {
   const Icon = current.icon;
 
   return (
-    <div className="fixed inset-0 z-50 bg-black/60 backdrop-blur-sm flex items-center justify-center p-4 animate-fadeIn">
-      <div className="bg-white rounded-3xl max-w-lg w-full p-6 shadow-2xl border border-[#D4AF37]/50 text-xs text-[#0A1230]">
+    <div 
+      className="fixed inset-0 z-50 bg-black/60 backdrop-blur-sm flex items-center justify-center p-4 animate-fadeIn"
+      onClick={handleClose}
+      role="dialog"
+      aria-modal="true"
+    >
+      <div 
+        className="bg-white rounded-3xl max-w-lg w-full p-6 shadow-2xl border border-[#D4AF37]/50 text-xs text-[#0A1230]"
+        onClick={(e) => e.stopPropagation()}
+      >
         
         {/* Header */}
         <div className="flex items-center justify-between pb-3 border-b border-[#E6DDC8]">

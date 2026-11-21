@@ -69,6 +69,10 @@ export default function App() {
     ];
     if (rawPath === 'trust-security' || rawPath === 'trust') {
       setActivePage('trust-security');
+    } else if (rawPath === 'brand' || rawPath === 'brand-hub') {
+      setActivePage('brand-hub');
+    } else if (rawPath === 'new' || rawPath === 'new-review') {
+      setActivePage('new-review');
     } else if (validPages.includes(rawPath)) {
       setActivePage(rawPath);
     }
@@ -77,7 +81,7 @@ export default function App() {
   // Listen to browser Back/Forward navigation
   useEffect(() => {
     const onPop = () => {
-      const p = window.location.pathname.replace(/^\//, '').toLowerCase() || 'landing';
+      let p = window.location.pathname.replace(/^\//, '').toLowerCase() || 'landing';
       const params = new URLSearchParams(window.location.search);
       const id = params.get('id') || params.get('submission_id');
       if (id) {
@@ -85,6 +89,8 @@ export default function App() {
         sessionStorage.setItem('verity_last_submission_id', id);
       }
       if (p === 'trust') setActivePage('trust-security');
+      else if (p === 'brand') setActivePage('brand-hub');
+      else if (p === 'new') setActivePage('new-review');
       else setActivePage(p);
     };
     window.addEventListener('popstate', onPop);
@@ -103,7 +109,8 @@ export default function App() {
   };
 
   const navigateTo = (page, explicitId = null) => {
-    setActivePage(page);
+    const target = page === 'brand' ? 'brand-hub' : (page === 'trust' ? 'trust-security' : (page === 'new' ? 'new-review' : page));
+    setActivePage(target);
     const subId = explicitId || selectedSubmissionId;
     if (explicitId) {
       setSelectedSubmissionId(explicitId);
@@ -111,8 +118,8 @@ export default function App() {
         sessionStorage.setItem('verity_last_submission_id', explicitId);
       }
     }
-    let urlPath = page === 'landing' ? '/' : `/${page}`;
-    if (subId && ['results', 'correction', 'review'].includes(page)) {
+    let urlPath = target === 'landing' ? '/' : `/${target}`;
+    if (subId && ['results', 'correction', 'review'].includes(target)) {
       urlPath += `?id=${encodeURIComponent(subId)}`;
     }
     window.history.pushState(null, '', urlPath);
@@ -276,8 +283,8 @@ export default function App() {
             setSelectedSubmissionId={setSelectedSubmissionId} 
           />
         )}
-        {activePage === 'brand-hub' && <BrandHubPage />}
-        {activePage === 'new-review' && (
+        {(activePage === 'brand-hub' || activePage === 'brand') && <BrandHubPage />}
+        {(activePage === 'new-review' || activePage === 'new') && (
           <NewReviewPage 
             setActivePage={navigateTo} 
             setSelectedSubmissionId={setSelectedSubmissionId} 
@@ -342,6 +349,7 @@ export default function App() {
       <GuidedTourModal
         activePage={activePage}
         setActivePage={navigateTo}
+        isPublicPage={isPublicPage}
       />
 
       <FeedbackWidget />

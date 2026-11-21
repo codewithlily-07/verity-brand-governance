@@ -167,8 +167,8 @@ export function AnalysisResultsPage({ submissionId, setActivePage, role }) {
           Submit a new draft or select an existing draft from your dashboard to view findings.
         </p>
         <button
-          onClick={() => setActivePage('new')}
-          className="px-5 py-2.5 rounded-xl bg-[#0A1230] text-[#D4AF37] text-xs font-bold hover:bg-[#0A1230]/90 transition-all shadow-sm"
+          onClick={() => setActivePage('new-review')}
+          className="px-5 py-2.5 rounded-xl bg-[#0A1230] text-[#D4AF37] text-xs font-bold hover:bg-[#0A1230]/90 transition-all shadow-sm cursor-pointer"
         >
           Submit New Review
         </button>

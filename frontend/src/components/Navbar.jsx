@@ -2,7 +2,7 @@ import React, { useState, useEffect, useRef } from 'react';
 import { 
   Shield, Sparkles, User, RefreshCw, Bell, Command, 
   HelpCircle, CheckCircle2, ExternalLink, LogIn, LogOut, Check,
-  ArrowLeft, ChevronDown, X
+  ArrowLeft, ArrowRight, ChevronDown, X
 } from 'lucide-react';
 import { markNotificationRead, clearAllNotifications, switchRole } from '../lib/api';
 
