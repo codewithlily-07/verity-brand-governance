@@ -6,6 +6,8 @@ import { Footer } from './components/Footer';
 import { CommandPalette } from './components/CommandPalette';
 import { FeedbackWidget } from './components/FeedbackWidget';
 import { OnboardingWizard } from './components/OnboardingWizard';
+import { ErrorBoundary } from './components/ErrorBoundary';
+import { OfflineBanner } from './components/OfflineBanner';
 import { LandingPage } from './pages/LandingPage';
 import { DashboardPage } from './pages/DashboardPage';
 import { BrandHubPage } from './pages/BrandHubPage';
@@ -32,7 +34,15 @@ import { initSession, resetDemo, getMe, logoutUser } from './lib/api';
 export default function App() {
   const [activePage, setActivePage] = useState('landing');
   const [role, setRole] = useState('creator');
-  const [selectedSubmissionId, setSelectedSubmissionId] = useState(null);
+  const [selectedSubmissionId, setSelectedSubmissionId] = useState(() => {
+    if (typeof window !== 'undefined') {
+      const params = new URLSearchParams(window.location.search);
+      const urlId = params.get('id') || params.get('submission_id');
+      if (urlId) return urlId;
+      return sessionStorage.getItem('verity_last_submission_id') || null;
+    }
+    return null;
+  });
   const [isInitializing, setIsInitializing] = useState(true);
   const [isCommandPaletteOpen, setIsCommandPaletteOpen] = useState(false);
   const [isOnboardingOpen, setIsOnboardingOpen] = useState(false);
@@ -40,9 +50,16 @@ export default function App() {
   const [currentUser, setCurrentUser] = useState(null);
   const [isWakingServer, setIsWakingServer] = useState(false);
 
-  // Sync initial URL pathname
+  // Sync initial URL pathname & deep link query parameters
   useEffect(() => {
     const rawPath = window.location.pathname.replace(/^\//, '').toLowerCase();
+    const params = new URLSearchParams(window.location.search);
+    const id = params.get('id') || params.get('submission_id');
+    if (id) {
+      setSelectedSubmissionId(id);
+      sessionStorage.setItem('verity_last_submission_id', id);
+    }
+
     const validPages = [
       'product', 'how-it-works', 'trust-security', 'resources', 'quality',
       'login', 'register', 'forgot-password', 'profile', 'dashboard',
@@ -60,6 +77,12 @@ export default function App() {
   useEffect(() => {
     const onPop = () => {
       const p = window.location.pathname.replace(/^\//, '').toLowerCase() || 'landing';
+      const params = new URLSearchParams(window.location.search);
+      const id = params.get('id') || params.get('submission_id');
+      if (id) {
+        setSelectedSubmissionId(id);
+        sessionStorage.setItem('verity_last_submission_id', id);
+      }
       if (p === 'trust') setActivePage('trust-security');
       else setActivePage(p);
     };
@@ -78,9 +101,19 @@ export default function App() {
     navigateTo(targetPage);
   };
 
-  const navigateTo = (page) => {
+  const navigateTo = (page, explicitId = null) => {
     setActivePage(page);
-    const urlPath = page === 'landing' ? '/' : `/${page}`;
+    const subId = explicitId || selectedSubmissionId;
+    if (explicitId) {
+      setSelectedSubmissionId(explicitId);
+      if (typeof window !== 'undefined') {
+        sessionStorage.setItem('verity_last_submission_id', explicitId);
+      }
+    }
+    let urlPath = page === 'landing' ? '/' : `/${page}`;
+    if (subId && ['results', 'correction', 'review'].includes(page)) {
+      urlPath += `?id=${encodeURIComponent(subId)}`;
+    }
     window.history.pushState(null, '', urlPath);
     window.scrollTo({ top: 0, behavior: 'smooth' });
   };
@@ -147,15 +180,19 @@ export default function App() {
   ].includes(activePage);
 
   return (
-    <div 
-      className={`min-h-screen flex flex-col font-sans relative ${
-        isPublicPage 
-          ? (activePage === 'quality' ? 'bg-[#F7F2E7]' : 'bg-[#050A1F] text-[#F7F2E7]') + ' selection:bg-[#D4AF37]/30 selection:text-white' 
-          : 'theme-light text-[#2B3345] selection:bg-[#D4AF37]/30 selection:text-[#0A1230]'
-      }`}
-      style={!isPublicPage ? { background: 'linear-gradient(180deg, #F6F1E7 0%, #FBF8F1 100%)' } : {}}
-    >
-      {/* Friendly Cold Start Waking Banner */}
+    <ErrorBoundary>
+      <div 
+        className={`min-h-screen flex flex-col font-sans relative ${
+          isPublicPage 
+            ? (activePage === 'quality' ? 'bg-[#F7F2E7]' : 'bg-[#050A1F] text-[#F7F2E7]') + ' selection:bg-[#D4AF37]/30 selection:text-white' 
+            : 'theme-light text-[#2B3345] selection:bg-[#D4AF37]/30 selection:text-[#0A1230]'
+        }`}
+        style={!isPublicPage ? { background: 'linear-gradient(180deg, #F6F1E7 0%, #FBF8F1 100%)' } : {}}
+      >
+        {/* Network Offline Safeguard Banner */}
+        <OfflineBanner />
+
+        {/* Friendly Cold Start Waking Banner */}
       {isWakingServer && (
         <div className="fixed top-0 left-0 right-0 z-50 bg-[#0A1230] border-b border-[#D4AF37]/50 text-[#F7F2E7] px-4 py-2.5 shadow-2xl flex items-center justify-between gap-3 text-sm">
           <div className="flex items-center justify-center gap-3 mx-auto">
@@ -315,6 +352,7 @@ export default function App() {
           </div>
         </footer>
       )}
-    </div>
+      </div>
+    </ErrorBoundary>
   );
 }
