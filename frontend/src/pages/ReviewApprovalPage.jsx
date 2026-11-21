@@ -400,7 +400,7 @@ export function ReviewApprovalPage({ submissionId, setActivePage, role, onRoleCh
                         <CheckCircle className="w-5 h-5 text-[#065F46] flex-shrink-0" />
                         <div>
                           <strong className="block font-bold">No findings, clean draft</strong>
-                          <span>Zero violations detected. Content is 100% compliant with active brand rules and verified facts.</span>
+                          <span>Zero violations detected. Content is fully verified against active brand rules and approved facts.</span>
                         </div>
                       </div>
                     ) : (
