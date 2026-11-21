@@ -6,6 +6,7 @@ import { Footer } from './components/Footer';
 import { CommandPalette } from './components/CommandPalette';
 import { FeedbackWidget } from './components/FeedbackWidget';
 import { OnboardingWizard } from './components/OnboardingWizard';
+import { GuidedTourModal } from './components/GuidedTourModal';
 import { ErrorBoundary } from './components/ErrorBoundary';
 import { OfflineBanner } from './components/OfflineBanner';
 import { LandingPage } from './pages/LandingPage';
@@ -335,6 +336,11 @@ export default function App() {
       <OnboardingWizard
         isOpen={isOnboardingOpen}
         onClose={() => setIsOnboardingOpen(false)}
+        setActivePage={navigateTo}
+      />
+
+      <GuidedTourModal
+        activePage={activePage}
         setActivePage={navigateTo}
       />
 
