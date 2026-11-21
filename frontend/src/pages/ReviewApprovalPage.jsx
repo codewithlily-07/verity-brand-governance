@@ -335,15 +335,27 @@ export function ReviewApprovalPage({ submissionId, setActivePage, role, onRoleCh
                       </span>
                     </div>
 
-                    <button
-                      onClick={handleVerifyIntegrity}
-                      disabled={verifyingIntegrity}
-                      className="px-3 py-1.5 rounded-lg border border-[#0A1230] bg-white hover:bg-[#F6F1E7] text-[#0A1230] font-semibold text-xs transition-colors flex items-center gap-1 shadow-sm"
-                      title="Recompute SHA-256 on server to confirm database integrity"
-                    >
-                      <Hash className={`w-3.5 h-3.5 ${verifyingIntegrity ? 'animate-spin' : ''}`} />
-                      <span>{verifyingIntegrity ? 'Verifying...' : 'Verify integrity'}</span>
-                    </button>
+                    <div className="flex items-center gap-2">
+                      <a
+                        href={`/api/submissions/${currentSubId}/audit.csv`}
+                        download={`audit-${currentSubId?.slice(0, 8)}.csv`}
+                        className="px-3 py-1.5 rounded-lg border border-[#E6DDC8] bg-white hover:bg-[#F6F1E7] text-[#0A1230] font-semibold text-xs transition-colors flex items-center gap-1 shadow-sm"
+                        title="Download submission audit trail CSV"
+                      >
+                        <Download className="w-3.5 h-3.5 text-[#8A6A00]" />
+                        <span>Audit CSV</span>
+                      </a>
+
+                      <button
+                        onClick={handleVerifyIntegrity}
+                        disabled={verifyingIntegrity}
+                        className="px-3 py-1.5 rounded-lg border border-[#0A1230] bg-white hover:bg-[#F6F1E7] text-[#0A1230] font-semibold text-xs transition-colors flex items-center gap-1 shadow-sm"
+                        title="Recompute SHA-256 on server to confirm database integrity"
+                      >
+                        <Hash className={`w-3.5 h-3.5 ${verifyingIntegrity ? 'animate-spin' : ''}`} />
+                        <span>{verifyingIntegrity ? 'Verifying...' : 'Verify integrity'}</span>
+                      </button>
+                    </div>
                   </div>
 
                   {integrityResult && (
@@ -773,9 +785,19 @@ export function ReviewApprovalPage({ submissionId, setActivePage, role, onRoleCh
           {/* Audit Ledger Sub-Tab */}
           {historySubTab === 'audit' && (
             <div className="bg-white rounded-[14px] border border-[#E6DDC8] shadow-[0_1px_2px_rgba(10,18,48,0.06)] overflow-hidden">
-              <div className="p-4 border-b border-[#E6DDC8]">
-                <h3 className="font-serif font-bold text-[#0A1230] text-sm">System Audit Trail</h3>
-                <p className="text-xs text-[#5B6478]">Every submission creation, version snapshot, and review decision is cryptographically logged.</p>
+              <div className="p-4 border-b border-[#E6DDC8] flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+                <div>
+                  <h3 className="font-serif font-bold text-[#0A1230] text-sm">System Audit Trail</h3>
+                  <p className="text-xs text-[#5B6478]">Every submission creation, version snapshot, and review decision is cryptographically logged.</p>
+                </div>
+                <a
+                  href="/api/audit/export.csv"
+                  download="verity-workspace-audit-ledger.csv"
+                  className="px-3.5 py-1.5 rounded-lg border border-[#E6DDC8] bg-white hover:bg-[#FAF8F3] text-[#0A1230] font-semibold text-xs transition-colors flex items-center gap-1.5 shadow-sm"
+                >
+                  <Download className="w-3.5 h-3.5 text-[#8A6A00]" />
+                  <span>Export Audit (CSV)</span>
+                </a>
               </div>
 
               <div className="divide-y divide-[#E6DDC8]/60 text-xs">

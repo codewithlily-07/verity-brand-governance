@@ -1,5 +1,8 @@
 from typing import Dict, Any, List, Optional
-from fastapi import APIRouter, Depends, HTTPException, Request
+import csv
+import io
+import json
+from fastapi import APIRouter, Depends, HTTPException, Request, Response
 from sqlalchemy.orm import Session
 from datetime import datetime, timezone
 from backend.app.core.database import get_db
@@ -204,3 +207,81 @@ def add_comment(
         "comment_text": comment.comment_text,
         "created_at": comment.created_at
     }
+
+@router.get("/{submission_id}/audit.csv")
+def export_submission_audit_csv(submission_id: str, db: Session = Depends(get_db)):
+    sub = db.query(Submission).filter(Submission.id == submission_id).first()
+    if not sub:
+        raise HTTPException(status_code=404, detail="Submission not found")
+        
+    events = db.query(AuditEvent).filter(
+        AuditEvent.submission_id == submission_id
+    ).order_by(AuditEvent.timestamp.asc()).all()
+    
+    output = io.StringIO()
+    writer = csv.writer(output)
+    writer.writerow([
+        "Event ID", "Timestamp (UTC)", "Event Type", "Actor Name", "Actor Role",
+        "Version Number", "Content Hash", "Details"
+    ])
+    for e in events:
+        details = e.details_json or {}
+        hash_val = details.get("content_hash") or details.get("hash") or ""
+        writer.writerow([
+            e.id,
+            e.timestamp.isoformat() if e.timestamp else "",
+            e.event_type,
+            e.actor_name,
+            e.actor_role,
+            e.version_number or details.get("version_number") or "",
+            hash_val,
+            json.dumps(details)
+        ])
+        
+    csv_bytes = output.getvalue().encode("utf-8")
+    return Response(
+        content=csv_bytes,
+        media_type="text/csv",
+        headers={
+            "Content-Disposition": f"attachment; filename=audit-submission-{submission_id[:8]}.csv"
+        }
+    )
+
+audit_router = APIRouter(prefix="/audit", tags=["Audit Ledger"])
+
+@audit_router.get("/export.csv")
+@audit_router.get("/export")
+def export_workspace_audit_csv(db: Session = Depends(get_db)):
+    events = db.query(AuditEvent).order_by(AuditEvent.timestamp.desc()).all()
+    output = io.StringIO()
+    writer = csv.writer(output)
+    writer.writerow([
+        "Event ID", "Timestamp (UTC)", "Workspace ID", "Submission ID",
+        "Event Type", "Actor Name", "Actor Role", "Version Number",
+        "Content Hash", "Details"
+    ])
+    for e in events:
+        details = e.details_json or {}
+        hash_val = details.get("content_hash") or details.get("hash") or ""
+        writer.writerow([
+            e.id,
+            e.timestamp.isoformat() if e.timestamp else "",
+            e.workspace_id,
+            e.submission_id or "",
+            e.event_type,
+            e.actor_name,
+            e.actor_role,
+            e.version_number or details.get("version_number") or "",
+            hash_val,
+            json.dumps(details)
+        ])
+        
+    csv_bytes = output.getvalue().encode("utf-8")
+    return Response(
+        content=csv_bytes,
+        media_type="text/csv",
+        headers={
+            "Content-Disposition": "attachment; filename=verity-workspace-audit-ledger.csv"
+        }
+    )
+

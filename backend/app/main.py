@@ -10,7 +10,7 @@ from backend.app.api.session_routes import router as session_router
 from backend.app.api.brand_routes import router as brand_router
 from backend.app.api.submission_routes import router as submission_router
 from backend.app.api.finding_routes import router as finding_router
-from backend.app.api.review_routes import router as review_router
+from backend.app.api.review_routes import router as review_router, audit_router
 from backend.app.api.insights_routes import router as insights_router
 from backend.app.api.notification_feedback_routes import router as extra_router
 from backend.app.api.auth_routes import router as auth_router
@@ -74,6 +74,7 @@ app.include_router(brand_router, prefix="/api")
 app.include_router(submission_router, prefix="/api")
 app.include_router(finding_router, prefix="/api")
 app.include_router(review_router, prefix="/api")
+app.include_router(audit_router, prefix="/api")
 app.include_router(insights_router, prefix="/api")
 app.include_router(extra_router, prefix="/api")
 app.include_router(auth_router, prefix="/api")
