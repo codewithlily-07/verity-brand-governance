@@ -46,23 +46,16 @@ export function PageSubNav({ sections = [] }) {
         className="fixed top-0 left-0 h-[2.5px] z-50 pointer-events-none transition-all duration-75"
         style={{
           width: `${scrollProgress}%`,
-          background: 'linear-gradient(90deg, #F3D98B 0%, #D4AF37 50%, #A67C00 100%)',
-          boxShadow: '0 0 10px rgba(212, 175, 55, 0.65)',
+          background: 'linear-gradient(90deg, #F3EAD3 0%, #E2B857 50%, #8A6A24 100%)',
+          boxShadow: '0 0 10px rgba(226, 184, 87, 0.65)',
         }}
       />
 
       {/* Sticky Sub-navigation Bar */}
       <div 
-        className="sticky top-[60px] sm:top-[72px] z-30 w-full py-2.5 px-4 select-none border-b"
-        style={{
-          backgroundColor: 'rgba(5, 8, 20, 0.92)',
-          backdropFilter: 'blur(14px)',
-          WebkitBackdropFilter: 'blur(14px)',
-          borderColor: 'rgba(212, 175, 55, 0.20)',
-          boxShadow: '0 4px 20px rgba(0, 0, 0, 0.35)',
-        }}
+        className="sticky top-[60px] sm:top-[72px] z-30 w-full min-h-[44px] py-1.5 px-4 select-none border-b border-[#F3EAD3]/30 bg-[#13203F] backdrop-blur-md shadow-md"
       >
-        <div className="max-w-[1200px] mx-auto flex items-center justify-start sm:justify-center gap-2 overflow-x-auto no-scrollbar py-0.5">
+        <div className="max-w-[1200px] mx-auto flex items-center justify-start sm:justify-center gap-2 overflow-x-auto no-scrollbar py-0.5 min-h-[44px]">
           {sections.map((sec) => {
             const isActive = activeId === sec.id;
             return (
@@ -70,10 +63,10 @@ export function PageSubNav({ sections = [] }) {
                 key={sec.id}
                 type="button"
                 onClick={() => scrollToSection(sec.id)}
-                className={`px-3.5 py-1.5 rounded-full text-xs font-medium tracking-wide transition-all whitespace-nowrap cursor-pointer ${
+                className={`inline-flex items-center justify-center px-4 py-2 min-h-[44px] rounded-full text-sm tracking-wide transition-all whitespace-nowrap cursor-pointer focus:outline-none focus:ring-2 focus:ring-[#E2B857] ${
                   isActive
-                    ? 'bg-gradient-to-r from-[#F3D98B] to-[#D4AF37] text-[#050814] font-bold shadow-[0_0_12px_rgba(212,175,55,0.4)] scale-105'
-                    : 'text-[#9AA6C7] hover:text-[#F7F2E7] hover:bg-white/5 border border-transparent'
+                    ? 'bg-[#E2B857] text-[#101B35] font-bold shadow-[0_2px_10px_rgba(226,184,87,0.35)]'
+                    : 'text-[#FAF8F2] hover:text-[#FAF8F2] hover:underline hover:decoration-[#E2B857] hover:underline-offset-4 bg-transparent'
                 }`}
               >
                 {sec.label}
