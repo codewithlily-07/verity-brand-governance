@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { 
+import {
   CheckCircle2, XCircle, Play, BarChart2, Check, RefreshCw
 } from 'lucide-react';
 
@@ -44,7 +44,7 @@ export function QualityPage({ setActivePage }) {
 
   return (
     <div className="w-full min-h-screen bg-[#FAF8F2] text-[#14203D]">
-      
+
       {/* ==================================================
           SECTION 1: HERO (NAVY LIKE: #0A1226 to #101B35 with gold glow)
           ================================================== */}
@@ -87,7 +87,7 @@ export function QualityPage({ setActivePage }) {
           ================================================== */}
       <section className="py-12 px-4 sm:px-6 lg:px-8 bg-[#FAF8F2]">
         <div className="max-w-7xl mx-auto">
-          
+
           {error && (
             <div className="mb-6 p-4 rounded-xl bg-[#FEE2E2] border border-[#B91C1C]/30 text-sm text-[#B91C1C]">
               Error: {error}
@@ -107,7 +107,7 @@ export function QualityPage({ setActivePage }) {
 
           {/* 4 Metric Cards */}
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5 mb-10">
-            
+
             {/* Metric 1: Precision */}
             <div className="bg-[#FFFFFF] rounded-2xl p-6 border border-[#E2B857]/30 border-l-4 border-l-[#E2B857] shadow-[0_4px_20px_rgba(20,32,61,0.05)]">
               <span className="text-sm font-semibold text-[#8A6A24] uppercase tracking-wider block">Precision</span>
@@ -115,8 +115,8 @@ export function QualityPage({ setActivePage }) {
                 {evalResults ? `${evalResults.metrics.precision_percent}%` : 'Not run yet'}
               </p>
               <span className="text-sm text-[#4A5675] mt-1 block">
-                {evalResults 
-                  ? `${evalResults.metrics.planted_issues_detected} / (${evalResults.metrics.planted_issues_detected} + ${evalResults.metrics.false_positives_on_clean_draft})` 
+                {evalResults
+                  ? `${evalResults.metrics.planted_issues_detected} / (${evalResults.metrics.planted_issues_detected} + ${evalResults.metrics.false_positives_on_clean_draft})`
                   : 'Click Run live evaluation'}
               </span>
             </div>
@@ -175,8 +175,8 @@ export function QualityPage({ setActivePage }) {
               const runMatch = evalResults?.test_case_results?.find(r => r.test_case_id === tc.id);
 
               return (
-                <div 
-                  key={tc.id} 
+                <div
+                  key={tc.id}
                   className="bg-[#FFFFFF] rounded-2xl p-6 border border-[#E2B857]/30 shadow-[0_4px_20px_rgba(20,32,61,0.05)]"
                 >
                   <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 mb-4 pb-3 border-b border-[#F3EAD3]">
