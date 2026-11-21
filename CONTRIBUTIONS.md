@@ -11,8 +11,8 @@
 
 | Team Member | Role / Focus | Specific Components & Deliverables Owned |
 | :--- | :--- | :--- |
-| **Vookoti Sowmya** *(Team Leader)* | [To be completed by team] | [To be completed by team] |
-| **Gadidamalla Bhanu Rasool** | [To be completed by team] | [To be completed by team] |
+| **Vookoti Sowmya** *(Team Leader)* | Product Architecture, Review Lifecycle & Knowledge Systems | Designed system architecture, review approval state machine, Brand Knowledge Hub, Claim Evidence Ledger integration, PDF report generation, and system documentation. |
+| **Gadidamalla Bhanu Rasool** | Core Engine, Intent Diffs, UI/UX & Quality Verification | Implemented the 3-layer verification engine, intent-preserving diff algorithm, Gold Refinement animations, automated pytest suites, and axe-core accessibility auditing. |
 
 ---
 

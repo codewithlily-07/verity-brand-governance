@@ -18,5 +18,10 @@ In accordance with Round 2 and Round 3 judging guidelines, this document provide
 
 ### 4. Cold-Start Latency on Serverless Containers
 - **Current Behavior:** On free-tier container platforms (such as Render free tier), the container may spin down during prolonged inactivity. The first wake request can experience a 15–20 second delay.
-- **Mitigation:** The frontend provides non-blocking status messaging and does not crash or display broken states during server initialization.
+- **Mitigation:** The frontend provides non-blocking status messaging ("Connecting to Verity Engine...") and does not crash or display broken states during server initialization.
+
+### 5. Automated Accessibility Testing Scope
+- **Current Behavior:** Automated axe-core audits verify 0 contrast violations across all 16 tested routes.
+- **Limitation:** Automated tools evaluate machine-detectable rules (contrast ratios, image alt attributes, form labels). Full end-to-end screen reader compliance (NVDA, VoiceOver) and human cognitive accessibility are part of continuous human governance.
+
 

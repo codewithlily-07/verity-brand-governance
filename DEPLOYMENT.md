@@ -1,5 +1,6 @@
 # VERITY Deployment Guide
 
+**Live Public Application:** [https://verity-brand-governance.onrender.com](https://verity-brand-governance.onrender.com)  
 **Target Topology:** Single-container deployment where FastAPI serves both the REST API and the built production React SPA. Database supports Supabase PostgreSQL or zero-config local SQLite.
 
 ---
