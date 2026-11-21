@@ -4,43 +4,50 @@ This document provides a comprehensive inventory of all functional features avai
 
 ---
 
-## 1. Feature Breakdown by Functional Area
+## 1. Complete Feature List (Live & Deployed)
 
-### A. Intake & Analysis Engine
-- **Multi-Format Ingestion:** Paste raw text, or upload `.pdf`, `.docx`, or `.txt` files with automated file magic-byte validation and 10MB size limits.
-- **Channel Template Checklists:** Dynamic quality hints tailored for Social, Ads, Emails, Press Releases, Websites, and Institutional Documents.
-- **Three-Layer Evaluation Pipeline:**
-  1. *Layer 1 (Deterministic Rules):* Always-on regex and normalization checking absolute guarantees (R1), unbacked superlatives (R2), informal greetings (R3), casing (R4), repeated punctuation (R5), and required elements (R6).
-  2. *Layer 2 (Retrieval-Grounded Analysis):* Vector and full-text retrieval matching factual claims against approved fact statements.
-  3. *Layer 3 (Validated Contextual AI):* Advisory contextual suggestions with strict JSON schema validation and graceful fallback when API keys are absent.
-- **Brand Compliance Score:** Transparent weighted evaluation metric (0–100) and letter grade (A–F) detailing individual components (Rules, Facts, Terminology, Tone, Visual).
+1. Three-layer brand governance engine combining deterministic policy rules, approved-source retrieval and optional contextual AI advisory.
+2. Multi-format content intake supporting direct text, PDF, DOCX and TXT uploads with file-signature validation.
+3. Channel-specific compliance checklists for social media, advertisements, emails, press releases, websites and institutional documents.
+4. Brand Compliance Score (0–100) with letter-grade assessment and breakdowns for rules, facts, terminology, tone and visual standards.
+5. Claim Evidence Ledger extracting factual assertions and classifying them as supported, conflicting or unsupported against approved corporate facts.
+6. Evidence-linked findings displaying relevant approved facts or guideline passages, or explicitly identifying missing supporting evidence.
+7. Server-enforced approval restrictions for unresolved high-severity unsupported claims, with documented reviewer override justification.
+8. Intent-preserving word-level diff comparing original and revised content without overwriting the original submission.
+9. Gold Refinement correction animation using amber and gold visual effects.
+10. Apply All Safe Fixes preview with an eight-second reversible Undo option.
+11. Submission version history with non-destructive restoration.
+12. SHA-256 content fingerprinting binding reviewer decisions to specific submission versions.
+13. Server-side role-based access control for Content Creator, Authorised Reviewer, Administrator and Owner.
+14. Optimistic concurrency control detecting stale versions and returning HTTP 409 Conflict.
+15. Threaded review comments associated with submission versions.
+16. Notification bell with read/unread notification state and Mark All as Read functionality.
+17. PDF compliance certificate generation with review findings and verification fingerprints.
+18. Individual submission and workspace-wide CSV audit exports.
+19. Brand Knowledge Hub for managing approved facts, guideline sources, deterministic rules, terminology and visual identity.
+20. Interactive Brand Hub Rule Tester with live pattern matching.
+21. Portable Brand Kit JSON export and schema-validated import.
+22. Visual palette distance and WCAG contrast validation.
+23. Draft autosave and browser-exit safeguards.
+24. Four-step guided onboarding tour and dynamic Getting Started dashboard checklist.
+25. Deep-link URL synchronization for submission IDs, search and status filters.
+26. React error boundary with incident identification and network connectivity feedback.
+27. Public Quality dashboard with a labelled evaluation runner.
+28. Graceful fallback to deterministic rules and approved-source retrieval when external AI services are unavailable.
 
-### B. Workspace & Correction Environment
-- **Claim Evidence Ledger:** Dedicated view displaying each extracted claim, verdict (`supported`, `conflicting`, `unsupported`), and grounding citations.
-- **Gold Refinement Effect:** Pure CSS/canvas animation transforming flagged text into verified wording through gold dust dissolution and letter condensation.
-- **Side-by-Side Intent Diff:** Real-time word-level diff viewer highlighting original vs revised draft.
-- **Apply All Safe Fixes:** Single-click preview modal applying all verified rule and terminology corrections, accompanied by an instant 8-second Undo toast.
-- **Draft Autosave & Protection:** Debounced local persistence and `beforeunload` unsaved copy warnings.
-- **Version Restoration:** Restore any historical version as a new revision without overwriting immutable prior records.
+---
 
-### C. Reviewer Sign-off & Audit Governance
-- **Role-Based Permission Enforcement:** Creator, Reviewer, Admin, and Owner separation with server-side validation.
-- **Cryptographic SHA-256 Stamping:** Every version is hashed upon creation; approvals bind strictly to the exact hash evaluated.
-- **Concurrency Conflict Handling (409):** Detects when reviews are attempted on stale drafts and prompts the reviewer to reload the latest copy.
-- **Compliance Override Ledger:** Approving with open high-severity findings or ungrounded claims requires recording an explicit audit explanation.
-- **Executive PDF Report Export:** Generates official compliance certification via ReportLab including hash snapshots, finding breakdowns, and audit decisions.
-- **CSV Audit Exports:** Instant download of submission-level and workspace-level audit event streams.
+## 2. Functional Matrix by Persona
 
-### D. Brand Knowledge Hub
-- **Approved Fact Repository:** Manage institutional claims (code, statement, source documentation) used for Layer 2 grounding.
-- **Deterministic Rules Management:** View active rules, citations, and violation telemetry.
-- **Interactive Rule Tester:** Test any rule live with sample copy and match quote highlighting.
-- **Terminology Glossary:** Word replacement mappings (avoid vs prefer) enforcing corporate vocabulary.
-- **Visual Identity Palette:** Approved brand hex codes with CIE ΔE color distance and WCAG AA contrast validation.
-- **Brand Kit JSON Portability:** One-click export and schema-validated import of complete brand configurations.
-
-### E. Navigation, Onboarding & Reliability
-- **Getting Started Milestones:** Dashboard progress tracker for essential onboarding tasks.
-- **4-Step Guided First-Use Tour:** Skippable modal introducing the core platform concepts.
-- **Deep-Link URL Sync:** Query parameters (`?id=`, `?search=`, `?status=`) preserve UI state across refreshes and tab openings.
-- **React Error Boundary & Offline Banner:** Graceful error handling and network status monitoring.
+| Capability | Creator | Reviewer | Admin | Owner |
+| :--- | :---: | :---: | :---: | :---: |
+| Draft Ingestion (Text/File) | ✓ | ✓ | ✓ | ✓ |
+| View 3-Layer Findings & Diff | ✓ | ✓ | ✓ | ✓ |
+| Apply Safe Fixes & Undo | ✓ | ✓ | ✓ | ✓ |
+| Save New Versions & Restore | ✓ | ✓ | ✓ | ✓ |
+| Sign-Off / Approve Release | ✗ | ✓ | ✓ | ✓ |
+| Request Changes / Reject | ✗ | ✓ | ✓ | ✓ |
+| Compliance Override Justification | ✗ | ✓ | ✓ | ✓ |
+| Configure Brand Rules & Facts | ✗ | ✗ | ✓ | ✓ |
+| Export Audit CSV & PDF Reports | ✓ | ✓ | ✓ | ✓ |
+| Run Quality Benchmark Runner | ✓ | ✓ | ✓ | ✓ |
